@@ -1,0 +1,9 @@
+-keep class com.google.** { *; }
+-keep class com.icmp.** { *; }
+-keep class com.simant.** { *; }
+-keep class com.sacbpp.** { *; }
+-keep class com.simcore.** { *; }
+-keep class flexjson.** { *; }
+-keep class org.** { *; }
+-keep class javax.** { *; }
+-keep class dalvik.** { *; }

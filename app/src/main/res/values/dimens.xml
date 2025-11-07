@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_small">10dp</dimen>
+    <dimen name="margin">15dp</dimen>
+    <dimen name="margin_big">30dp</dimen>
+    <dimen name="margin_giant">50dp</dimen>
+    <dimen name="font_size_label">24sp</dimen>
+    <dimen name="font_size_label_registration">16sp</dimen>
+    <dimen name="font_size_code_registration">18sp</dimen>
+    <dimen name="font_size_label_pin">18sp</dimen>
+    <dimen name="margin_button_correction">10dp</dimen>
+    <dimen name="margin_circle">10dp</dimen>
+    <dimen name="pin_button_elevation">2dp</dimen>
+    <dimen name="margin_negative_correction">-10dp</dimen>
+    <dimen name="font_size_label_pos_ips_small">27sp</dimen>
+    <dimen name="font_size_label_pos_ips_big">20sp</dimen>
+    <dimen name="font_label_dm">22sp</dimen>
+    <dimen name="font_label_address_mail">18sp</dimen>
+    <dimen name="line_height">1dp</dimen>
+    <dimen name="margin_line_top">5dp</dimen>
+    <dimen name="font_label_transaction">16sp</dimen>
+    <dimen name="card_corner_radius">5dp</dimen>
+    <dimen name="card_elevation">5dp</dimen>
+    <dimen name="filter_padding_top">9dp</dimen>
+    <dimen name="filter_margin_end">5dp</dimen>
+    <dimen name="radio_button_padding">2dp</dimen>
+    <dimen name="transaction_status_icon_size">48dp</dimen>
+    <dimen name="filter_margin_top_correction">-10dp</dimen>
+    <dimen name="font_radio_margin_top_correction">-13sp</dimen>
+    <dimen name="font_label_date">22sp</dimen>
+    <dimen name="font_label_filter">26sp</dimen>
+    <dimen name="font_filter_radio_button">17sp</dimen>
+    <dimen name="margin_top_filter">10dp</dimen>
+    <dimen name="radio_button_padding_left">5dp</dimen>
+    <dimen name="dialog_font_size">14sp</dimen>
+    <dimen name="dialog_margin_start">20dp</dimen>
+    <dimen name="dialog_margin_button_top">10dp</dimen>
+    <dimen name="font_forgotten_pin">19sp</dimen>
+    <dimen name="bill_margin_correction">-8dp</dimen>
+    <dimen name="bill_margin">9dp</dimen>
+    <dimen name="intro_big_label_text_size">40sp</dimen>
+    <dimen name="line_margin_top">5dp</dimen>
+    <dimen name="profile_margin">30dp</dimen>
+    <dimen name="pos_ips_button_corner_radius">6sp</dimen>
+    <dimen name="transaction_padding">14dp</dimen>
+    <dimen name="transaction_slip_margin">10dp</dimen>
+    <dimen name="transaction_slip_font">19sp</dimen>
+    <dimen name="transaction_slip_amount_font">38sp</dimen>
+
+    <dimen name="transaction_slip_bottom_margin">150dp</dimen>
+
+
+</resources>

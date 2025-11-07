@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundAmount"
+        tools:context=".activities.EndOfDayActivity">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_big"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin_default"
+            android:backgroundTint="@color/backgroundAmount"
+            android:tint="@color/colorPrimary"
+            app:borderWidth="0dp"
+            app:fabCustomSize="45dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:maxImageSize="16dp"
+            app:srcCompat="@drawable/icon_back"
+            app:tint="@color/colorPrimary" />
+
+        <ImageView
+            android:id="@+id/print"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/printer"
+            android:padding="@dimen/margin_default"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/share"
+            app:layout_constraintTop_toTopOf="@+id/endOfDayButton"
+            app:srcCompat="@drawable/icon_print" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/endOfDayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:backgroundTint="@color/backgroundAmount"
+            android:tint="@color/colorPrimary"
+            app:borderWidth="0dp"
+            app:fabCustomSize="45dp"
+            app:layout_constraintEnd_toStartOf="@+id/share"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:maxImageSize="20dp"
+            app:srcCompat="@drawable/icon_end_of_day_dark"
+            app:tint="@color/colorPrimary" />
+
+        <!--ImageView
+            android:id="@+id/endOfDayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:contentDescription="@string/label_end_of_day"
+            android:padding="@dimen/margin_default"
+            app:layoutDescription="@string/label_end_of_day"
+            app:layout_constraintBottom_toBottomOf="@+id/back"
+            app:layout_constraintEnd_toStartOf="@+id/print"
+            app:layout_constraintTop_toTopOf="@+id/back"
+            app:srcCompat="@drawable/icon_end_of_day_dark" /-->
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin_big"
+            android:backgroundTint="@color/backgroundAmount"
+            android:tint="@color/colorPrimary"
+            app:borderWidth="0dp"
+            app:fabCustomSize="45dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:maxImageSize="20dp"
+            app:srcCompat="@drawable/icon_share"
+            app:tint="@color/colorPrimary" />
+
+        <!--ImageView
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/share_title"
+            android:padding="@dimen/margin_default"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/print"
+            app:srcCompat="@drawable/icon_share" /-->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/grayLayoutParent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_big"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:backgroundTint="@color/transaction_grey"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/back">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/grayLayout"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/transaction_layout_height"
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:background="@drawable/rounded_edge"
+                android:backgroundTint="@color/transaction_grey"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ScrollView
+                android:id="@+id/billLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/transaction_slip_margin"
+                android:layout_marginTop="@dimen/transaction_slip_margin"
+                android:layout_marginEnd="@dimen/transaction_slip_margin"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                android:translationY="-1000dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="@+id/grayLayout"
+                app:layout_constraintStart_toStartOf="@+id/grayLayout"
+                app:layout_constraintTop_toTopOf="@+id/grayLayout">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/picture_dimension"
+
+                    >
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/bill"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/slipBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:background="@color/bill"
+                    android:backgroundTint="@color/white"
+                    android:paddingBottom="@dimen/margin_big"
+                    app:layout_constraintTop_toTopOf="@+id/image">
+
+
+                    <TextView
+                        android:id="@+id/transactionSlip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_end_of_day"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/transaction_slip_font"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <TextView
+                        android:id="@+id/labelMerchantName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_transaction_merchant_name"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintBottom_toBottomOf="@id/merchantName"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/transactionSlip" />
+
+                    <TextView
+                        android:id="@+id/merchantName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:gravity="end"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/labelMerchantName"
+                        app:layout_constraintTop_toBottomOf="@+id/transactionSlip" />
+
+
+                    <TextView
+                        android:id="@+id/labelTerminalId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_transaction_terminal_id"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/merchantName" />
+
+                    <TextView
+                        android:id="@+id/terminalId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/merchantName" />
+
+
+                    <TextView
+                        android:id="@+id/labelMerchantId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_transaction_merchant_id"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/terminalId" />
+
+                    <TextView
+                        android:id="@+id/merchantId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelTerminalId" />
+
+
+                    <TextView
+                        android:id="@+id/labelLastEndOfDay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_transaction_date"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/merchantId" />
+
+                    <TextView
+                        android:id="@+id/lastEndOfDay"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:gravity="end"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/labelMerchantId"
+                        app:layout_constraintTop_toBottomOf="@+id/labelMerchantId" />
+
+
+                    <View
+                        android:id="@+id/line6"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_height"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:background="@color/bill_line"
+                        app:layout_constraintTop_toBottomOf="@+id/lastEndOfDay" />
+
+                    <TextView
+                        android:id="@+id/labelMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_mastercard"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/line6" />
+
+
+                    <TextView
+                        android:id="@+id/labelPurchaseMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_purchase"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelMastercard" />
+
+                    <TextView
+                        android:id="@+id/purchaseMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelMastercard" />
+
+                    <TextView
+                        android:id="@+id/purchaseMastercardNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/purchaseMastercard"
+                        app:layout_constraintStart_toStartOf="@+id/labelPurchaseMastercard"
+                        app:layout_constraintTop_toBottomOf="@+id/labelMastercard" />
+
+                    <TextView
+                        android:id="@+id/labelStornoMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_cancel_purchase"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelPurchaseMastercard" />
+
+
+                    <TextView
+                        android:id="@+id/stornoNumberMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/stornoMastercard"
+                        app:layout_constraintStart_toStartOf="@+id/labelStornoMastercard"
+                        app:layout_constraintTop_toBottomOf="@+id/purchaseMastercard" />
+
+                    <TextView
+                        android:id="@+id/stornoMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/purchaseMastercard" />
+
+
+                    <TextView
+                        android:id="@+id/labelTipMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_tip"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelStornoMastercard" />
+
+                    <TextView
+                        android:id="@+id/tipMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/stornoMastercard" />
+
+
+                    <TextView
+                        android:id="@+id/empty1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelTipMastercard" />
+
+                    <TextView
+                        android:id="@+id/labelTotalMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_total"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/empty1" />
+
+                    <TextView
+                        android:id="@+id/totalNumberMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/totalMastercard"
+                        app:layout_constraintStart_toStartOf="@+id/labelTotalMastercard"
+                        app:layout_constraintTop_toBottomOf="@+id/empty1" />
+
+                    <TextView
+                        android:id="@+id/totalMastercard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/empty1" />
+
+
+                    <View
+                        android:id="@+id/line8"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_height"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:background="@color/bill_line"
+                        app:layout_constraintTop_toBottomOf="@+id/totalMastercard" />
+
+
+                    <TextView
+                        android:id="@+id/labelVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_visa"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/line8" />
+
+
+                    <TextView
+                        android:id="@+id/labelPurchaseVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_purchase"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelVisa" />
+
+                    <TextView
+                        android:id="@+id/purchaseNumberVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/purchaseVisa"
+                        app:layout_constraintStart_toStartOf="@+id/labelPurchaseVisa"
+                        app:layout_constraintTop_toBottomOf="@+id/labelVisa" />
+
+                    <TextView
+                        android:id="@+id/purchaseVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelVisa" />
+
+
+                    <TextView
+                        android:id="@+id/labelStornoVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_cancel_purchase"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelPurchaseVisa" />
+
+                    <TextView
+                        android:id="@+id/stornoNumberVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/stornoVisa"
+                        app:layout_constraintStart_toStartOf="@+id/labelStornoVisa"
+                        app:layout_constraintTop_toBottomOf="@+id/purchaseVisa" />
+
+                    <TextView
+                        android:id="@+id/stornoVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/purchaseVisa" />
+
+                    <TextView
+                        android:id="@+id/labelTipVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_tip"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelStornoVisa" />
+
+                    <TextView
+                        android:id="@+id/tipVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/stornoVisa" />
+
+
+                    <TextView
+                        android:id="@+id/empty2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelTipVisa" />
+
+                    <TextView
+                        android:id="@+id/labelTotalVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_total"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/empty2" />
+
+                    <TextView
+                        android:id="@+id/totalNumberVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/totalVisa"
+                        app:layout_constraintStart_toStartOf="@+id/labelTotalVisa"
+                        app:layout_constraintTop_toBottomOf="@+id/empty2" />
+
+                    <TextView
+                        android:id="@+id/totalVisa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/empty2" />
+
+
+                    <View
+                        android:id="@+id/line9"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_height"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:background="@color/bill_line"
+                        app:layout_constraintTop_toBottomOf="@+id/totalVisa" />
+
+
+                    <TextView
+                        android:id="@+id/labelFlik"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_flik"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/line9" />
+
+
+                    <TextView
+                        android:id="@+id/empty3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelFlik" />
+
+
+                    <TextView
+                        android:id="@+id/labelTotalFlik"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_total"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/empty3" />
+
+                    <TextView
+                        android:id="@+id/totalNumberFlik"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/totalFlik"
+                        app:layout_constraintStart_toStartOf="@+id/labelTotalFlik"
+                        app:layout_constraintTop_toBottomOf="@+id/empty3" />
+
+                    <TextView
+                        android:id="@+id/totalFlik"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/empty3" />
+
+
+                    <View
+                        android:id="@+id/line10"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_height"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:background="@color/bill_line"
+                        app:layout_constraintTop_toBottomOf="@+id/totalFlik" />
+
+
+                    <TextView
+                        android:id="@+id/labelTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_total_header"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/transaction_slip_font"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/line10" />
+
+
+                    <TextView
+                        android:id="@+id/labelPurchaseTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_purchase"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelTotal" />
+
+                    <TextView
+                        android:id="@+id/purchaseNumberTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/purchaseTotal"
+                        app:layout_constraintStart_toStartOf="@+id/labelPurchaseTotal"
+                        app:layout_constraintTop_toBottomOf="@+id/labelTotal" />
+
+                    <TextView
+                        android:id="@+id/purchaseTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelTotal" />
+
+
+                    <TextView
+                        android:id="@+id/labelStornoTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_cancel_purchase"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelPurchaseTotal" />
+
+                    <TextView
+                        android:id="@+id/stornoNumberTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/stornoTotal"
+                        app:layout_constraintStart_toStartOf="@+id/labelStornoTotal"
+                        app:layout_constraintTop_toBottomOf="@+id/purchaseTotal" />
+
+                    <TextView
+                        android:id="@+id/stornoTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/purchaseTotal" />
+
+                    <TextView
+                        android:id="@+id/labelTipTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_tip"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelStornoTotal" />
+
+                    <TextView
+                        android:id="@+id/tipTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/stornoTotal" />
+
+
+                    <TextView
+                        android:id="@+id/empty4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelTipTotal" />
+
+                    <TextView
+                        android:id="@+id/labelTotalM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/label_total"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/empty4" />
+
+                    <TextView
+                        android:id="@+id/totalNumberTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="@+id/totalTotal"
+                        app:layout_constraintStart_toStartOf="@+id/labelTotalM"
+                        app:layout_constraintTop_toBottomOf="@+id/empty4" />
+
+                    <TextView
+                        android:id="@+id/totalTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/empty4" />
+
+
+                    <View
+                        android:id="@+id/line11"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_height"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:background="@color/bill_line"
+                        app:layout_constraintTop_toBottomOf="@+id/totalTotal" />
+
+
+                    <TextView
+                        android:id="@+id/empty5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_margin_top"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/label_transaction_bill"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/line10" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <ImageView
+                        android:id="@+id/imageBottom"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/bill_bottom"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/slipBody" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </ScrollView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/amountContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_pin"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/enterPinLayout"
+                    style="@style/OutlinedRoundedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_big"
+                    android:layout_marginTop="@dimen/margin_big"
+                    android:layout_marginEnd="@dimen/margin_big"
+                    android:background="@drawable/rounded_edittext"
+                    android:fontFamily="@font/ss3regular"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/back">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/pinText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:fontFamily="@font/ss3bold"
+                        android:gravity="center"
+                        android:inputType="number"
+                        android:paddingTop="-3dp"
+                        android:paddingBottom="-3dp"
+                        android:textColor="@color/bigLabelBlack"
+                        android:textSize="32sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/enter_pin_text"
+                    android:textColor="@color/global_grey"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <TableLayout
+                android:id="@+id/keypad_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/amountContainer"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="@dimen/margin_big"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <TableRow>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_1_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_1"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_2_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_2"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_3_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_3"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+                </TableRow>
+
+                <TableRow>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_4_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_4"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_5_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_5"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_6_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_6"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+                </TableRow>
+
+                <TableRow>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_7_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_7"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_8_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_8"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_9_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_9"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+                </TableRow>
+
+                <TableRow android:layout_marginBottom="15dp">
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/icon_oval"
+                        android:visibility="invisible">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_centerInParent="true"
+                            android:layout_marginTop="15dp"
+                            android:adjustViewBounds="true"
+                            android:paddingTop="5dp"
+                            android:scaleType="centerCrop" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_0_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/circle_pin"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_0"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/icon_oval"
+                        android:visibility="invisible">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_centerInParent="true"
+                            android:layout_marginTop="15dp"
+                            android:adjustViewBounds="true"
+                            android:paddingTop="5dp"
+                            android:scaleType="centerCrop" />
+                    </RelativeLayout>
+                </TableRow>
+
+                <TableRow android:layout_marginBottom="15dp">
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_cancel_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/pin_cancel_icon"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_cancel"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true" />
+
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_clear_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/pin_clear_icon"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_clear"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true" />
+
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+
+                    <RelativeLayout
+                        android:id="@+id/keypad_ok_container"
+                        android:layout_width="@dimen/h_and_w_pin_button"
+                        android:layout_height="@dimen/h_and_w_pin_button"
+                        android:background="@drawable/pin_ok_icon"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:id="@+id/keypad_ok"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true" />
+
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".1" />
+                </TableRow>
+            </TableLayout>
+
+            <TextView
+                android:id="@+id/infoText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/keypad_container"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text=""
+                android:textColor="#ffffff"
+                android:textSize="30sp"
+                android:typeface="monospace"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/countDownText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/infoText"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="126dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text=""
+                android:textColor="#ffffff"
+                android:textSize="30sp"
+                android:typeface="monospace"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </ScrollView>
+</layout>

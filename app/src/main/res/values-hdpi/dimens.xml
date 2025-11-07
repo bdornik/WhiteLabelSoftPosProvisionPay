@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pin_button_margin">3dp</dimen>
+    <dimen name="pin_button_size">58dp</dimen>
+    <dimen name="margin_big">30dp</dimen>
+
+    <dimen name="button_orange_height">55dp</dimen>
+    <dimen name="button_orange_height_small">45dp</dimen>
+    <dimen name="pin_button_corner_radius">29dp</dimen>
+    <dimen name="margin_message_top">50dp</dimen>
+    <dimen name="margin_amount_top">10dp</dimen>
+    <dimen name="amount_text_size">20sp</dimen>
+    <dimen name="suffix_text_size">14sp</dimen>
+    <dimen name="margin_pos_ips">25dp</dimen>
+    <dimen name="button_payment_margin">20dp</dimen>
+    <dimen name="button_payment_layout_margin">30dp</dimen>
+    <dimen name="margin_dm_logo_top">20dp</dimen>
+    <dimen name="margin_default">9dp</dimen>
+    <dimen name="margin_button_bottom">40dp</dimen>
+    <dimen name="white_space_height">10dp</dimen>
+    <dimen name="margin_top_card_view">3dp</dimen>
+    <dimen name="font_btn_filter">12sp</dimen>
+    <dimen name="transaction_dialog_margin">20dp</dimen>
+    <dimen name="transaction_dialog_margin_top">10dp</dimen>
+    <dimen name="dialog_pin_margin_start_end">60dp</dimen>
+    <dimen name="dialog_pin_margin_top">30dp</dimen>
+    <dimen name="padding_image_pos">35dp</dimen>
+    <dimen name="margin_pos_label_top">10dp</dimen>
+    <dimen name="button_transaction_padding">10dp</dimen>
+    <dimen name="pos_margin_bottom">10dp</dimen>
+    <dimen name="intro_picture_margin_bottom">10dp</dimen>
+    <dimen name="global_button_margin_bottom">10dp</dimen>
+    <dimen name="intro_big_label_margin_top">10dp</dimen>
+    <dimen name="margin_top_ips">8dp</dimen>
+    <dimen name="margin_top_profile_details">3dp</dimen>
+    <dimen name="margin_top_profile_details_label">0dp</dimen>
+    <dimen name="margin_top_global">8dp</dimen>
+    <dimen name="margin_top_amount_layout">0dp</dimen>
+    <dimen name="font_value_transaction">20sp</dimen>
+    <dimen name="cancel_margin_top">6sp</dimen>
+    <dimen name="transaction_layout_height">20dp</dimen>
+    <dimen name="label_transaction_bill">12sp</dimen>
+    <dimen name="picture_dimension">100dp</dimen>
+    <dimen name="h_and_w_pin_button">85dp</dimen>
+    <dimen name="margin_pin">30dp</dimen>
+
+
+
+
+</resources>

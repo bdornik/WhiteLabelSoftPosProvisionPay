@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/backgroundAmount"
+        tools:context=".activities.SettingsActivity">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/icon_back"
+            app:tint="@color/colorPrimary"
+            android:tint="@color/colorPrimary"
+            android:backgroundTint="@color/backgroundAmount"
+            app:fabCustomSize="45dp"
+            app:maxImageSize="16dp"
+            android:layout_marginStart="@dimen/margin_big"
+            android:layout_marginTop="@dimen/margin"
+            app:borderWidth="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <TextView
+            android:id="@+id/labelSettings"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/back"
+            android:text="@string/label_settings"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:fontFamily="@font/ss3black"
+            android:textSize="22sp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/global_grey"
+            app:layout_constraintBottom_toBottomOf="@id/back"
+            app:layout_constraintStart_toEndOf="@id/back"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <View
+            android:id="@+id/line0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            app:layout_constraintTop_toBottomOf="@id/back"
+            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:layout_marginBottom="@dimen/margin_default"
+            android:background="@color/greyLine"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line0"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:layout_marginTop="@dimen/margin_default">
+            <TextView
+                android:id="@+id/labelProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:text="@string/label_profile"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="@font/ss3bold"
+                android:textSize="18sp"
+                />
+
+            <ImageView
+                android:id="@+id/arrowProfile"
+                android:layout_width="6dp"
+                android:layout_height="11dp"
+                android:src="@drawable/icon_arrow_right"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            app:layout_constraintTop_toBottomOf="@+id/profile"
+            android:layout_marginTop="@dimen/line_margin_top"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:background="@color/greyLine"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/changePin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profile"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:layout_marginTop="@dimen/profile_margin">
+            <TextView
+                android:id="@+id/labelChangePin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:text="@string/label_change_pin"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="@font/ss3bold"
+                android:textSize="18sp"
+                />
+
+            <ImageView
+                android:id="@+id/arrowPin"
+                android:layout_width="6dp"
+                android:layout_height="11dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@drawable/icon_arrow_right" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            app:layout_constraintTop_toBottomOf="@+id/changePin"
+            android:layout_marginTop="@dimen/line_margin_top"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:background="@color/greyLine"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/changeTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/changePin"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:layout_marginTop="@dimen/profile_margin">
+            <TextView
+                android:id="@+id/labelChangeTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:text="@string/label_change_theme"
+                android:textColor="@color/suffix"
+                android:fontFamily="@font/cocoregular"
+                android:textSize="@dimen/font_label_date"
+                />
+
+            <ImageView
+                android:id="@+id/arrowTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@drawable/icon_arrow_right" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/line3"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            app:layout_constraintTop_toBottomOf="@+id/changeTheme"
+            android:layout_marginTop="@dimen/line_margin_top"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:visibility="gone"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:background="@color/greyLine"/>
+
+
+        <TextView
+            android:id="@+id/labelLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line3"
+            android:layout_marginTop="@dimen/profile_margin"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:text="@string/language"
+            android:textColor="@color/colorPrimary"
+            android:fontFamily="@font/ss3bold"
+            android:textSize="18sp"
+            />
+
+
+        <Spinner
+            android:id="@+id/languageSpinner"
+            app:layout_constraintTop_toTopOf="@id/labelLanguage"
+            app:layout_constraintBottom_toBottomOf="@id/labelLanguage"
+            android:layout_width="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:id="@+id/line4"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            app:layout_constraintTop_toBottomOf="@+id/labelLanguage"
+            android:layout_marginTop="@dimen/line_margin_top"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:visibility="visible"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:background="@color/greyLine"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/labelTermsConditions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line4"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:layout_marginTop="@dimen/profile_margin">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:text="@string/terms_conditions"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="@font/ss3bold"
+                android:textSize="18sp"
+                />
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="11dp"
+                android:src="@drawable/icon_arrow_right"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/line5"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            app:layout_constraintTop_toBottomOf="@+id/labelTermsConditions"
+            android:layout_marginTop="@dimen/line_margin_top"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:visibility="visible"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:background="@color/greyLine"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/labelContacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line5"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:layout_marginTop="@dimen/profile_margin">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/settings_contact"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="@font/ss3bold"
+                android:textSize="18sp"
+                />
+
+            <TextView
+                android:id="@+id/labelContactNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/cocobold"
+                android:textColor="@color/global_grey"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="11dp"
+                android:src="@drawable/icon_arrow_right"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/line6"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            app:layout_constraintTop_toBottomOf="@+id/labelContacts"
+            android:layout_marginTop="@dimen/line_margin_top"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:visibility="visible"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:background="@color/greyLine"/>
+
+        <TextView
+            android:id="@+id/labelVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line6"
+            android:layout_marginTop="@dimen/profile_margin"
+            android:layout_marginStart="@dimen/profile_margin"
+            android:text="@string/version_label"
+            android:textColor="@color/colorPrimary"
+            android:fontFamily="@font/ss3bold"
+            android:textSize="18sp"
+            />
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line6"
+            android:layout_marginTop="@dimen/profile_margin"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/profile_margin"
+            android:gravity="end"
+            app:layout_constraintStart_toEndOf="@id/labelVersion"
+            android:textColor="@color/colorPrimary"
+            android:fontFamily="@font/ss3bold"
+            android:textSize="18sp"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

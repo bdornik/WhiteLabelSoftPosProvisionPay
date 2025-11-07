@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.ThemeActivity">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/icon_back"
+            android:padding="@dimen/margin_default"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="@dimen/margin_top_global"
+            android:layout_marginStart="@dimen/margin_default"/>
+
+        <TextView
+            android:id="@+id/labelChangeTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/back"
+            android:text="@string/label_change_theme"
+            android:fontFamily="@font/poppinssemibold"
+            android:textSize="@dimen/font_size_label"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@id/back"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/back"
+            android:layout_marginTop="@dimen/margin_default"
+            android:weightSum="2">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/lightMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_default"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/labelDay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="@string/label_theme_day"
+                    android:textColor="@color/bigLabelBlack"
+                    android:fontFamily="@font/poppinsregular"
+                    android:textSize="@dimen/font_value_transaction"
+                    />
+                <ImageView
+                    android:id="@+id/imageDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/labelDay"
+                    android:src="@drawable/theme_day_selected"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/darkMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_default"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/labelNight"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="@string/label_theme_night"
+                    android:textColor="@color/bigLabelBlack"
+                    android:fontFamily="@font/poppinsregular"
+                    android:textSize="@dimen/font_value_transaction"
+                    />
+                <ImageView
+                    android:id="@+id/imageNight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/labelNight"
+                    android:src="@drawable/theme_night_unselected"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

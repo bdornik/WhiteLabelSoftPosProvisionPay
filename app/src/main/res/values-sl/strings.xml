@@ -1,0 +1,293 @@
+<resources>
+    <string name="app_name">OTP Smart POS</string>
+
+    <string name="app_name_first">OTP</string>
+    <string name="app_name_second">Soft POS</string>
+    <string name="app_label_smart">Smart POS</string>
+    <string name="intro_body_1">Hitro. Varno. Kadarkoli.</string>
+    <string name="intro_body_2">Preprost način \nsprejemanja kartičnih in Flik plačil.</string>
+    <string name="intro_landing_1">Dobrodošli</string>
+    <string name="intro_landing_2">v aplikaciji OTP Smart POS, ki vam omogoča hiter, varen in preprost način sprejemanja plačilnih kartic in Flik takojšnjih plačil.</string>
+
+    <string name="label_printed">Račun potiskan</string>
+    <string name="label_no_printed">Aplikacija ne najde tiskalnika</string>
+
+    <string name="label_operation_sales">Prodaja</string>
+    <string name="label_registration">Registracija</string>
+    <string name="label_marketing_text_big_font">Hitro. \nVarno. \nKadarkoli.</string>
+    <string name="label_marketing_text_small_font">Preprost način \nsprejemanja plačilnih kartic.</string>
+    <string name="button_become_user">Naprej</string>
+    <string name="label_user_id">ID uporabnika</string>
+    <string name="label_terminal_name">ID uporabnika</string>
+    <string name="label_activation_code">Aktivacijska koda</string>
+    <string name="label_enter_pin">Vnesite PIN kodo</string>
+    <string name="label_enter_pin_registration">Vnesite želeno PIN kodo</string>
+    <string name="label_repeat_pin">Ponovno vnesite želeni PIN</string>
+    <string name="message_wrong_pin">Napačen PIN, prosimo poskusite znova</string>
+    <string name="label_enter_amount">Vnesite znesek</string>
+    <string name="label_enter_tip_header">Napitnina</string>
+    <string name="button_proceed">Naprej</string>
+    <string name="suffix_text">EUR</string>
+    <string name="label_payment_type">Način plačila</string>
+    <string name="label_payment_type_pos">POS</string>
+    <string name="label_payment_type_void">Storniraj transakcijo</string>
+    <string name="label_payment_type_ips">FLIK</string>
+    <string name="label_billing_method">Izberite način plačila</string>
+    <string name="label_tip_method">Izberite napitnino</string>
+    <string name="hint_amount">Znesek</string>
+    <string name="button_pos">POS</string>
+    <string name="button_ips">FLIK</string>
+    <string name="button_lean">prisloni</string>
+    <string name="button_read">skeniraj</string>
+    <string name="button_read_p">pokaži</string>
+    <string name="label_dm">Dm drogerie</string>
+    <string name="label_address">Antifašističke borbe 32, Beograd</string>
+    <string name="label_mail">dmdrogerienbg@gmail.com</string>
+    <string name="label_enter_amount_profile">Vnesite znesek</string>
+    <string name="label_traffic">Promet</string>
+    <string name="label_empty_traffic">Za ta filter ni transakcij.</string>
+    <string name="label_settings">Nastavitve</string>
+    <string name="button_sign_out">Odjava</string>
+    <string name="label_period">Obdobje:</string>
+    <string name="button_generate_report">Kreiraj poročilo</string>
+    <string name="label_transaction_date">Datum</string>
+    <string name="label_transaction_amount">Znesek</string>
+    <string name="label_transaction_e2e">E2E Ref:</string>
+    <string name="label_transaction_e2e_ips">E2E referenca:</string>
+    <string name="label_transaction_status">Status:</string>
+    <string name="label_transaction_merchant_id">MID:</string>
+    <string name="label_transaction_terminal_id">TID:</string>
+    <string name="label_transaction_merchant_name">Trgovec:</string>
+    <string name="label_transaction_card_number">Številka kartice:</string>
+    <string name="label_transaction_authorization_code">Avtorizacijska koda:</string>
+    <string name="label_transaction_operation_name">Operacija:</string>
+    <string name="label_transaction_response">Odgovor:</string>
+    <string name="label_transaction_message">Sporočilo:</string>
+    <string name="label_transaction_aid">AID:</string>
+    <string name="merchant_name">Trgovec</string>
+    <string name="button_cancel_transaction">Prekini transakcijo</string>
+    <string name="button_void_transaction">Storniraj transakcijo</string>
+    <string name="transaction_status_accepted">Odobreno</string>
+    <string name="transaction_status_rejected">Zavrnjeno</string>
+    <string name="transaction_status_pin_not_entered">PIN ni vnesen</string>
+    <string name="transaction_status_wrong_pin">Napačen PIN</string>
+    <string name="transaction_status_canceled">Stornirano</string>
+    <string name="transaction_status_reversed">Stornirano</string>
+
+    <string name="transaction_operation_void">Storno</string>
+    <string name="label_filter">Filtri</string>
+    <string name="label_filter_date">Datum</string>
+    <string name="label_transaction_type">Tip transakcije</string>
+    <string name="label_transaction_status_filter">Status transakcije</string>
+    <string name="label_transaction_status_sort">Razvrsti</string>
+    <string name="label_from">od</string>
+    <string name="label_to">do</string>
+    <string name="radio_button_pos">POS</string>
+    <string name="radio_button_ips">FLIK</string>
+    <string name="radio_button_all">Vsi</string>
+    <string name="radio_button_date_asc">Po datumu naraščajoče</string>
+    <string name="radio_button_date_dsc">Po datumu padajoče</string>
+    <string name="radio_button_amount_asc">Po znesku naraščajoče</string>
+    <string name="radio_button_amount_dsc">Po znesku padajoče</string>
+    <string name="button_clear_filters">Pobriši filtre</string>
+    <string name="button_apply_filters">Potrdi</string>
+    <string name="transaction_warning_label">Ste prepričani, da želite stornirati transakcijo?</string>
+    <string name="label_transaction_details">PODATKI O TRANSAKCIJI</string>
+    <string name="button_canceled">Storniraj</string>
+    <string name="button_quit">Prekini</string>
+    <string name="label_registration_wrong_pin">Vnesena PIN-a se ne ujemata.\nProsimo, ponovite vnos.</string>
+    <string name="label_nfc_off">NFC mora biti vključen!</string>
+    <string name="button_registration_back">Nazaj</string>
+    <string name="button_e2e_back">Vredu</string>
+    <string name="button_try_again">Poizkusite ponovno</string>
+    <string name="button_nfc_go">Vključi</string>
+    <string name="label_registration_success">Uspešna registracija</string>
+    <string name="label_void_success">Uspešna transakcija</string>
+    <string name="label_void_failed">Storniranje transakcije ni uspelo</string>
+    <string name="label_registration_failed">Neuspešna registracija.\n Prosimo poizkusite ponovno.</string>
+    <string name="label_transaction_failed">Neuspešna transakcija</string>
+    <string name="label_transaction_timeout">Transakcija je potekla!</string>
+    <string name="label_transaction_failed_reason">Status</string>
+    <string name="label_transaction_failed_wrong_pin">Vnesli ste napačen PIN</string>
+    <string name="label_transaction_declined">Zavrnjena transakcija</string>
+    <string name="label_transaction_expired">Transakcija je potekla</string>
+    <string name="label_change_success">Uspešna menjava PIN-a</string>
+    <string name="button_registration_success">Vredu</string>
+    <string name="label_pin_sign_in">Vnesite PIN</string>
+    <string name="label_root_device">Naprava je root-ana, delovanje aplikacije ni mogoče</string>
+    <string name="dialog_login_wrong_pin">Vnesli ste napačen PIN. \n Preostalo število poskusov: </string>
+    <string name="button_login_fail">Poskusite ponovno</string>
+    <string name="button_login_fail_back">Nazaj</string>
+    <string name="label_forgotten_pin">Pozabljen PIN</string>
+    <string name="label_contact_bank">Prosimo vas, da kontaktirate\n klicni center za pomoč uporabnikom</string>
+    <string name="label_login">Prijava</string>
+    <string name="label_enter_current_pin">Unesite trenutni PIN</string>
+    <string name="btn_intro_login">Prijava</string>
+    <string name="btn_intro_sign_in">Postanite uporabnik</string>
+    <string name="underline_forgotten_pin">Pozabljen PIN</string>
+    <string name="label_pos_card">Prislonite kartico k napravi</string>
+    <string name="button_transaction_cancel">Preveri plačilo</string>
+    <string name="label_bill">Račun</string>
+    <string name="label_customer_name">Ime kupca:</string>
+    <string name="label_card_number">Številka kartice:</string>
+    <string name="label_authorisation_code">Autorizacioni kod:</string>
+    <string name="landing_label_small">Preprost način \n sprejemanja plačilnih kartic.</string>
+    <string name="landing_label_big">Dobrodošli</string>
+    <string name="label_ips_card">Skenirajte QR kodo</string>
+    <string name="label_profile">Profil</string>
+    <string name="label_menu">Meni</string>
+    <string name="label_change_pin">Zamenjaj PIN</string>
+    <string name="label_change_theme">Zamenjaj temo</string>
+    <string name="label_address_profile">Naslov</string>
+    <string name="toggle_button_label">vtomatično pošlji slip na\nemail naslov.</string>
+    <string name="label_city">Kraj</string>
+    <string name="label_terminal_id">TID:</string>
+    <string name="label_ips_terminal_id">FLIK Terminal ID</string>
+    <string name="label_theme_day">Dnevni režim</string>
+    <string name="label_theme_night">Noćni režim</string>
+    <string name="label_new_pin_first">Vnesite novi PIN</string>
+    <string name="label_new_pin_repeat">Ponovite vneseni PIN</string>
+    <string name="label_share_history">Ustvari poročilo</string>
+    <string name="label_ips_type">Plačilo s Flikom</string>
+    <string name="label_card_type">Plačilo s kartico</string>
+    <string name="label_flik">Flik</string>
+
+    <string name="label_change_pin_wrong_pin_no_attempts">Vnesli ste napačen PIN.</string>
+    <string name="label_change_pin_wrong_pin_">Vnesli ste napačen PIN.\nŠt. preostalih poizkusov:</string>
+
+    <string name="label_change_pin_wrong_pin_max_attempts">Presegli sta število možnih poskusov vnosa PINa.\nAplikacija je zaklenjena.\nProsimo, uporabite opcijo »Pozabljen PIN?« in sledite postopku na telefonu.\nV primeru težav, pokličite na klicni center +386 1 583 41 03.</string>
+
+    <string name="message_must_enter_amount">Vnesti morate znesek.</string>
+    <string name="btn_must_enter_amount">OK</string>
+    <string name="wrong_format_userid">Vnesite aktivacijsko kodo</string>
+    <string name="wrong_format_code">Vnesite aktivacijsko kodo</string>
+    <string name="label_pin_log_in">Preverjanje PIN-a</string>
+    <string name="success_transaction">Uspešna transakcija!</string>
+    <string name="success_cancel_transaction">Uspešno prekinjena transakcija!</string>
+    <string name="transaction_canceled_successful">Uspešno stornirana transakcija</string>
+    <string name="transaction_canceled_unsuccessful">Neuspešno stornirana transakcija</string>
+    <string name="transaction_slip">Znesek transakcije</string>
+    <string name="transaction_button_reset">Poskusite ponovno</string>
+    <string name="transaction_void_button_reset">Prekini</string>
+    <string name="enter_pin_ok">Potrdi</string>
+    <string name="enter_pin_clear">Počisti</string>
+    <string name="enter_pin_cancel">Prekini</string>
+    <string name="enter_pin_text">Vnesite PIN</string>
+    <string name="transaction_void_failed_button">Ok</string>
+    <string name="share_date">Datum</string>
+    <string name="share_title">Poiščite račun</string>
+    <string name="root_detection">Uporaba root-ne naprave ni dovoljena</string>
+    <string name="store_verify">Aplikacija ni naložena s play store-a</string>
+    <string name="hooks_detected">Najdeni so "hook-i". Aplikacija se zapira.</string>
+    <string name="qr_code_success">Uporabniški ID QR koda uspešno prebrana!</string>
+    <string name="qr_code_label">Skeniraj uporabniški\n ID QR kodo</string>
+    <string name="email_not_valid">E-mail nije validan!</string>
+    <string name="ereceipt_not_sent_title">E mail nije poslat,\nželite li da pokušate ponovo?</string>
+    <string name="email_address">Email adresa:</string>
+    <string name="email_error">Trenutno nije moguće slanje e-mail izveštaja!\n Molimo, pokušajte ponovo</string>
+    <string name="choose_export_format">Izaberite format izveštaja:</string>
+    <string name="format_pdf">PDF</string>
+    <string name="format_xls">XLS</string>
+    <string name="report_sending_title">Slanje izveštaja za period:</string>
+    <string name="ok">OK</string>
+    <string name="no">Odustani</string>
+    <string name="send_email">Pošalji</string>
+    <string name="send_email_success">Uspešno poslat izveštaj</string>
+    <string name="send_email_failed">Izveštaj nije poslat</string>
+    <string name="enter_email_address">Unesite email adresu: </string>
+    <string name="landing_new_transaction">Nova transakcija</string>
+    <string name="pin_transaction_cancel">Transakcija je prekinjena</string>
+
+    <string name="provision_label">Obdelava v teku ...</string>
+
+
+    <string name="label_login_enter_pin">Vnesite PIN kodo</string>
+    <string name="qr_code_label_oneline">Skeniraj korisnički ID QR kod</string>
+    <string name="user_id_hint">Vnesite uporabniški ID</string>
+    <string name="activation_code_hint">Vnesite aktivacijsko kodo</string>
+
+    <string name="month_1_long">Januar</string>
+    <string name="month_2_long">Februar</string>
+    <string name="month_3_long">Marec</string>
+    <string name="month_4_long">Aprila</string>
+    <string name="month_5_long">Maja</string>
+    <string name="month_6_long">Junij</string>
+    <string name="month_7_long">Julija</string>
+    <string name="month_8_long">Avgusta</string>
+    <string name="month_9_long">Septembara</string>
+    <string name="month_10_long">Oktobra</string>
+    <string name="month_11_long">Novembra</string>
+    <string name="month_12_long">Decembra</string>
+    <string name="language">Jezik</string>
+    <string name="language_en">Angleški</string>
+    <string name="language_slo">Slovenski</string>
+    <string name="forgot_pin">Pozabljen PIN?</string>
+    <string name="change_pin_header">Sprememba PIN-a</string>
+    <string name="send_activation_code">Pošljite aktivacijsko kodo</string>
+    <string name="next">Nadaljuj</string>
+    <string name="wrong_activation_code">Neveljavna aktivacijska koda ali ID uporabnika.</string>
+
+    <string name="processing_label">Obdelava v teku...</string>
+    <string name="processing_label_wait">Prosimo, počakajte.</string>
+    <string name="register_checkbox"></string>
+    <string name="register_checkbox_2">Strinjam se s Splošnimi pogoji za najem POS opreme, sprejemanje plačilnih kartic in Flik takojšnjih plačil.</string>
+    <string name="terms_conditions">Pogoji uporabe</string>
+    <string name="settings_contact">Konktaktni podatki</string>
+    <string name="version_label">Različica aplikacije</string>
+    <string name="label_pin_not_entered">PIN ni bil vnesen pravočasno.\nProsimo, ponovite transakcijo.</string>
+    <string name="label_pin_not_entered_button">Nazaj</string>
+
+
+    <string name="no_results_header">Brez rezultatov</string>
+    <string name="no_results_body">Razširite iskanje ali uporabite manj filtrov.</string>
+
+    <string name="error">Prijava ni uspela.\nV primeru težav, pokličite Klicni center +386 1 583 41 03.</string>
+
+    <string name="settings_terms_label">Pogoji uporabe</string>
+
+    <string name="logs_successfully_send">Logs so bili uspešno poslani</string>
+    <string name="logs_unsuccessfully_send">Logs niso bili poslani</string>
+
+    <string name="reactivation_message">Prosimo, da ponovno izvedete aktivacijo vašega OTP Smart POS terminala. \nPritisnite gumb »Aktiviraj« in sledite postopku.</string>
+    <string name="reactivation_button">Aktiviraj</string>
+
+    <string name="back_button">Nazaj</string>
+    <string name="printer">Tiskalnik</string>
+    <string name="label_end_of_day">Zaključek dneva</string>
+    <string name="label_end_of_day_transaction_date">Datum:</string>
+    <string name="label_mastercard">mastercard</string>
+    <string name="label_purchase">Nakup:</string>
+    <string name="label_cancel_purchase">Storno:</string>
+    <string name="label_total">Skupaj:</string>
+    <string name="label_visa">visa</string>
+    <string name="label_total_header">SKUPAJ</string>
+    <string name="label_time">Čas:</string>
+
+    <string name="label_yes">Da</string>
+    <string name="label_no">Ne</string>
+    <string name="label_are_you_shure">Ali ste prepričani, \nda želite zapustiti to stran?</string>
+    <string name="label_end_of_day_question">Niste potrdili oz. poslali zaključka \ndneva.</string>
+
+    <string name="label_end_of_day_done">Uspešno ste naredili zaključek dneva</string>
+    <string name="label_end_of_day_must_be_done">Narediti morate zaključek dneva</string>
+
+
+    <string name="label_enter_tip">Vnesite napitnino</string>
+    <string name="total_amount">Skupni znesek:</string>
+    <string name="continue_payment">Nadaljuj s plačilom</string>
+    <string name="custom_tip">Znesek po izbiri</string>
+    <string name="remove_tip">Brez napitnine</string>
+    <string name="label_tip">Napitnina:</string>
+    <string name="label_amount">Znesek:</string>
+
+    <string name="label_end_of_day_question_first">Niste potrdili oz. poslali zaključka \ndneva.</string>
+
+    <string name="label_full_amount">Celoten znesek:</string>
+
+    <string name="reference_accept">Potrdi</string>
+
+    <string name="connection_timeout_message">Časovna omejitev povezave</string>
+
+
+
+</resources>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_edittext"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/transaction_dialog_margin"
+        android:layout_marginStart="@dimen/dialog_pin_margin_start_end"
+        android:layout_marginEnd="@dimen/dialog_pin_margin_start_end"
+        tools:src="@drawable/icon_warning"/>
+
+    <TextView
+        android:id="@+id/warningLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/icon"
+        android:textColor="@color/global_grey"
+        android:fontFamily="@font/ss3regular"
+        android:textAlignment="center"
+        android:padding="10dp"
+        tools:text="Mismatched PINs\nPlease, try again."
+        android:layout_marginStart="@dimen/transaction_dialog_margin"
+        android:layout_marginEnd="@dimen/transaction_dialog_margin"
+        android:layout_marginTop="@dimen/dialog_pin_margin_top"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/warningLabel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="@dimen/dialog_pin_margin_top"
+        android:layout_marginStart="@dimen/transaction_dialog_margin"
+        android:layout_marginEnd="@dimen/transaction_dialog_margin"
+        android:paddingTop="@dimen/dialog_margin_button_top"
+        android:paddingBottom="@dimen/dialog_margin_button_top"
+        android:layout_marginBottom="@dimen/transaction_dialog_margin_top"
+        android:textAllCaps="false"
+        android:fontFamily="@font/ss3bold"
+        android:textSize="14sp"
+        style="@style/CustomButtonOrangeNoHeight"
+        android:textColor="@color/white"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

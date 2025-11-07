@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/transaction_dialog_margin"
+        android:layout_marginStart="@dimen/dialog_pin_margin_start_end"
+        android:layout_marginEnd="@dimen/dialog_pin_margin_start_end"/>
+
+    <TextView
+        android:id="@+id/warningLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/icon"
+        android:textSize="@dimen/font_value_transaction"
+        android:textColor="@color/black"
+        android:fontFamily="@font/poppinsregular"
+        android:textAlignment="center"
+        android:layout_marginStart="@dimen/transaction_dialog_margin"
+        android:layout_marginEnd="@dimen/transaction_dialog_margin"
+        android:layout_marginTop="@dimen/dialog_pin_margin_top"
+        android:layout_marginBottom="@dimen/transaction_dialog_margin"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/warningLabel"
+        android:layout_marginTop="@dimen/dialog_pin_margin_top"
+        android:layout_marginStart="@dimen/transaction_dialog_margin"
+        android:layout_marginEnd="@dimen/transaction_dialog_margin"
+        android:paddingTop="@dimen/dialog_margin_button_top"
+        android:paddingBottom="@dimen/dialog_margin_button_top"
+        android:text="@string/transaction_void_failed_button"
+        android:layout_marginBottom="@dimen/transaction_dialog_margin_top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/ButtonTransaction"
+        android:textColor="@color/globalOrange"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

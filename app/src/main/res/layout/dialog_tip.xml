@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@null"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="@dimen/profile_margin"
+        app:cardElevation="10dp"
+        app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/amountLayout"
+                android:layout_margin="@dimen/margin_pos_label_top"
+                android:text="@string/label_enter_tip"
+                android:fontFamily="@font/cocoregular"
+                android:textSize="@dimen/font_size_label_pin"
+                android:textColor="@color/black"
+                android:textAlignment="center"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/enterTipLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/labelAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:suffixTextAppearance="@style/suffix"
+                app:suffixTextColor="@color/suffix"
+                android:fontFamily="@font/cocoregular"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                android:gravity="center"
+                android:theme="@style/AppTheme.EditTextAmountTheme"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="@dimen/margin_big"
+                android:layout_marginEnd="@dimen/margin_big">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/enterTip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_edittext"
+                    android:fontFamily="@font/cocobold"
+                    android:textColor="@color/bigLabelBlack"
+                    android:gravity="center"
+                    android:cursorVisible="true"
+                    android:inputType="number"
+                    android:text="0.00"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/amount_text_size" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dialog_pin_margin_top"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:paddingTop="@dimen/dialog_margin_button_top"
+                android:paddingBottom="@dimen/dialog_margin_button_top"
+                android:layout_marginBottom="@dimen/transaction_dialog_margin_top"
+                style="@style/ButtonSignOut"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:fontFamily="@font/cocoregular"
+                android:text="@string/reference_accept"
+                android:textColor="@color/white"/>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:paddingTop="@dimen/dialog_margin_button_top"
+                android:paddingBottom="@dimen/dialog_margin_button_top"
+                android:layout_marginBottom="@dimen/transaction_dialog_margin_top"
+                style="@style/ButtonNoInstallment"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:fontFamily="@font/cocoregular"
+                android:text="@string/button_quit"
+                android:textColor="@color/white"/>
+
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

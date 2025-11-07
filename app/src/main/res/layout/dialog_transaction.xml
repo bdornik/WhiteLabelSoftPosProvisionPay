@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_default"
+    android:background="@drawable/rounded_edittext"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_warning"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="@dimen/transaction_dialog_margin"/>
+
+            <TextView
+                android:id="@+id/warningLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/icon"
+                android:text="@string/transaction_warning_label"
+                android:textSize="16sp"
+                android:textColor="@color/global_grey"
+                android:fontFamily="@font/ss3regular"
+                android:textAlignment="center"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:layout_marginTop="@dimen/transaction_dialog_margin"/>
+
+            <View
+                android:id="@+id/bottomSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="0.2dp"
+                android:background="@color/global_grey_light"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:layout_marginTop="@dimen/margin_default"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/detailsLabel"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.2dp"
+                android:background="@color/global_grey_light"
+                android:layout_marginBottom="@dimen/margin_default"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/detailsLabel"/>
+
+            <TextView
+                android:id="@+id/detailsLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/warningLabel"
+                android:textSize="14sp"
+                android:text="@string/label_transaction_details"
+                android:textColor="@color/suffix"
+                android:fontFamily="@font/ss3bold"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginTop="@dimen/transaction_dialog_margin_top"/>
+
+            <TextView
+                android:id="@+id/dateLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bottomSeparator"
+                android:layout_marginTop="@dimen/margin_default"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:text="@string/label_transaction_date"
+                android:textSize="14sp"
+                android:textColor="@color/text_black"
+                android:fontFamily="@font/ss3regular"/>
+
+            <!--TextView
+                android:id="@+id/dateValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/dateLabel"
+                app:layout_constraintTop_toBottomOf="@+id/bottomSeparator"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:layout_marginTop="@dimen/margin_default"
+                android:layout_marginStart="@dimen/margin_line_top"
+                android:textSize="@dimen/dialog_font_size"
+                android:gravity="end"
+                android:fontFamily="@font/ss3bold"
+                android:textColor="@color/black"/-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/dateValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_line_top"
+                android:gravity="end"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                app:layout_constraintBottom_toBottomOf="@+id/dateLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/dateLabel"
+                app:layout_constraintTop_toTopOf="@+id/dateLabel">
+
+                <TextView
+                    android:id="@+id/transactionDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/ss3bold"
+                    android:layout_marginEnd="5dp"
+                    android:text="8. Januar 2022"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/circleImage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/circleImage"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/circle_grey"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/transactionTime"
+                    app:layout_constraintTop_toTopOf="@+id/transactionDate" />
+
+                <TextView
+                    android:id="@+id/transactionTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/ss3bold"
+                    android:text="12:45"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/transactionDate" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <TextView
+                android:id="@+id/amountLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dateValue"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:text="@string/label_transaction_amount"
+                android:layout_marginTop="@dimen/margin_default"
+                android:textSize="14sp"
+                android:textColor="@color/text_black"
+                android:fontFamily="@font/ss3regular"/>
+
+            <TextView
+                android:id="@+id/amountValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/dateValue"
+                app:layout_constraintTop_toTopOf="@id/amountLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:gravity="end"
+                android:textSize="@dimen/dialog_font_size"
+                android:fontFamily="@font/ss3bold"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:id="@+id/e2eLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/amountValue"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:text="@string/label_transaction_e2e"
+                android:layout_marginTop="@dimen/margin_default"
+                android:visibility="gone"
+                android:textSize="14sp"
+                android:textColor="@color/text_black"
+                android:fontFamily="@font/ss3regular"/>
+
+            <TextView
+                android:id="@+id/e2eValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textAlignment="textEnd"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                app:layout_constraintTop_toTopOf="@id/e2eLabel"
+                app:layout_constraintStart_toEndOf="@id/e2eLabel"
+                android:visibility="gone"
+                android:layout_marginStart="@dimen/margin_default"
+                android:textSize="@dimen/dialog_font_size"
+                android:fontFamily="@font/ss3bold"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:id="@+id/statusLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/e2eValue"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:text="@string/label_transaction_status"
+                android:layout_marginTop="@dimen/margin_default"
+                android:textSize="14sp"
+                android:textColor="@color/text_black"
+                android:fontFamily="@font/ss3regular"/>
+
+            <TextView
+                android:id="@+id/statusValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/dateValue"
+                app:layout_constraintTop_toTopOf="@id/statusLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="@dimen/margin_default"
+                android:gravity="end"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:textSize="@dimen/dialog_font_size"
+                android:fontFamily="@font/ss3bold"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.2dp"
+                android:background="@color/global_grey_light"
+                android:layout_marginTop="@dimen/margin_default"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/statusValue"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCanceled"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:text="@string/button_quit"
+                android:textAlignment="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnQuit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="@dimen/margin_default"
+                android:paddingTop="@dimen/transaction_padding"
+                android:paddingBottom="@dimen/transaction_padding"
+                android:fontFamily="@font/ss3bold"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                style="@style/CustomButtonOrange"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnQuit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statusValue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="@dimen/transaction_dialog_margin"
+                android:layout_marginEnd="@dimen/transaction_dialog_margin"
+                android:layout_marginTop="@dimen/transaction_dialog_margin_top"
+                android:paddingTop="@dimen/transaction_padding"
+                android:paddingBottom="@dimen/transaction_padding"
+                android:layout_marginBottom="@dimen/transaction_dialog_margin_top"
+                style="@style/ButtonTransactionRed"
+                android:text="@string/button_canceled"
+                android:textAllCaps="false"
+                android:fontFamily="@font/ss3bold"
+                android:textColor="@color/white"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

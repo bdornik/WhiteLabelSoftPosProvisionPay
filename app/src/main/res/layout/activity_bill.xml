@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.BillActivity">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/icon_back"
+            android:padding="@dimen/margin_default"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/labelBill"
+            app:layout_constraintBottom_toBottomOf="@+id/labelBill"/>
+
+        <TextView
+            android:id="@+id/labelBill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_bill"
+            android:fontFamily="@font/poppinssemibold"
+            android:textSize="@dimen/font_size_label"
+            android:textColor="@color/bigLabelBlack"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/margin_top_global"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutAmount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/labelBill"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_default"
+            android:background="@drawable/rounded_edge_top"
+            android:backgroundTint="@color/globalGreen">
+            <ImageView
+                android:id="@+id/iconPos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icon_pos_small"
+                android:layout_margin="@dimen/bill_margin"/>
+            <TextView
+                android:id="@+id/amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/iconPos"
+                android:layout_marginStart="@dimen/margin_default"
+                android:text="540,00 RSD"
+                android:textSize="@dimen/font_size_label"
+                android:fontFamily="@font/poppinssemibold"
+                android:textColor="@color/white" />
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/amount"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="08. Jul 2021. u 12.45"
+                android:textSize="@dimen/font_value_transaction"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/white"
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginBottom="@dimen/margin_default"
+                android:layout_marginTop="@dimen/bill_margin_correction"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/layoutAmount"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:background="@drawable/rounded_edge_bottom"
+            android:elevation="2dp">
+
+            <TextView
+                android:id="@+id/labelName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginTop="@dimen/margin_default"
+                android:text="@string/label_customer_name"
+                android:textSize="@dimen/font_label_transaction"
+                android:textColor="@color/suffix"
+                android:fontFamily="@font/poppinsregular" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:layout_marginTop="@dimen/margin_default"
+                android:text="XXXXX XXXXXXX"
+                android:textColor="@color/bigLabelBlack"
+                android:textSize="@dimen/font_label_transaction"
+                android:fontFamily="@font/poppinsmedium"/>
+
+            <TextView
+                android:id="@+id/labelCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/labelName"
+                android:layout_marginStart="@dimen/margin_default"
+                android:text="@string/label_card_number"
+                android:textColor="@color/suffix"
+                android:textSize="@dimen/font_label_transaction"
+                android:fontFamily="@font/poppinsregular"/>
+
+            <TextView
+                android:id="@+id/card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/name"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:text="1243514276249371"
+                android:textColor="@color/bigLabelBlack"
+                android:textSize="@dimen/font_label_transaction"
+                android:fontFamily="@font/poppinsmedium"/>
+
+            <TextView
+                android:id="@+id/labelCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/labelCard"
+                android:layout_marginStart="@dimen/margin_default"
+                android:text="@string/label_authorisation_code"
+                android:textSize="@dimen/font_label_transaction"
+                android:textColor="@color/suffix"
+                android:fontFamily="@font/poppinsregular"/>
+
+            <TextView
+                android:id="@+id/code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/card"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:text="XXXXXX"
+                android:textColor="@color/bigLabelBlack"
+                android:textSize="@dimen/font_label_transaction"
+                android:fontFamily="@font/poppinsmedium"/>
+
+            <TextView
+                android:id="@+id/labelE2E"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/labelCode"
+                android:layout_marginStart="@dimen/margin_default"
+                android:text="@string/label_transaction_e2e"
+                android:textSize="@dimen/font_label_transaction"
+                android:textColor="@color/suffix"
+                android:fontFamily="@font/poppinsregular"/>
+
+            <TextView
+                android:id="@+id/e2e"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/code"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:text="QR00004123"
+                android:textColor="@color/bigLabelBlack"
+                android:textSize="@dimen/font_label_transaction"
+                android:fontFamily="@font/poppinsmedium"/>
+
+            <TextView
+                android:id="@+id/labelStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/labelE2E"
+                android:layout_marginStart="@dimen/margin_default"
+                android:text="@string/label_transaction_status"
+                android:textSize="@dimen/font_label_transaction"
+                android:textColor="@color/suffix"
+                android:fontFamily="@font/poppinsregular"/>
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/e2e"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:text="Prihvacena"
+                android:textColor="@color/globalGreen"
+                android:textSize="@dimen/font_label_transaction"
+                android:fontFamily="@font/poppinssemibold"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnResendBill"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labelStatus"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:paddingTop="@dimen/margin_default"
+                android:paddingBottom="@dimen/margin_default"
+                style="@style/ButtonTransaction"
+                android:text="Ponovi slanje racuna"
+                android:textColor="@color/globalOrange"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelTransaction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnResendBill"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:layout_marginBottom="@dimen/margin_default"
+                android:paddingTop="@dimen/margin_default"
+                android:paddingBottom="@dimen/margin_default"
+                style="@style/ButtonTransaction"
+                android:text="Storniraj transakciju"
+                android:textColor="@color/globalOrange"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

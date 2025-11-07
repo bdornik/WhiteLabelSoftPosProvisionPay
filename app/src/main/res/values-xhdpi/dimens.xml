@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pin_button_margin">4dp</dimen>
+    <dimen name="button_orange_height">60dp</dimen>
+    <dimen name="button_orange_height_small">50dp</dimen>
+    <dimen name="margin_big">30dp</dimen>
+
+    <dimen name="pin_button_size">68dp</dimen>
+    <dimen name="pin_button_corner_radius">34dp</dimen>
+    <dimen name="margin_message_top">65dp</dimen>
+    <dimen name="margin_amount_top">50dp</dimen>
+    <dimen name="amount_text_size">22sp</dimen>
+    <dimen name="suffix_text_size">16sp</dimen>
+    <dimen name="margin_pos_ips">40dp</dimen>
+    <dimen name="button_payment_margin">25dp</dimen>
+    <dimen name="margin_dm_logo_top">30dp</dimen>
+    <dimen name="margin_default">12dp</dimen>
+    <dimen name="margin_button_bottom">50dp</dimen>
+    <dimen name="white_space_height">20dp</dimen>
+    <dimen name="margin_top_card_view">6dp</dimen>
+    <dimen name="font_btn_filter">14sp</dimen>
+    <dimen name="transaction_dialog_margin">40dp</dimen>
+    <dimen name="transaction_dialog_margin_top">15dp</dimen>
+    <dimen name="dialog_pin_margin_start_end">80dp</dimen>
+    <dimen name="dialog_pin_margin_top">40dp</dimen>
+    <dimen name="padding_image_pos">50dp</dimen>
+    <dimen name="margin_pos_label_top">20dp</dimen>
+    <dimen name="button_transaction_padding">12dp</dimen>
+    <dimen name="pos_margin_bottom">40dp</dimen>
+    <dimen name="intro_picture_margin_bottom">40dp</dimen>
+    <dimen name="global_button_margin_bottom">10dp</dimen>
+    <dimen name="intro_big_label_margin_top">20dp</dimen>
+    <dimen name="margin_top_ips">20dp</dimen>
+    <dimen name="margin_top_profile_details">15dp</dimen>
+    <dimen name="margin_top_profile_details_label">15dp</dimen>
+    <dimen name="margin_top_global">13dp</dimen>
+    <dimen name="margin_top_amount_layout">3dp</dimen>
+    <dimen name="font_value_transaction">21sp</dimen>
+    <dimen name="label_transaction_bill">14sp</dimen>
+    <dimen name="picture_dimension">150dp</dimen>
+    <dimen name="h_and_w_pin_button">70dp</dimen>
+    <dimen name="margin_pin">30dp</dimen>
+
+
+
+</resources>

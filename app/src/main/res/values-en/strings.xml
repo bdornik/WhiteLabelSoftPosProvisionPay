@@ -1,0 +1,303 @@
+<resources>
+    <string name="app_name">OTP Smart POS</string>
+
+    <string name="app_name_first">OTP</string>
+    <string name="app_name_second">Soft POS</string>
+    <string name="app_label_smart">Smart POS</string>
+    <string name="intro_body_1">Fast. Safe. Simple.</string>
+    <string name="intro_body_2">Simple acceptance of contacless payments.</string>
+    <string name="intro_landing_1">Welcome</string>
+    <string name="intro_landing_2">in OTP Smart POS application. Fast, safe and simple acceptance of card and Flik transactions.</string>
+
+    <string name="label_printed">Slip printed</string>
+    <string name="label_no_printed">Application can not find printer</string>
+
+
+    <string name="label_operation_sales">Sales</string>
+    <string name="label_registration">Registration</string>
+    <string name="label_marketing_text_big_font">Fast. \Safe. \Simple.</string>
+    <string name="label_marketing_text_small_font">Simple acceptance of contacless payments.</string>
+    <string name="button_become_user">Next</string>
+    <string name="label_user_id">User Id</string>
+    <string name="label_terminal_name">Merchant Name</string>
+    <string name="label_activation_code">Activation code</string>
+    <string name="label_enter_pin">Enter PIN</string>
+    <string name="label_enter_pin_registration">Enter PIN</string>
+    <string name="label_repeat_pin">Re-enter PIN</string>
+    <string name="message_wrong_pin">Wrong PIN, please try again.</string>
+    <string name="label_enter_amount">Enter the amount</string>
+    <string name="label_enter_tip_header">Tip</string>
+    <string name="label_tip_method">Select the tip</string>
+
+
+    <string name="button_proceed">Next</string>
+    <string name="suffix_text">EUR</string>
+    <string name="label_payment_type">Payment method</string>
+    <string name="label_payment_type_pos">POS</string>
+    <string name="label_payment_type_void">Void transaction</string>
+    <string name="label_payment_type_ips">FLIK</string>
+    <string name="label_billing_method">Select payment method</string>
+    <string name="hint_amount">Amount</string>
+    <string name="button_pos">POS</string>
+    <string name="button_ips">FLIK</string>
+    <string name="button_lean">Tap</string>
+    <string name="button_read">Scan</string>
+    <string name="button_read_p">Show</string>
+    <string name="label_dm">Dm drogerie</string>
+    <string name="label_address">Antifašističke borbe 32, Beograd</string>
+    <string name="label_mail">dmdrogerienbg@gmail.com</string>
+    <string name="label_enter_amount_profile">Enter the amount</string>
+    <string name="label_traffic">Transaction list</string>
+    <string name="label_empty_traffic">No transactions.</string>
+    <string name="label_settings">Settings</string>
+    <string name="button_sign_out">Log out</string>
+    <string name="label_period">Period:</string>
+    <string name="button_generate_report">Generate report</string>
+    <string name="label_transaction_date">Date</string>
+    <string name="label_transaction_amount">Amount</string>
+    <string name="label_transaction_e2e">E2E Ref:</string>
+    <string name="label_transaction_e2e_ips">E2E referenca:</string>
+    <string name="label_transaction_status">Status:</string>
+    <string name="label_transaction_merchant_id">MID:</string>
+    <string name="label_transaction_terminal_id">TID:</string>
+    <string name="label_transaction_merchant_name">Merchant:</string>
+    <string name="merchant_name">Merchant name</string>
+    <string name="label_transaction_card_number">Card number:</string>
+    <string name="label_transaction_authorization_code">Authorization code:</string>
+    <string name="label_transaction_operation_name">Operation:</string>
+    <string name="label_transaction_response">Response:</string>
+    <string name="label_transaction_message">Message:</string>
+    <string name="label_transaction_aid">AID:</string>
+    <string name="button_cancel_transaction">Cancel transaction</string>
+    <string name="button_void_transaction">Void transaction</string>
+    <string name="transaction_status_accepted">Approved</string>
+    <string name="transaction_status_rejected">Declined</string>
+    <string name="transaction_status_pin_not_entered">No PIN</string>
+    <string name="transaction_status_wrong_pin">Wrong PIN</string>
+    <string name="transaction_status_canceled">Void</string>
+    <string name="transaction_status_reversed">Void</string>
+    <string name="transaction_operation_void">Void</string>
+    <string name="label_filter">Filters</string>
+    <string name="label_filter_date">Date</string>
+    <string name="label_transaction_type">Transaction type</string>
+    <string name="label_transaction_status_filter">Transaction status</string>
+    <string name="label_transaction_status_sort">Sort</string>
+    <string name="label_from">from</string>
+    <string name="label_to">to</string>
+    <string name="radio_button_pos">POS</string>
+    <string name="radio_button_ips">FLIK</string>
+    <string name="radio_button_all">All</string>
+    <string name="radio_button_date_asc">Ascending</string>
+    <string name="radio_button_date_dsc">Descending</string>
+    <string name="radio_button_amount_asc">Amount ascending</string>
+    <string name="radio_button_amount_dsc">Amount descending</string>
+    <string name="button_clear_filters">Reset filters</string>
+    <string name="button_apply_filters">Use filter</string>
+    <string name="transaction_warning_label">Are you sure you want to void the transaction?</string>
+    <string name="label_transaction_details">Transaction details</string>
+    <string name="button_canceled">Void</string>
+    <string name="button_quit">Cancel</string>
+    <string name="label_registration_wrong_pin">Mismatched PINs   \nPlease, try again.    </string>
+    <string name="label_nfc_off">Turn on NFC!</string>
+    <string name="button_registration_back">Back</string>
+    <string name="button_try_again">Try again</string>
+    <string name="button_nfc_go">Turn on</string>
+    <string name="label_registration_success">Successful registration</string>
+    <string name="label_void_success">Successful transaction</string>
+    <string name="label_void_failed">Void failed</string>
+    <string name="label_registration_failed">Unsuccessful registration. Please, try again.</string>
+    <string name="label_transaction_failed">Unsuccessful transaction</string>
+    <string name="label_transaction_timeout">Transaction expired!</string>
+    <string name="label_transaction_failed_reason">Status</string>
+    <string name="label_transaction_failed_wrong_pin">Wrong PIN</string>
+    <string name="label_transaction_declined">Declined transaction</string>
+    <string name="label_transaction_expired">Transaction expired</string>
+    <string name="label_change_success">Successful PIN change</string>
+    <string name="button_registration_success">Ok</string>
+    <string name="button_e2e_back">Ok</string>
+    <string name="label_pin_sign_in">Enter PIN</string>
+    <string name="label_root_device">Rooted device is not premitted.</string>
+    <string name="dialog_login_wrong_pin">Wrong PIN. Remaining trials:</string>
+    <string name="button_login_fail">Try again.</string>
+    <string name="button_login_fail_back">Back</string>
+    <string name="label_forgotten_pin">Forgotten PIN</string>
+    <string name="label_contact_bank">Please contact Call Center.</string>
+    <string name="label_login">Log In</string>
+    <string name="label_enter_current_pin">Enter current PIN</string>
+    <string name="btn_intro_login">Log In</string>
+    <string name="btn_intro_sign_in">Become a user</string>
+    <string name="underline_forgotten_pin">Forgotten PIN</string>
+    <string name="label_pos_card">Tap the card</string>
+    <string name="button_transaction_cancel">Check the payment</string>
+    <string name="label_bill">Receipt</string>
+    <string name="label_customer_name">Customer name:</string>
+    <string name="label_card_number">Card number:</string>
+    <string name="label_authorisation_code">Authorization code:</string>
+    <string name="landing_label_small">Easy card acceptance.</string>
+    <string name="landing_label_big">Welcome</string>
+    <string name="label_ips_card">Scan QR code</string>
+    <string name="label_profile">Profile</string>
+    <string name="label_menu">Menu</string>
+    <string name="label_change_pin">Change PIN</string>
+    <string name="label_change_theme">Change theme</string>
+    <string name="label_address_profile">Address</string>
+    <string name="toggle_button_label">Automatically send slip to email address.</string>
+    <string name="label_city">City</string>
+    <string name="label_terminal_id">TID</string>
+    <string name="label_ips_terminal_id">FLIK TID</string>
+    <string name="label_theme_day">Light mode</string>
+    <string name="label_theme_night">Dark mode</string>
+    <string name="label_new_pin_first">Enter new PIN</string>
+    <string name="label_new_pin_repeat">Re-enter PIN</string>
+    <string name="label_share_history">Generate report</string>
+    <string name="label_change_pin_wrong_pin_no_attempts">Wrong PIN.</string>
+    <string name="label_change_pin_wrong_pin_">Wrong PIN. Remaining trials:</string>
+
+    <string name="label_ips_type">Pay with Flik</string>
+    <string name="label_card_type">Pay with card</string>
+    <string name="label_flik">Flik</string>
+
+
+    <string name="label_change_pin_wrong_pin_max_attempts">You have used the maximum number of attempts.\nApplication is locked.\nPlease go to »Forgotten PIN?« and follow the instructions on the phone.\nIn case of problems, please call +386 1 583 41 03.</string>
+
+
+    <string name="message_must_enter_amount">You must enter the amount</string>
+    <string name="btn_must_enter_amount">OK</string>
+    <string name="wrong_format_userid">Enter USER ID</string>
+    <string name="wrong_format_code">Enter Activation code</string>
+    <string name="label_pin_log_in">PIN checking</string>
+    <string name="success_transaction">Successful transaction!</string>
+    <string name="success_cancel_transaction">Transaction successfuly terminated!</string>
+    <string name="transaction_canceled_successful">Transaction successfuly voided</string>
+    <string name="transaction_canceled_unsuccessful">Transaction unsuccessfuly voided</string>
+    <string name="transaction_slip">Transaction amount</string>
+    <string name="transaction_button_reset">Try again</string>
+    <string name="transaction_void_button_reset">Cancel</string>
+    <string name="enter_pin_ok">Confirm</string>
+    <string name="enter_pin_clear">Clean</string>
+    <string name="enter_pin_cancel">Cancel</string>
+    <string name="enter_pin_text">Enter PIN</string>
+    <string name="transaction_void_failed_button">OK</string>
+    <string name="share_date">Date</string>
+    <string name="share_title">Slip search</string>
+    <string name="root_detection">Rooted device is not premitted.</string>
+    <string name="store_verify">Application is not downloaded from Google Play store.</string>
+    <string name="hooks_detected">Hooks detected. Closing the app.</string>
+    <string name="qr_code_success">QR code successfuly read!</string>
+    <string name="qr_code_label">Scan QR code with USER ID</string>
+    <string name="email_not_valid">Wrong email!</string>
+    <string name="ereceipt_not_sent_title">Email not sent. Try again?</string>
+    <string name="email_address">Email address:</string>
+    <string name="email_error">Sorry, the email can not be send at the moment. Please, try again.</string>
+    <string name="choose_export_format">Select report format:</string>
+    <string name="format_pdf">PDF</string>
+    <string name="format_xls">XLS</string>
+    <string name="report_sending_title">Sending report for period:</string>
+    <string name="ok">OK</string>
+    <string name="no">Cancel</string>
+    <string name="send_email">Send</string>
+    <string name="send_email_success">Successfuly sent email</string>
+    <string name="send_email_failed">Unsuccessfuly sent email</string>
+    <string name="enter_email_address">Enter email address:</string>
+    <string name="landing_new_transaction">New transaction</string>
+    <string name="pin_transaction_cancel">Transaction is canceled</string>
+
+    <string name="provision_label">Registration in progress...</string>
+
+
+
+    <string name="label_login_enter_pin">Enter PIN</string>
+    <string name="qr_code_label_oneline">Scan QR code with USER ID</string>
+    <string name="user_id_hint">Enter USER ID</string>
+    <string name="activation_code_hint">Enter Activation code</string>
+
+    <string name="month_1_long">January</string>
+    <string name="month_2_long">February</string>
+    <string name="month_3_long">March</string>
+    <string name="month_4_long">April</string>
+    <string name="month_5_long">May</string>
+    <string name="month_6_long">June</string>
+    <string name="month_7_long">July</string>
+    <string name="month_8_long">August</string>
+    <string name="month_9_long">September</string>
+    <string name="month_10_long">October</string>
+    <string name="month_11_long">November</string>
+    <string name="month_12_long">December</string>
+
+    <string name="language">Language</string>
+    <string name="language_en">English</string>
+    <string name="language_slo">Slovenian</string>
+
+    <string name="forgot_pin">Forgotten PIN?</string>
+    <string name="change_pin_header">Change PIN</string>
+    <string name="send_activation_code">Send activation code</string>
+    <string name="next">Next</string>
+    <string name="wrong_activation_code">Worng activation code or user ID</string>
+
+    <string name="processing_label">Processing in progress...</string>
+    <string name="processing_label_wait">Please wait</string>
+
+    <string name="register_checkbox">I agree to the </string>
+    <string name="register_checkbox_2">terms and conditions</string>
+    <string name="terms_conditions">Terms and conditions</string>
+    <string name="settings_contact">Contact number</string>
+    <string name="version_label">Application version</string>
+
+    <string name="label_pin_not_entered">Pin code not entered!</string>
+    <string name="label_pin_not_entered_button">Back</string>
+
+    <string name="no_results_header">No results</string>
+    <string name="no_results_body">This text tells you to widen your search or use less filters.</string>
+
+    <string name="error">Authentication failed.\nIn case of problems, please call +386 1 583 41 03.</string>
+
+    <string name="settings_terms_label">Terms and conditions</string>
+
+    <string name="logs_successfully_send">Logs have been sent successfully</string>
+    <string name="logs_unsuccessfully_send">Logs have not been sent</string>
+
+    <string name="reactivation_message">You need to do new activation for OTP Smart POS terminal. \nPlease, tap »Activate« and proceed with the flow.</string>
+    <string name="reactivation_button">Activate</string>
+
+    <string name="back_button">Cancel transaction</string>
+    <string name="printer">Printer</string>
+    <string name="label_end_of_day">End of Day Report</string>
+    <string name="label_mastercard">mastercard</string>
+    <string name="label_end_of_day_transaction_date">Date:</string>
+    <string name="label_purchase">Sale:</string>
+    <string name="label_cancel_purchase">Void:</string>
+    <string name="label_visa">visa</string>
+    <string name="label_total">Total:</string>
+
+    <string name="label_total_header">TOTAL</string>
+    <string name="label_time">Time:</string>
+
+
+    <string name="label_yes">Yes</string>
+    <string name="label_no">No</string>
+    <string name="label_are_you_shure">Are you sure you want to exit?</string>
+    <string name="label_end_of_day_question">You have not shared the end of the day.</string>
+    <string name="label_end_of_day_question_first">You have not clicked on the End of the Day button.</string>
+
+    <string name="label_end_of_day_done">Successfully done End of the Day</string>
+    <string name="label_end_of_day_must_be_done">You have to do the end of the day</string>
+
+
+    <string name="label_enter_tip">Enter tip</string>
+    <string name="total_amount">Total Amount:</string>
+    <string name="continue_payment">Continue Payment</string>
+    <string name="custom_tip">Custom Tip</string>
+    <string name="label_tip">Tip:</string>
+    <string name="label_amount">Amount:</string>
+
+    <string name="label_full_amount">Full Amount:</string>
+
+    <string name="reference_accept">Accept</string>
+
+    <string name="remove_tip">No Tip</string>
+
+    <string name="connection_timeout_message">Connection timeout</string>
+
+
+
+</resources>

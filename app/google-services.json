@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "417790107315",
+    "project_id": "softpos-nkbm",
+    "storage_bucket": "softpos-nkbm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417790107315:android:cd0549af6b2cdc783a5ac6",
+        "android_client_info": {
+          "package_name": "com.payten.nkbm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "417790107315-5s916roe7o1jqn245hqanhupnmkek1dc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4L30jwx8rvIt_htsATxZURuUDHSmDYjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "417790107315-5s916roe7o1jqn245hqanhupnmkek1dc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

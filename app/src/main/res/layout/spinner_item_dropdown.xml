@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView android:id="@+id/labelSettings"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:padding="@dimen/margin_small"
+    android:textColor="@color/global_grey"
+    android:fontFamily="@font/ss3regular"
+    android:textSize="18sp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" />

@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.PaymentTypeActivity"
+        android:backgroundTint="@color/backgroundAmount"
+        >
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/icon_back"
+            app:tint="@color/colorPrimary"
+            android:tint="@color/colorPrimary"
+            android:backgroundTint="@color/backgroundAmount"
+            app:fabCustomSize="45dp"
+            app:maxImageSize="16dp"
+            android:layout_marginStart="@dimen/margin_big"
+            android:layout_marginTop="@dimen/margin"
+            app:borderWidth="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+        <TextView
+            android:id="@+id/labelPaymentType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_payment_type"
+            android:textColor="@color/global_grey"
+            android:textSize="22sp"
+            android:fontFamily="@font/ss3black"
+            app:layout_constraintBottom_toBottomOf="@id/back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/back" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/menuButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_big"
+            android:backgroundTint="@color/white"
+            android:tint="@color/colorPrimary"
+            app:borderWidth="0dp"
+            app:fabCustomSize="45dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/back"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/back"
+            app:maxImageSize="16dp"
+            app:srcCompat="@drawable/icon_menu_dark"
+            app:tint="@color/colorPrimary" />
+
+        <LinearLayout
+            android:id="@+id/amountLayout"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="@dimen/margin_pin"
+            android:background="@drawable/bg_amount_box"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelPaymentType">
+
+            <TextView
+                android:id="@+id/topLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:fontFamily="@font/ss3regular"
+                android:text="@string/hint_amount"
+                android:textColor="@color/global_grey"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/amountValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-10dp"
+                android:fontFamily="@font/ss3bold"
+                android:backgroundTint="@color/transparent"
+                android:textColor="@color/text_black"
+                android:textSize="48sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/topLabel" />
+
+            <TextView
+                android:id="@+id/currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ss3regular"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/labelMethod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/button_payment_margin"
+            android:text="@string/label_billing_method"
+            android:textAlignment="center"
+            android:fontFamily="@font/ss3bold"
+            android:textSize="@dimen/suffix_text_size"
+            android:textColor="@color/text_black"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/amountLayout" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/paymentOptionsScroll"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintTop_toBottomOf="@id/labelMethod"
+            app:layout_constraintBottom_toTopOf="@id/proceed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/paymentOptionsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelMethod">
+
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:columnCount="1"
+                android:rowCount="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <!-- 3% Button -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cardPaymentOptionBg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/margin_default">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPaymentOption"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_margin="8dp"
+                        android:fontFamily="@font/cocoregular"
+                        android:text="@string/remove_tip"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:cardCornerRadius="32dp"
+
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:backgroundTint="@color/white"
+                        app:strokeColor="@color/button_border_selector"
+                        app:strokeWidth="2dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_amount_box"
+                            android:layout_margin="8dp"
+                            >
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+
+                                <LinearLayout
+                                    android:id="@+id/linearLayout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent">
+
+                                    <ImageView
+                                        android:layout_width="80dp"
+                                        android:layout_height="48dp"
+                                        android:src="@drawable/icon_visa"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
+
+                                    <ImageView
+                                        android:layout_width="80dp"
+                                        android:layout_height="48dp"
+                                        android:src="@drawable/icon_mastercard"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
+
+                                </LinearLayout>
+
+
+                                <TextView
+                                    android:id="@+id/tvCard"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_card_type"
+                                    android:textColor="#666666"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/buttonCardIcon"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_margin="@dimen/margin_default"
+                                android:background="@drawable/ok_icon_type_disable"
+                                android:backgroundTint="@color/transparent"
+                                android:visibility="visible"
+                                android:src="@drawable/ok_icon_type"
+                                app:fabCustomSize="25dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- 3% Button -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/ipsPaymentOptionBg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/margin_default">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/flikPaymentOption"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_margin="8dp"
+                        android:fontFamily="@font/cocoregular"
+                        android:text="@string/remove_tip"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:cardCornerRadius="32dp"
+
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:backgroundTint="@color/white"
+                        app:strokeColor="@color/button_border_selector"
+                        app:strokeWidth="2dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_amount_box"
+                            android:layout_margin="8dp"
+                            >
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <ImageView
+                                    android:id="@+id/flikIcon"
+                                    android:layout_width="80dp"
+                                    android:layout_height="48dp"
+                                    android:src="@drawable/icon_flik"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/tvFlik"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@string/label_ips_type"
+                                    android:textColor="#666666"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@id/flikIcon" />
+
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/buttonFlikIcon"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_margin="@dimen/margin_default"
+                                android:background="@drawable/ok_icon_type_disable"
+                                android:backgroundTint="@color/transparent"
+                                android:visibility="visible"
+                                android:src="@drawable/ok_icon_type_disable"
+                                app:fabCustomSize="25dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </GridLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/proceed"
+            style="@style/CustomButtonOrangeNoHeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_amount_top"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:layout_marginBottom="@dimen/margin"
+            android:fontFamily="@font/ss3bold"
+            android:paddingTop="@dimen/margin"
+            android:paddingBottom="@dimen/margin"
+            android:text="@string/button_proceed"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

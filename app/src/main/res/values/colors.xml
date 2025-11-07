@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#52AE30</color>
+    <color name="colorPrimaryDark">#52AE30</color>
+    <color name="colorAccent">#52AE30</color>
+    <color name="buttonGreen">#52AE30</color>
+    <color name="black">#000000</color>
+    <color name="globalOrange">#F36F20</color>
+    <color name="bigLabelBlack">#323232</color>
+    <color name="smallLabelGray">#797979</color>
+    <!--color name="backgroundAmount">#E7EBF3</color-->
+    <color name="backgroundAmount">#ECEFF6</color>
+    <color name="pinForgotLine">#A5ACB9</color>
+    <color name="white">#FFFFFF</color>
+    <color name="underlineGray">#C0C0C0</color>
+    <color name="pinButtonBorder">#979797</color>
+    <color name="amountBackground">#F8F8F8</color>
+    <color name="suffix">#464646</color>
+    <color name="globalGreen">#52AE30</color>
+    <color name="greyLine">#D8D8D8</color>
+    <color name="icon_grey">#949494</color>
+    <color name="global_grey">#7D828B</color>
+    <color name="global_grey_light">#3D3D3D</color>
+    <color name="transaction_red">#E41616</color>
+    <color name="new_red">#FF435A</color>
+    <color name="text_black">#151617</color>
+    <color name="transaction_grey">#464646</color>
+    <color name="greenLight">#acd1af</color>
+    <color name="landingCover">#33464646</color>
+    <color name="gray">#CFCFCF</color>
+    <color name="globalBlack">#212429</color>
+    <color name="globalGray">#9B9DA1</color>
+    <color name="globalBlackDialog">#2D3137</color>
+    <color name="suffixDarkMode">#9B9DA1</color>
+    <color name="button_canceled_transaction_dark_mode">#DADADA</color>
+    <color name="label_canceled_transaction_dark_mode">#707070</color>
+    <color name="visa_blue">#1434CB</color>
+    <color name="dark_blue">#1434CB</color>
+
+    <color name="bill">#FFFFFF</color>
+    <color name="bill_line">#C0C0C0</color>
+    <color name="transparent">#00C0C0C0</color>
+    <color name="green_background">#A4E7F9E5</color>
+
+
+</resources>
