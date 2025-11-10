@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.payten.nkbm.ui.components.BackButton
 import com.payten.nkbm.ui.components.CustomTextField
+import com.payten.nkbm.ui.theme.AppTheme
 import com.payten.nkbm.ui.theme.MyriadPro
 /**
  * Registration screen for new users.
@@ -55,7 +57,7 @@ fun RegistrationPage(onNavigateBack: () -> Unit, onNavigateNext: () -> Unit) {
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(Color(0xffeff2fa))) {
+        .background(MaterialTheme.colorScheme.background)) {
 
         Column(
             modifier = Modifier
@@ -128,10 +130,10 @@ fun RegistrationForm(modifier: Modifier = Modifier) {
             onClick = {  },//TODO
             enabled = isChecked,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red,
-                disabledContainerColor = Color.Red.copy(alpha = 0.4f),
-                contentColor = Color.White,
-                disabledContentColor = Color.White.copy(alpha = 0.9f)
+                containerColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
             ),
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
@@ -157,7 +159,7 @@ fun TermsAndConditionsBox(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0x65d7dee2), RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.tertiary, RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
         Column(
@@ -165,13 +167,13 @@ fun TermsAndConditionsBox(
         ) {
             Checkbox(
                 modifier = Modifier
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .size(16.dp, 16.dp),
                 checked = isChecked,
                 onCheckedChange = onCheckedChange,
                 colors = CheckboxDefaults.colors(
-                    checkedColor = Color.Red,
-                    uncheckedColor = Color.White
+                    checkedColor = MaterialTheme.colorScheme.primary,
+                    uncheckedColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
 
@@ -180,16 +182,20 @@ fun TermsAndConditionsBox(
                         "prihvatanje platnih kartica i Flik instant plaćanja.",
                 fontSize = 14.sp,
                 fontFamily = MyriadPro,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onTertiary,
                 lineHeight = 20.sp,
                 modifier = Modifier.padding(top = 12.dp)
             )
         }
     }
 }
-@Preview
+@Preview(showBackground = true, name = "Registration - Light")
 @Composable
-fun RegPreview()
-{
-    RegistrationPage(onNavigateBack = {}, onNavigateNext = {})
+fun RegPreview() {
+    AppTheme {
+        RegistrationPage(
+            onNavigateBack = {},
+            onNavigateNext = {}
+        )
+    }
 }

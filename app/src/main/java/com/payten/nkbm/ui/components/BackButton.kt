@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,8 +22,8 @@ import androidx.ui.tooling.preview.Preview
 @Composable
 fun BackButton(
     modifier: Modifier = Modifier,
-    circleColor: Color = Color.Black,
-    triangleColor: Color = Color.Black,
+    circleColor: Color = MaterialTheme.colorScheme.secondary,
+    triangleColor: Color = MaterialTheme.colorScheme.secondary,
     onClick: () -> Unit = {}
 ) {
     Canvas(

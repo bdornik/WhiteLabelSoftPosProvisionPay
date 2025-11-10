@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.payten.nkbm.ui.navigation.PosNavigation
+import com.payten.nkbm.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -25,7 +26,9 @@ class MainActivity : ComponentActivity() {
         Log.d("DEBUG", "MainActivity started!")
 
         setContent {
-                    PosNavigation()
+            AppTheme {
+                PosNavigation()
+            }
         }
     }
 }

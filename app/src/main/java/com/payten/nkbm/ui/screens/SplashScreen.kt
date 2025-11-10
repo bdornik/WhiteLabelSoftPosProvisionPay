@@ -10,12 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,7 +55,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(MaterialTheme.colorScheme.onBackground),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -74,13 +72,13 @@ fun SplashScreen(
 
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.White)){append("Soft")}
-                    withStyle(style = SpanStyle(color = Color.Red)){append("POS")}
+                    withStyle(style = SpanStyle(MaterialTheme.colorScheme.onPrimary)){append("Soft")}
+                    withStyle(style = SpanStyle(MaterialTheme.colorScheme.primary)){append("POS")}
                 },
                 fontSize = 24.sp,
                 fontFamily = MyriadPro,
                 fontWeight = FontWeight.Bold,
-                color = Color.White)
+                color = MaterialTheme.colorScheme.onPrimary)
 
             Spacer(modifier = Modifier.height(48.dp))
 

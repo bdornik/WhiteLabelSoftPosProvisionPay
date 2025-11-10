@@ -14,11 +14,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.payten.nkbm.R
+import com.payten.nkbm.ui.theme.AppTheme
 import com.payten.nkbm.ui.theme.MyriadPro
 /**
  * Initial screen of the Payten POS application.
@@ -45,7 +46,7 @@ fun LandingPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit)
         modifier = Modifier.fillMaxSize()
     ){
         Box(
-            modifier = Modifier.fillMaxSize().background(Color.Black)
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.onBackground)
         )
         Image(
             painter = painterResource(id = R.drawable.vortex),
@@ -63,13 +64,13 @@ fun LandingPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit)
 
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.White)){append("Soft")}
-                    withStyle(style = SpanStyle(color = Color.Red)){append("POS")}
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onPrimary)){append("Soft")}
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)){append("POS")}
                 },
                 fontSize = 24.sp,
                 fontFamily = MyriadPro,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onPrimary
             )
 
             Spacer(
@@ -102,7 +103,7 @@ fun LandingPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit)
                 Column(modifier = Modifier.height(89.dp)) {
                     Text(
                         text= "Brzo. Bezbedno. Bilo kada.",
-                        color = Color.LightGray,
+                        color = MaterialTheme.colorScheme.onTertiary,
                         fontSize = 24.sp,
                         fontFamily = MyriadPro,
                         fontWeight = FontWeight.Bold,
@@ -111,7 +112,7 @@ fun LandingPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit)
                     Spacer (modifier = Modifier.height(22.dp))
                     Text(
                         text = "Jednostavan način prihvatanja plaćanja karticama i Flik računima.",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 16.sp,
                         fontFamily = MyriadPro,
                         textAlign = TextAlign.Center)
@@ -128,7 +129,7 @@ fun LandingPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit)
                     modifier = Modifier.size(297.dp, 51.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
+                        containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
                     Text(
@@ -145,5 +146,8 @@ fun LandingPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit)
 @Composable
 fun LandPreview()
 {
-    LandingPage(onNavigateToLogin = {}, onNavigateToRegister = {})
+    AppTheme{
+        LandingPage(onNavigateToLogin = {}, onNavigateToRegister = {})
+    }
+
 }
