@@ -22,8 +22,8 @@ import androidx.ui.tooling.preview.Preview
 @Composable
 fun BackButton(
     modifier: Modifier = Modifier,
-    circleColor: Color = MaterialTheme.colorScheme.secondary,
-    triangleColor: Color = MaterialTheme.colorScheme.secondary,
+    circleColor: Color = MaterialTheme.colorScheme.onBackground,
+    triangleColor: Color = MaterialTheme.colorScheme.onBackground,
     onClick: () -> Unit = {}
 ) {
     Canvas(
