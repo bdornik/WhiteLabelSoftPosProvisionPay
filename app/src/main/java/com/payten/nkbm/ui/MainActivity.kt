@@ -1,12 +1,9 @@
 package com.payten.nkbm.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import com.payten.nkbm.ui.navigation.PosNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,14 +22,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    PosNavigation()
-                }
+        Log.d("DEBUG", "MainActivity started!")
 
+        setContent {
+                    PosNavigation()
         }
     }
 }

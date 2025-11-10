@@ -74,17 +74,17 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity
+        <!--<activity
             android:name=".activities.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-        <activity
+        <activity-->
             android:name=".activities.ProvisionActivity"
             android:exported="false"
             android:theme="@style/AppTheme3"/>
         <activity
             android:name=".activities.SplashActivity"
-            android:exported="true"
+            android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3">

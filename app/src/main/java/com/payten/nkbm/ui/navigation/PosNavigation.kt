@@ -1,10 +1,13 @@
 package com.payten.nkbm.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.payten.nkbm.ui.screens.LandingPage
+import com.payten.nkbm.ui.screens.RegistrationPage
+import com.payten.nkbm.ui.screens.SplashScreen
 
 /**
  * Main navigation component for the Payten POS application.
@@ -22,18 +25,45 @@ fun PosNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "landing" // Initial screen of the app
+        startDestination = "splash" // Initial screen of the app
     ) {
+        composable("splash") {
+        SplashScreen(
+            onNavigateToNext = {
+                // Navigate to landing and remove splash from back stack
+                navController.navigate("landing") {
+                    popUpTo("splash") { inclusive = true }
+                }
+            }
+        )
+    }
+
         composable("landing") {
+            Log.d("Navigation", "Landing screen composable")
             LandingPage(
                 onNavigateToLogin = {
+                    Log.d("Navigation", "Login button clicked")
                     //Navigates to PIN insertion if the user is registered on this device
                     //This might be moved in the future, if we want to skip the landing page when registered
                     navController.navigate("login")
                 },
                 onNavigateToRegister = {
+                    Log.d("Navigation", "Register button clicked - navigating...")
                     //Navigates to registration if the user isnt registered
-                    navController.navigate("register")
+                    navController.navigate("registration")
+                }
+            )
+        }
+
+        composable("registration") {
+            Log.d("Navigation", "Registration screen composable")
+            RegistrationPage(
+                onNavigateBack = {
+                    Log.d("Navigation", "Back button clicked")
+                    navController.popBackStack()
+                },
+                onNavigateNext = {
+                    // TODO: Navigate to PIN setup after registration
                 }
             )
         }
