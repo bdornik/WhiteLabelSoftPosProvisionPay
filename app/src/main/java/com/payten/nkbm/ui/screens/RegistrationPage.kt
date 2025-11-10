@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -36,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.payten.nkbm.ui.components.BackButton
 import com.payten.nkbm.ui.components.CustomTextField
+import com.payten.nkbm.ui.components.TermsAndConditionsBox
 import com.payten.nkbm.ui.theme.AppTheme
 import com.payten.nkbm.ui.theme.MyriadPro
 /**
@@ -49,7 +47,11 @@ import com.payten.nkbm.ui.theme.MyriadPro
  * @param onNavigateNext Callback invoked when the registration is successful
  * */
 @Composable
-fun RegistrationPage(onNavigateBack: () -> Unit, onNavigateNext: () -> Unit) {
+fun RegistrationPage(
+    onNavigateBack: () -> Unit,
+    onNavigateNext: () -> Unit,
+    onViewTermsClick: () -> Unit
+) {
 
     var userId by remember { mutableStateOf("") }
     var activationCode by remember { mutableStateOf("") }
@@ -87,7 +89,7 @@ fun RegistrationPage(onNavigateBack: () -> Unit, onNavigateNext: () -> Unit) {
 
             Spacer(modifier = Modifier.size(100.dp))
 
-            RegistrationForm()
+            RegistrationForm(onViewTermsClick = onViewTermsClick)
         }
 
     }
@@ -97,7 +99,7 @@ fun RegistrationPage(onNavigateBack: () -> Unit, onNavigateNext: () -> Unit) {
  * Registration form containing input fields and T&C box.
  */
 @Composable
-fun RegistrationForm(modifier: Modifier = Modifier) {
+fun RegistrationForm(modifier: Modifier = Modifier, onViewTermsClick: () -> Unit) {
     var isChecked by remember { mutableStateOf(false) }
 
     Column(
@@ -120,7 +122,8 @@ fun RegistrationForm(modifier: Modifier = Modifier) {
 
         TermsAndConditionsBox(
             isChecked = isChecked,
-            onCheckedChange = { isChecked = it }
+            onCheckedChange = { isChecked = it },
+            onViewTermsClick = onViewTermsClick
         )
 
         Spacer(modifier = Modifier.size(10.dp))
@@ -148,54 +151,15 @@ fun RegistrationForm(modifier: Modifier = Modifier) {
         }
     }
 }
-/**
- * T&C acceptance box with a checkbox.
- * */
-@Composable
-fun TermsAndConditionsBox(
-    isChecked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.tertiary, RoundedCornerShape(16.dp))
-            .padding(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Checkbox(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surface)
-                    .size(16.dp, 16.dp),
-                checked = isChecked,
-                onCheckedChange = onCheckedChange,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = MaterialTheme.colorScheme.primary,
-                    uncheckedColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
 
-            Text(
-                text = "Slažem se sa opštim uslovima i odredbama za iznajmljivanje POS opreme, " +
-                        "prihvatanje platnih kartica i Flik instant plaćanja.",
-                fontSize = 14.sp,
-                fontFamily = MyriadPro,
-                color = MaterialTheme.colorScheme.onTertiary,
-                lineHeight = 20.sp,
-                modifier = Modifier.padding(top = 12.dp)
-            )
-        }
-    }
-}
 @Preview(showBackground = true, name = "Registration - Light")
 @Composable
 fun RegPreview() {
     AppTheme {
         RegistrationPage(
             onNavigateBack = {},
-            onNavigateNext = {}
+            onNavigateNext = { },
+            onViewTermsClick = {},
         )
     }
 }

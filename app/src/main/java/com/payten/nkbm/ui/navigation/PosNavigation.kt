@@ -5,7 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.payten.nkbm.config.SupercaseConfig
 import com.payten.nkbm.ui.screens.LandingPage
+import com.payten.nkbm.ui.screens.PdfViewerScreen
 import com.payten.nkbm.ui.screens.RegistrationPage
 import com.payten.nkbm.ui.screens.SplashScreen
 
@@ -64,6 +66,18 @@ fun PosNavigation() {
                 },
                 onNavigateNext = {
                     // TODO: Navigate to PIN setup after registration
+                },
+                onViewTermsClick = {
+                    //Navigates to the PDF viewer if the user clicks the T&C link
+                    navController.navigate("pdf_terms")
+                }
+            )
+        }
+        composable("pdf_terms") {
+            PdfViewerScreen(
+                pdfUrl = SupercaseConfig.termsConditionURL,
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
