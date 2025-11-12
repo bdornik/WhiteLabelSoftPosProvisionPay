@@ -285,6 +285,22 @@ dependencies {
 
     //printer
     implementation 'com.github.DantSu:ESCPOS-ThermalPrinter-Android:3.3.0'
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("io.reactivex.rxjava3:rxjava:3.1.8")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    // Compose UI Testing
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.4")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // Mockito inline
+    testImplementation("org.mockito:mockito-inline:5.2.0")
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -48,7 +48,10 @@ fun PinSetupScreen(
 
     // Check the validity of the PIN
     LaunchedEffect(pin.length) {
-        if (confirmedPin != null && pin.length == 4) {
+        if (pin.length == 4 && confirmedPin == null) {
+            confirmedPin = pin
+            pin = ""
+        } else if (confirmedPin != null && pin.length == 4) {
             if (pin == confirmedPin) {
                 showSuccessDialog = true
                 kotlinx.coroutines.delay(300)
