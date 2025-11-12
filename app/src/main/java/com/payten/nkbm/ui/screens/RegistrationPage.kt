@@ -67,27 +67,27 @@ fun RegistrationPage(
                 .align(Alignment.TopCenter)
         ) {
             Row(
-                modifier = Modifier.offset(x = 32.dp, y = 62.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BackButton(
+                /*BackButton(
                     onClick = onNavigateBack
-                )
+                )*/
 
-                Spacer(modifier = Modifier.size((43).dp))
+                Spacer(modifier = Modifier.height((96).dp))
 
                 Text(
                     text = "REGISTRACIJA",
-                    fontSize = 16.sp,
+                    fontSize = 20.sp,
                     fontFamily = MyriadPro,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.offset(y = 9.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     letterSpacing = TextUnit(4f, TextUnitType.Sp)
                 )
             }
 
-            Spacer(modifier = Modifier.size(100.dp))
+            Spacer(modifier = Modifier.size(48.dp))
 
             RegistrationForm(onViewTermsClick = onViewTermsClick)
         }
@@ -118,7 +118,7 @@ fun RegistrationForm(modifier: Modifier = Modifier, onViewTermsClick: () -> Unit
             placeholder = "Unesite aktivacioni kod"
         )
 
-        Spacer(modifier = modifier.size(150.dp))
+        Spacer(modifier = modifier.size(200.dp))
 
         TermsAndConditionsBox(
             isChecked = isChecked,
