@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.payten.nkbm.config.SupercaseConfig
-import com.payten.nkbm.ui.screens.LandingPage
+import com.payten.nkbm.ui.screens.FirstPage
 import com.payten.nkbm.ui.screens.PdfViewerScreen
 import com.payten.nkbm.ui.screens.RegistrationPage
 import com.payten.nkbm.ui.screens.SplashScreen
@@ -16,7 +16,7 @@ import com.payten.nkbm.ui.screens.SplashScreen
  *
  * Manages the navigation graph and screen transitions via Navigation Compose.
  *
- * Current implementation handles the following flow: Landing->Login/Register.
+ * Current implementation handles the following flow: FirstPage->Login/Register.
  *
  * To be expanded further.
  * */
@@ -42,7 +42,7 @@ fun PosNavigation() {
 
         composable("landing") {
             Log.d("Navigation", "Landing screen composable")
-            LandingPage(
+            FirstPage(
                 onNavigateToLogin = {
                     Log.d("Navigation", "Login button clicked")
                     //Navigates to PIN insertion if the user is registered on this device

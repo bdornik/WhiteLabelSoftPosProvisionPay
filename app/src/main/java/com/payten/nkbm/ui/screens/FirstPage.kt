@@ -41,7 +41,7 @@ import com.payten.nkbm.ui.theme.MyriadPro
  * @param onNavigateToRegister Callback invoked when user navigates to registration.
  * */
 @Composable
-fun LandingPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit) {
+fun FirstPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ){
@@ -147,7 +147,7 @@ fun LandingPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit)
 fun LandPreview()
 {
     AppTheme{
-        LandingPage(onNavigateToLogin = {}, onNavigateToRegister = {})
+        FirstPage(onNavigateToLogin = {}, onNavigateToRegister = {})
     }
 
 }
