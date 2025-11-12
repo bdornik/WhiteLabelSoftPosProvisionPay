@@ -4,21 +4,26 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.nkbm.ui.navigation.PosNavigation
 import com.payten.nkbm.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 /**
  * Main Activity for the Payten POS application.
  *
- * This is the single entry point for the entre domain.
+ * This is the single entry point for the entire domain.
  *
  * Uses Jetpack Compose for UI and Navigate Compose for navigation.
  * Annotated with @AndroidEntryPoint to allow Hilt dependency injection.
  * */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var sharedPreferences: KsPrefs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +32,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                PosNavigation()
+                PosNavigation(sharedPreferences = sharedPreferences)
             }
         }
     }

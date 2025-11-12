@@ -18,38 +18,39 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.ui.tooling.preview.Preview
+import com.cioccarellia.ksprefs.KsPrefs
 import kotlinx.coroutines.delay
 import com.payten.nkbm.R
+import com.payten.nkbm.persistance.SharedPreferencesKeys
 import com.payten.nkbm.ui.theme.MyriadPro
 
 /**
  * Splash screen is displayed when the app launches.
  *
  * This screen performs initial app setup and determines the next destination:
- * - If user is not registered → navigate to LandingPage
+ * - If user is not registered → navigate to FirstPage
  * - If user is registered but not logged in navigate to Login
  *
- * Currently simplified to navigate to Landing after a delay.
- * Full logic will be implemented with ViewModel in future iterations.
- *
- * @param onNavigateToNext Callback invoked after splash delay completes
+ * @param sharedPreferences Instance of shared preferences for auth checks.
+ * @param onNavigateToNext Callback invoked after splash delay completes.
  */
 @Preview
 @Composable
 fun SplashScreen(
-    onNavigateToNext: () -> Unit = {}
+    sharedPreferences: KsPrefs,
+    onNavigateToNext: (destination: String) -> Unit = {}
 ) {
     // Trigger navigation after delay
     LaunchedEffect(Unit) {
-        // Simulate splash delay for now
         delay(2000)
 
-        // TODO: Add logic to determine next destination:
-        // - Check if user is registered
-        // - Check if user is logged in
-        // - Navigate accordingly
+        val isRegistered = sharedPreferences.pull(SharedPreferencesKeys.REGISTERED, false)
 
-        onNavigateToNext()
+        val destination = when {
+            isRegistered -> "pin_login"
+            else -> "first"
+        }
+        onNavigateToNext(destination)
     }
 
     Box(

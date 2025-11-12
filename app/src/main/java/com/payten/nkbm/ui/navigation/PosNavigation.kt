@@ -5,9 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import at.favre.lib.crypto.bcrypt.BCrypt
+import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.nkbm.config.SupercaseConfig
+import com.payten.nkbm.persistance.SharedPreferencesKeys
 import com.payten.nkbm.ui.screens.FirstPage
 import com.payten.nkbm.ui.screens.PdfViewerScreen
+import com.payten.nkbm.ui.screens.PinLoginScreen
+import com.payten.nkbm.ui.screens.PinSetupScreen
 import com.payten.nkbm.ui.screens.RegistrationPage
 import com.payten.nkbm.ui.screens.SplashScreen
 
@@ -21,7 +26,7 @@ import com.payten.nkbm.ui.screens.SplashScreen
  * To be expanded further.
  * */
 @Composable
-fun PosNavigation() {
+fun PosNavigation(sharedPreferences: KsPrefs) {
     //Manages navigation state
     val navController = rememberNavController()
 
@@ -31,23 +36,23 @@ fun PosNavigation() {
     ) {
         composable("splash") {
         SplashScreen(
-            onNavigateToNext = {
-                // Navigate to landing and remove splash from back stack
-                navController.navigate("landing") {
+            sharedPreferences = sharedPreferences,
+            onNavigateToNext = { destination ->
+                navController.navigate(destination) {
                     popUpTo("splash") { inclusive = true }
                 }
             }
         )
     }
 
-        composable("landing") {
-            Log.d("Navigation", "Landing screen composable")
+        composable("first") {
+            Log.d("Navigation", "First screen composable")
             FirstPage(
                 onNavigateToLogin = {
                     Log.d("Navigation", "Login button clicked")
                     //Navigates to PIN insertion if the user is registered on this device
                     //This might be moved in the future, if we want to skip the landing page when registered
-                    navController.navigate("login")
+                    navController.navigate("pin_login")
                 },
                 onNavigateToRegister = {
                     Log.d("Navigation", "Register button clicked - navigating...")
@@ -61,16 +66,19 @@ fun PosNavigation() {
             Log.d("Navigation", "Registration screen composable")
             RegistrationPage(
                 onNavigateBack = {
+                    // This is currently unused since we removed the back button
                     Log.d("Navigation", "Back button clicked")
                     navController.popBackStack()
                 },
                 onNavigateNext = {
-                    // TODO: Navigate to PIN setup after registration
+                    // Navigates to the PIN setup screen
+                    navController.navigate("pin_setup")
                 },
                 onViewTermsClick = {
-                    //Navigates to the PDF viewer if the user clicks the T&C link
+                    // Navigates to the PDF viewer if the user clicks the T&C link
                     navController.navigate("pdf_terms")
-                }
+                },
+                sharedPreferences = sharedPreferences
             )
         }
         composable("pdf_terms") {
@@ -78,6 +86,46 @@ fun PosNavigation() {
                 pdfUrl = SupercaseConfig.termsConditionURL,
                 onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+        composable("pin_setup") {
+            PinSetupScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onPinSetupComplete = { pin ->
+                    val encryptedPin = BCrypt
+                        .withDefaults()
+                        .hashToString(12, pin.toCharArray())
+                    sharedPreferences.push(SharedPreferencesKeys.PIN, encryptedPin)
+                    sharedPreferences.push(SharedPreferencesKeys.REGISTERED, true)
+
+                    // TODO: Navigate to Landing
+                    navController.navigate("landing") {
+                        popUpTo("landing") { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable("pin_login") {
+            PinLoginScreen(
+                sharedPreferences = sharedPreferences,
+                onLoginSuccess = {
+                    // TODO: Navigate to Landing (new landing not what I used to call landing)
+                 /*   navController.navigate("landing") {
+                        popUpTo("pin_login") { inclusive = true }
+                    }*/
+                },
+                onForgotPin = {
+                    // TODO: Navigate to Forgot PIN flow
+                    // navController.navigate("forgot_pin")
+                },
+                onLoginFailed = {
+                    // App blocked - reset to splash
+                    navController.navigate("splash") {
+                        popUpTo(0)
+                    }
                 }
             )
         }
