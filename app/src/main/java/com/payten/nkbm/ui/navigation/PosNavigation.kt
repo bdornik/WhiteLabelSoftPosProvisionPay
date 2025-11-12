@@ -10,6 +10,7 @@ import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.nkbm.config.SupercaseConfig
 import com.payten.nkbm.persistance.SharedPreferencesKeys
 import com.payten.nkbm.ui.screens.FirstPage
+import com.payten.nkbm.ui.screens.LandingScreen
 import com.payten.nkbm.ui.screens.PdfViewerScreen
 import com.payten.nkbm.ui.screens.PinLoginScreen
 import com.payten.nkbm.ui.screens.PinSetupScreen
@@ -21,7 +22,9 @@ import com.payten.nkbm.ui.screens.SplashScreen
  *
  * Manages the navigation graph and screen transitions via Navigation Compose.
  *
- * Current implementation handles the following flow: FirstPage->Login/Register.
+ * Current implementation handles the following flows:
+ * -Splash->FirstPage->Register->PinSetup->Landing
+ * -Splash->PinLogin->Landing
  *
  * To be expanded further.
  * */
@@ -101,7 +104,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     sharedPreferences.push(SharedPreferencesKeys.PIN, encryptedPin)
                     sharedPreferences.push(SharedPreferencesKeys.REGISTERED, true)
 
-                    // TODO: Navigate to Landing
+                    // Navigates to the landing page after a successful registration process
                     navController.navigate("landing") {
                         popUpTo("landing") { inclusive = true }
                     }
@@ -112,10 +115,10 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             PinLoginScreen(
                 sharedPreferences = sharedPreferences,
                 onLoginSuccess = {
-                    // TODO: Navigate to Landing (new landing not what I used to call landing)
-                 /*   navController.navigate("landing") {
+                    // Navigates to the landing page after a successful login
+                     navController.navigate("landing") {
                         popUpTo("pin_login") { inclusive = true }
-                    }*/
+                    }
                 },
                 onForgotPin = {
                     // TODO: Navigate to Forgot PIN flow
@@ -126,6 +129,16 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.navigate("splash") {
                         popUpTo(0)
                     }
+                }
+            )
+        }
+        composable("landing") {
+            LandingScreen(
+                onNavigateToTransaction = {
+                    navController.navigate("transaction")  // TODO: Implement TransactionScreen
+                },
+                onNavigateToMenu = {
+                    navController.navigate("menu")  // TODO: Implement MenuScreen
                 }
             )
         }
