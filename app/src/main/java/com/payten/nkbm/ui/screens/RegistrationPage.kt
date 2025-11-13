@@ -1,7 +1,6 @@
 package com.payten.nkbm.ui.screens
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -275,7 +273,7 @@ fun RegistrationPage(
                     if (userId == SupercaseConfig.dummyUsId && activationCode == SupercaseConfig.dummyActCode) {
                         Log.d(TAG, "DUMMY LOGIN detected")
                         // Dummy login - skip API calls
-                        val encryptedActId = at.favre.lib.crypto.bcrypt.BCrypt
+                        val encryptedActId = BCrypt
                             .withDefaults()
                             .hashToString(12, activationCode.toCharArray())
                         sharedPreferences.push(SharedPreferencesKeys.IS_LOGGED_IN, true)
