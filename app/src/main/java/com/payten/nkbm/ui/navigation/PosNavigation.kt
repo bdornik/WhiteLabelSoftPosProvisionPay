@@ -1,6 +1,7 @@
 package com.payten.nkbm.ui.navigation
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,6 +12,7 @@ import com.payten.nkbm.config.SupercaseConfig
 import com.payten.nkbm.persistance.SharedPreferencesKeys
 import com.payten.nkbm.ui.screens.FirstPage
 import com.payten.nkbm.ui.screens.LandingScreen
+import com.payten.nkbm.ui.screens.MenuScreen
 import com.payten.nkbm.ui.screens.PdfViewerScreen
 import com.payten.nkbm.ui.screens.PinLoginScreen
 import com.payten.nkbm.ui.screens.PinSetupScreen
@@ -23,8 +25,8 @@ import com.payten.nkbm.ui.screens.SplashScreen
  * Manages the navigation graph and screen transitions via Navigation Compose.
  *
  * Current implementation handles the following flows:
- * -Splash->FirstPage->Register->PinSetup->Landing
- * -Splash->PinLogin->Landing
+ * -Splash->FirstPage->Register->PinSetup->Landing->Menu
+ * -Splash->PinLogin-------------------------^
  *
  * To be expanded further.
  * */
@@ -138,7 +140,52 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.navigate("transaction")  // TODO: Implement TransactionScreen
                 },
                 onNavigateToMenu = {
-                    navController.navigate("menu")  // TODO: Implement MenuScreen
+                    // Navigates to the Menu screen from the top-right buton on the landing page.
+                    navController.navigate("menu")
+                }
+            )
+        }
+        composable("menu"){
+            val merchantName = sharedPreferences.pull(
+                SharedPreferencesKeys.MERCHANT_NAME,
+                ""
+            )
+
+            val merchantAddress = sharedPreferences.pull(
+                SharedPreferencesKeys.MERCHANT_ADDRESS,
+                ""
+            )
+
+            val merchantPlaceName = sharedPreferences.pull(
+                SharedPreferencesKeys.MERCHANT_PLACE_NAME,
+                ""
+            )
+
+            val fullAddress = if (merchantAddress.isNotBlank() && merchantPlaceName.isNotBlank()) {
+                "$merchantAddress, $merchantPlaceName"
+            } else merchantAddress.ifBlank {
+                merchantPlaceName
+            }
+
+            MenuScreen(
+                merchantName = merchantName,
+                merchantAddress = fullAddress,
+                onClose = {
+                    navController.popBackStack()
+                },
+                onTrafficClick = {
+                    navController.navigate("traffic")
+                },
+                onSettingsClick = {
+                    navController.navigate("settings")
+                },
+                onEndOfDayClick = {
+                    navController.navigate("end_of_day")
+                },
+                onSignOutClick = {
+                    navController.navigate("pin_login") {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }
