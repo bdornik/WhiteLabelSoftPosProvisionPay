@@ -6,7 +6,6 @@ package com.simant;
 
 import android.content.Context;
 
-import com.payten.nkbm.config.SupercaseConfig;
 import com.sacbpp.api.SACBPPModuleListener;
 import com.sacbpp.api.SACBTPModuleConfigurator;
 import com.simant.m.b.e;

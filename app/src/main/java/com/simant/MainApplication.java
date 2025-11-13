@@ -1,9 +1,9 @@
 package com.simant;
 
-import static com.payten.nkbm.config.SupercaseConfig.CMS_URL;
-import static com.payten.nkbm.config.SupercaseConfig.TMS_URL;
-import static com.payten.nkbm.config.SupercaseConfig.CVMS_URL;
-import static com.payten.nkbm.config.SupercaseConfig.IDENTIFIER;
+import static com.payten.whitelabel.config.SupercaseConfig.CMS_URL;
+import static com.payten.whitelabel.config.SupercaseConfig.TMS_URL;
+import static com.payten.whitelabel.config.SupercaseConfig.CVMS_URL;
+import static com.payten.whitelabel.config.SupercaseConfig.IDENTIFIER;
 import static com.sacbpp.remotemanagement.SACBPPNotificationManager.END_OF_REMOTE_PROCESS;
 
 import android.app.Activity;
@@ -19,13 +19,12 @@ import androidx.hilt.work.HiltWorkerFactory;
 import androidx.multidex.MultiDex;
 import androidx.work.Configuration;
 
-import com.cioccarellia.ksprefs.KsPrefs;
 import com.icmp10.icmp.api.ParameterProvider;
 import com.jakewharton.threetenabp.AndroidThreeTen;
-import com.payten.nkbm.R;
-import com.payten.nkbm.activities.MainActivity;
-import com.payten.nkbm.activities.SplashActivity;
-import com.payten.nkbm.config.SupercaseConfig;
+import com.payten.whitelabel.R;
+import com.payten.whitelabel.activities.MainActivity;
+import com.payten.whitelabel.activities.SplashActivity;
+import com.payten.whitelabel.config.SupercaseConfig;
 import com.sacbpp.api.SAMPAActivation;
 import com.sacbpp.api.SAMPAKeyStore;
 import com.sacbpp.api.configuration.SAMPARNSConfiguration;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.payten.nkbm">
+    package="com.payten.whitelabel">
 
     <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
     <!-- Permission to access network state - required -->
@@ -45,7 +45,7 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.payten.whitelabel.ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
@@ -55,19 +55,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.CustomAmountActivity"
+            android:name="com.payten.whitelabel.activities.CustomAmountActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.BaseActivity"
+            android:name="com.payten.whitelabel.activities.BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.TipActivity"
+            android:name="com.payten.whitelabel.activities.TipActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.EndOfDayActivity"
+            android:name="com.payten.whitelabel.activities.EndOfDayActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.ReactivationActivity"
+            android:name="com.payten.whitelabel.activities.ReactivationActivity"
             android:exported="false" />
 
         <uses-library
@@ -83,7 +83,7 @@
             android:exported="false"
             android:theme="@style/AppTheme3"/>
         <activity
-            android:name=".activities.SplashActivity"
+            android:name="com.payten.whitelabel.activities.SplashActivity"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -95,57 +95,57 @@
             </intent-filter>-->
         </activity>
         <activity
-            android:name=".activities.IntroActivity"
+            android:name="com.payten.whitelabel.activities.IntroActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />
         <activity
-            android:name=".activities.RegistrationActivity"
+            android:name="com.payten.whitelabel.activities.RegistrationActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.TermsConditionsActivity"
+            android:name="com.payten.whitelabel.activities.TermsConditionsActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />
         <activity
-            android:name=".activities.ForgotPinActivity"
+            android:name="com.payten.whitelabel.activities.ForgotPinActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.PinActivity"
+            android:name="com.payten.whitelabel.activities.PinActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme2" />
         <activity
-            android:name=".activities.AmountActivity"
+            android:name="com.payten.whitelabel.activities.AmountActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.PaymentTypeActivity"
+            android:name="com.payten.whitelabel.activities.PaymentTypeActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.ProfileActivity"
+            android:name="com.payten.whitelabel.activities.ProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />
         <activity
-            android:name=".activities.TrafficActivity"
+            android:name="com.payten.whitelabel.activities.TrafficActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />
         <activity
-            android:name=".activities.FilterActivity"
+            android:name="com.payten.whitelabel.activities.FilterActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.ScanQRActivity"
+            android:name="com.payten.whitelabel.activities.ScanQRActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />
         <activity
-            android:name=".activities.PosActivity"
+            android:name="com.payten.whitelabel.activities.PosActivity"
             android:exported="true"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
@@ -154,38 +154,38 @@
                 android:resource="@xml/nfc_tech_filter" />
         </activity>
         <activity
-            android:name=".activities.BillActivity"
+            android:name="com.payten.whitelabel.activities.BillActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.VoidActivity"
+            android:name="com.payten.whitelabel.activities.VoidActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.LandingActivity"
+            android:name="com.payten.whitelabel.activities.LandingActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.IpsActivity"
+            android:name="com.payten.whitelabel.activities.IpsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name="com.payten.whitelabel.activities.SettingsActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />
         <activity
-            android:name=".activities.ProfileDetailsActivity"
+            android:name="com.payten.whitelabel.activities.ProfileDetailsActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />
         <activity
-            android:name=".activities.ThemeActivity"
+            android:name="com.payten.whitelabel.activities.ThemeActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />
         <activity
-            android:name=".activities.TransactionActivity"
+            android:name="com.payten.whitelabel.activities.TransactionActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme3" />

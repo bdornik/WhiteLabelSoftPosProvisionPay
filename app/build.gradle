@@ -30,7 +30,7 @@ android {
         }
     }
 
-    namespace = "com.payten.nkbm"
+    namespace = "com.payten.whitelabel"
     compileSdk = 36
     useLibrary 'org.apache.http.legacy'
 

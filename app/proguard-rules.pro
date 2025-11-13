@@ -125,9 +125,9 @@
 
 -keep class com.shockwave.**
 
--keep class com.payten.nkbm.dto.** { *; }
--keepclassmembers class com.payten.nkbm.dto.** { *; }
--keepclassmembers enum com.payten.nkbm.** { *; }
+-keep class com.payten.whitelabel.dto.** { *; }
+-keepclassmembers class com.payten.whitelabel.dto.** { *; }
+-keepclassmembers enum com.payten.whitelabel.** { *; }
 
 -dontshrink
 -dontoptimize

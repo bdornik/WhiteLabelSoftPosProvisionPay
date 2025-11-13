@@ -5,7 +5,7 @@ package com.simant.m.b;
 
 import android.content.Context;
 
-import com.payten.nkbm.config.SupercaseConfig;
+import com.payten.whitelabel.config.SupercaseConfig;
 import com.sacbpp.api.SAMPAjne;
 import com.sacbpp.core.bytes.ByteArray;
 

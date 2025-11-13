@@ -1,0 +1,92 @@
+package com.payten.whitelabel.ui.screens
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.ui.tooling.preview.Preview
+import com.cioccarellia.ksprefs.KsPrefs
+import kotlinx.coroutines.delay
+import com.payten.whitelabel.persistance.SharedPreferencesKeys
+import com.payten.whitelabel.ui.theme.MyriadPro
+import com.payten.whitelabel.R
+
+/**
+ * Splash screen is displayed when the app launches.
+ *
+ * This screen performs initial app setup and determines the next destination:
+ * - If user is not registered → navigate to FirstPage
+ * - If user is registered but not logged in navigate to Login
+ *
+ * @param sharedPreferences Instance of shared preferences for auth checks.
+ * @param onNavigateToNext Callback invoked after splash delay completes.
+ */
+@Preview
+@Composable
+fun SplashScreen(
+    sharedPreferences: KsPrefs,
+    onNavigateToNext: (destination: String) -> Unit = {}
+) {
+    // Trigger navigation after delay
+    LaunchedEffect(Unit) {
+        delay(2000)
+
+        val isRegistered = sharedPreferences.pull(SharedPreferencesKeys.REGISTERED, false)
+
+        val destination = when {
+            isRegistered -> "pin_login"
+            else -> "first"
+        }
+        onNavigateToNext(destination)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.onBackground),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.payten),
+                contentDescription = null,
+                 modifier = Modifier.size(300.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(MaterialTheme.colorScheme.onPrimary)){append("Soft")}
+                    withStyle(style = SpanStyle(MaterialTheme.colorScheme.primary)){append("POS")}
+                },
+                fontSize = 24.sp,
+                fontFamily = MyriadPro,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary)
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
