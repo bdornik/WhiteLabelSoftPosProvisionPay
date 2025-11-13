@@ -35,7 +35,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        applicationId "com.payten.nkbm"
+        applicationId "com.payten.whitelabel"
         minSdkVersion 22
         targetSdkVersion 36
         versionCode 51

@@ -280,6 +280,9 @@ fun RegistrationPage(
                         sharedPreferences.push(SharedPreferencesKeys.HASHED_ACT_ID, encryptedActId)
                         sharedPreferences.push(SharedPreferencesKeys.IS_REGISTERED, true)
                         sharedPreferences.push(SharedPreferencesKeys.DUMMY, true)
+                        sharedPreferences.push(SharedPreferencesKeys.MERCHANT_NAME, "Google google")
+                        sharedPreferences.push(SharedPreferencesKeys.MERCHANT_ADDRESS, "Google 123")
+                        sharedPreferences.push(SharedPreferencesKeys.MERCHANT_PLACE_NAME, "Google")
                         isLoading = false
                         Log.d(TAG, "Navigating to next (dummy)")
                         onNavigateNext()
