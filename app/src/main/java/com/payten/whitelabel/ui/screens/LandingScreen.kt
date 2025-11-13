@@ -40,7 +40,9 @@ fun LandingScreen(
     onNavigateToMenu: () -> Unit = {}
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
     ) {
         Image(
             painter = painterResource(id = R.drawable.gradient_background),

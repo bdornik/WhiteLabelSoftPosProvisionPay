@@ -9,6 +9,7 @@ import com.payten.whitelabel.ui.navigation.PosNavigation
 import com.payten.whitelabel.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import androidx.activity.enableEdgeToEdge
 
 
 /**
@@ -29,6 +30,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         Log.d("DEBUG", "MainActivity started!")
+
+        enableEdgeToEdge()
 
         setContent {
             AppTheme {

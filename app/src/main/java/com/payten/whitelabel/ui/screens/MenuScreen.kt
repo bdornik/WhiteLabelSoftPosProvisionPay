@@ -54,6 +54,7 @@ fun MenuScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceVariant)
+            .statusBarsPadding()
     ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 8.dp)
