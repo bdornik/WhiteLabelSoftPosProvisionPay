@@ -62,8 +62,6 @@ fun MenuScreen(
         ) {
             MenuHeader(onClose = onClose)
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             MerchantInfoCard(
                 name = merchantName,
                 address = merchantAddress
@@ -126,15 +124,14 @@ private fun MenuHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 16.dp)
+            .padding(horizontal = 4.dp, vertical = 8.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.payten_dark),
+            painter = painterResource(id = R.drawable.payten_logo_final_rgb),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
-                .width(200.dp)
-                .height(24.dp)
+                .size(144.dp)
                 .align(Alignment.Center)
         )
 

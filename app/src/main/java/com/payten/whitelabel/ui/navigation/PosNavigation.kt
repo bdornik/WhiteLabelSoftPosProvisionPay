@@ -15,6 +15,7 @@ import com.payten.whitelabel.ui.screens.MenuScreen
 import com.payten.whitelabel.ui.screens.PdfViewerScreen
 import com.payten.whitelabel.ui.screens.PinLoginScreen
 import com.payten.whitelabel.ui.screens.PinSetupScreen
+import com.payten.whitelabel.ui.screens.ProfileScreen
 import com.payten.whitelabel.ui.screens.RegistrationPage
 import com.payten.whitelabel.ui.screens.SettingsScreen
 import com.payten.whitelabel.ui.screens.SplashScreen
@@ -61,7 +62,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 },
                 onNavigateToRegister = {
                     Log.d("Navigation", "Register button clicked - navigating...")
-                    //Navigates to registration if the user isnt registered
+                    //Navigates to registration if the user isn't registered.
                     navController.navigate("registration")
                 }
             )
@@ -71,16 +72,16 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             Log.d("Navigation", "Registration screen composable")
             RegistrationPage(
                 onNavigateBack = {
-                    // This is currently unused since we removed the back button
+                    // This is currently unused since we removed the back button.
                     Log.d("Navigation", "Back button clicked")
                     navController.popBackStack()
                 },
                 onNavigateNext = {
-                    // Navigates to the PIN setup screen
+                    // Navigates to the PIN setup screen.
                     navController.navigate("pin_setup")
                 },
                 onViewTermsClick = {
-                    // Navigates to the PDF viewer if the user clicks the T&C link
+                    // Navigates to the PDF viewer if the user clicks the T&C link.
                     navController.navigate("pdf_terms")
                 },
                 sharedPreferences = sharedPreferences
@@ -106,7 +107,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     sharedPreferences.push(SharedPreferencesKeys.PIN, encryptedPin)
                     sharedPreferences.push(SharedPreferencesKeys.REGISTERED, true)
 
-                    // Navigates to the landing page after a successful registration process
+                    // Navigates to the landing page after a successful registration process.
                     navController.navigate("landing") {
                         popUpTo("landing") { inclusive = true }
                     }
@@ -117,7 +118,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             PinLoginScreen(
                 sharedPreferences = sharedPreferences,
                 onLoginSuccess = {
-                    // Navigates to the landing page after a successful login
+                    // Navigates to the landing page after a successful login.
                      navController.navigate("landing") {
                         popUpTo("pin_login") { inclusive = true }
                     }
@@ -174,15 +175,19 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.popBackStack()
                 },
                 onTrafficClick = {
+                    // TODO: Implement TrafficScreen
                     navController.navigate("traffic")
                 },
                 onSettingsClick = {
+                    // Navigates to the settings.
                     navController.navigate("settings")
                 },
                 onEndOfDayClick = {
+                    //TODO: Implement EndOfDayScreen
                     navController.navigate("end_of_day")
                 },
                 onSignOutClick = {
+                    // Navigates to login after the user signs out.
                     navController.navigate("pin_login") {
                         popUpTo(0) { inclusive = true }
                     }
@@ -196,13 +201,24 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.popBackStack()
                 },
                 onProfileClick = {
+                    // Navigates to the profile details screen.
                     navController.navigate("profile")
                 },
                 onChangePinClick = {
+                    // Navigates to the PIN setup screen.
                     navController.navigate("pin_setup")
                 },
                 onTermsClick = {
+                    // Opens the T&C PDF file.
                     navController.navigate("pdf_terms")
+                }
+            )
+        }
+        composable("profile"){
+            ProfileScreen(
+                sharedPreferences = sharedPreferences,
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

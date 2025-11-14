@@ -313,6 +313,7 @@
     <string name="registration_continue">NASTAVI</string>
     <string name="registration_terms_part1">Prihvatam </string>
     <string name="registration_terms_link">Uslove korišćenja</string>
+    <string name="register_checkbox"></string>
 
     <!-- PIN Setup Screen -->
     <string name="pin_setup_title">POSTAVLJANJE PIN-a</string>
@@ -375,5 +376,12 @@
     <string name="terms_text_part1">Slažem se sa opštim </string>
     <string name="terms_text_link">uslovima i odredbama</string>
     <string name="terms_text_part2"> za iznajmljivanje POS opreme, prihvatanje platnih kartica i Flik instant plaćanja.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">PROFIL</string>
+    <string name="profile_user_id_label">ID korisnika</string>
+    <string name="profile_address_label">Adresa</string>
+    <string name="profile_city_label">Grad</string>
+    <string name="profile_tid_label">TID</string>
 
 </resources>

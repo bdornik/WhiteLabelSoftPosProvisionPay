@@ -235,6 +235,7 @@
     <string name="version_label">Različica aplikacije</string>
     <string name="label_pin_not_entered">PIN ni bil vnesen pravočasno.\nProsimo, ponovite transakcijo.</string>
     <string name="label_pin_not_entered_button">Nazaj</string>
+    <string name="register_checkbox"></string>
 
 
     <string name="no_results_header">Brez rezultatov</string>
@@ -378,4 +379,12 @@
     <string name="terms_text_part1">Strinjam se s splošnimi </string>
     <string name="terms_text_link">pogoji in določili</string>
     <string name="terms_text_part2"> za najem POS opreme, sprejemanje plačilnih kartic in Flik takojšnjih plačil.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">PROFIL</string>
+    <string name="profile_user_id_label">ID uporabnika</string>
+    <string name="profile_address_label">Naslov</string>
+    <string name="profile_city_label">Mesto</string>
+    <string name="profile_tid_label">TID</string>
+
 </resources>

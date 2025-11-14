@@ -299,7 +299,7 @@ private fun SettingsItem(
                     text = title,
                     fontSize = 16.sp,
                     fontFamily = MyriadPro,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
 

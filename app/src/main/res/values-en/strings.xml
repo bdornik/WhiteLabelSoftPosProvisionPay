@@ -387,4 +387,11 @@
     <string name="terms_text_part1">I agree to the general </string>
     <string name="terms_text_link">terms and conditions</string>
     <string name="terms_text_part2"> for renting POS equipment, accepting payment cards and Flik instant payments.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">PROFILE</string>
+    <string name="profile_user_id_label">User ID</string>
+    <string name="profile_address_label">Address</string>
+    <string name="profile_city_label">City</string>
+    <string name="profile_tid_label">TID</string>
 </resources>
