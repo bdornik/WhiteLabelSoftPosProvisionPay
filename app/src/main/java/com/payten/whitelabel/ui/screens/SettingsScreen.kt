@@ -62,7 +62,7 @@ fun SettingsScreen(
         mutableIntStateOf(sharedPreferences.pull(SharedPreferencesKeys.LANGUAGE, 2))
     }
 
-    var showLanguageDialog by remember { mutableStateOf(false) }
+    var showLanguageDropdown by remember { mutableStateOf(false) }
 
     val packageInfo = remember {
         context.packageManager.getPackageInfo(context.packageName, 0)
@@ -141,13 +141,40 @@ fun SettingsScreen(
                         color = Color.LightGray.copy(alpha = 0.3f)
                     )
 
-                    SettingsItem(
-                        title = stringResource(R.string.settings_language),
-                        subtitle = currentLanguageText,
-                        flag = currentLanguageFlag,
-                        showDropdown = true,
-                        onClick = { showLanguageDialog = true }
-                    )
+                    Box {
+                        SettingsItem(
+                            title = stringResource(R.string.settings_language),
+                            subtitle = currentLanguageText,
+                            flag = currentLanguageFlag,
+                            showDropdown = true,
+                            onClick = { showLanguageDropdown = !showLanguageDropdown }
+                        )
+
+                        LanguageDropdownMenu(
+                            expanded = showLanguageDropdown,
+                            currentLanguageIndex = currentLanguageIndex,
+                            onDismiss = { showLanguageDropdown = false },
+                            onLanguageSelected = { index ->
+                                Log.d("SettingsScreen", "=== LANGUAGE CHANGE STARTED ===")
+                                Log.d("SettingsScreen", "Selected index: $index")
+                                sharedPreferences.push(SharedPreferencesKeys.LANGUAGE, index)
+                                currentLanguageIndex = index
+
+                                val localeTag = when (index) {
+                                    0 -> "sl"
+                                    1 -> "en"
+                                    2 -> "sr"
+                                    else -> "sr"
+                                }
+                                Log.d("SettingsScreen", "Locale tag: $localeTag")
+                                AppCompatDelegate.setApplicationLocales(
+                                    LocaleListCompat.forLanguageTags(localeTag)
+                                )
+
+                                showLanguageDropdown = false
+                            }
+                        )
+                    }
 
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -196,34 +223,6 @@ fun SettingsScreen(
                     .padding(bottom = 24.dp)
             )
         }
-    }
-
-    if (showLanguageDialog) {
-        LanguagePickerDialog(
-            currentLanguageIndex = currentLanguageIndex,
-            onDismiss = { showLanguageDialog = false },
-            onLanguageSelected = { index ->
-                Log.d("SettingsScreen", "=== LANGUAGE CHANGE STARTED ===")
-                Log.d("SettingsScreen", "Selected index: $index")
-                sharedPreferences.push(SharedPreferencesKeys.LANGUAGE, index)
-                currentLanguageIndex = index
-
-                val localeTag = when (index) {
-                    0 -> "sl"
-                    1 -> "en"
-                    2 -> "sr"
-                    else -> "sr"
-                }
-                Log.d("SettingsScreen", "Locale tag: $localeTag")
-                Log.d("SettingsScreen", "Before setApplicationLocales")
-                AppCompatDelegate.setApplicationLocales(
-                    LocaleListCompat.forLanguageTags(localeTag)
-                )
-                Log.d("SettingsScreen", "After setApplicationLocales")
-
-                showLanguageDialog = false
-            }
-        )
     }
 }
 
@@ -339,92 +338,93 @@ private fun SettingsItem(
 }
 
 /**
- * Language picker dialog.
+ * Language picker menu.
  */
 @Composable
-private fun LanguagePickerDialog(
+private fun LanguageDropdownMenu(
+    expanded: Boolean,
     currentLanguageIndex: Int,
     onDismiss: () -> Unit,
     onLanguageSelected: (Int) -> Unit
 ) {
-    AlertDialog(
+    DropdownMenu(
+        expanded = expanded,
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = stringResource(R.string.settings_language_dialog_title),
-                fontFamily = MyriadPro,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        text = {
-            Column {
-                LanguageOption(
-                    flag = "🇸🇮",
-                    name = stringResource(R.string.language_slo),
-                    isSelected = currentLanguageIndex == 0,
-                    onClick = { onLanguageSelected(0) }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                LanguageOption(
-                    flag = "🇬🇧",
-                    name = stringResource(R.string.language_en),
-                    isSelected = currentLanguageIndex == 1,
-                    onClick = { onLanguageSelected(1) }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                LanguageOption(
-                    flag = "🇷🇸",
-                    name = stringResource(R.string.language_sr),
-                    isSelected = currentLanguageIndex == 2,
-                    onClick = { onLanguageSelected(2) }
-                )
-            }
-        },
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    stringResource(R.string.settings_dialog_cancel),
-                    fontFamily = MyriadPro
-                )
-            }
-        }
-    )
-}
-
-/**
- * Language option in dialog.
- */
-@Composable
-private fun LanguageOption(
-    flag: String,
-    name: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .background(Color.White)
+            .width(200.dp)
     ) {
-        Text(
-            text = flag,
-            fontSize = 24.sp,
-            modifier = Modifier.padding(end = 16.dp)
+        DropdownMenuItem(
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "🇸🇮",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.language_slo),
+                        fontSize = 16.sp,
+                        fontFamily = MyriadPro,
+                        fontWeight = if (currentLanguageIndex == 0) FontWeight.Bold else FontWeight.Normal,
+                        color = if (currentLanguageIndex == 0) MaterialTheme.colorScheme.primary else Color.Black
+                    )
+                }
+            },
+            onClick = { onLanguageSelected(0) }
         )
 
-        Text(
-            text = name,
-            fontSize = 16.sp,
-            fontFamily = MyriadPro,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Black
+        HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f))
+
+        DropdownMenuItem(
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "🇬🇧",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.language_en),
+                        fontSize = 16.sp,
+                        fontFamily = MyriadPro,
+                        fontWeight = if (currentLanguageIndex == 1) FontWeight.Bold else FontWeight.Normal,
+                        color = if (currentLanguageIndex == 1) MaterialTheme.colorScheme.primary else Color.Black
+                    )
+                }
+            },
+            onClick = { onLanguageSelected(1) }
+        )
+
+        HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f))
+
+        DropdownMenuItem(
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "🇷🇸",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.language_sr),
+                        fontSize = 16.sp,
+                        fontFamily = MyriadPro,
+                        fontWeight = if (currentLanguageIndex == 2) FontWeight.Bold else FontWeight.Normal,
+                        color = if (currentLanguageIndex == 2) MaterialTheme.colorScheme.primary else Color.Black
+                    )
+                }
+            },
+            onClick = { onLanguageSelected(2) }
         )
     }
 }
