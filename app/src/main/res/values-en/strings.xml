@@ -298,6 +298,93 @@
 
     <string name="connection_timeout_message">Connection timeout</string>
 
+    <string name="language_sr">Serbian</string>
 
+    <!-- Menu Screen -->
+    <string name="menu_traffic">Traffic</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_end_of_day">End of Day</string>
+    <string name="menu_sign_out">Sign Out</string>
 
+    <!-- Settings Screen -->
+    <string name="settings_title">SETTINGS</string>
+    <string name="settings_profile">Profile</string>
+    <string name="settings_change_pin">Change PIN</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_terms">Terms and Conditions</string>
+    <string name="settings_contact_info">Contact Details</string>
+    <string name="settings_language_dialog_title">Select Language</string>
+    <string name="settings_dialog_cancel">Cancel</string>
+
+    <!-- Registration Screen -->
+    <string name="registration_title">REGISTRATION</string>
+    <string name="registration_user_id_label">User ID</string>
+    <string name="registration_user_id_hint">Enter your user ID</string>
+    <string name="registration_activation_code_label">Activation Code</string>
+    <string name="registration_activation_code_hint">Enter activation code</string>
+    <string name="registration_continue">CONTINUE</string>
+    <string name="registration_terms_part1">I accept the </string>
+    <string name="registration_terms_link">Terms and Conditions</string>
+
+    <!-- PIN Setup Screen -->
+    <string name="pin_setup_title">PIN SETUP</string>
+    <string name="pin_setup_subtitle">Enter a 4-digit PIN you will use to access the app</string>
+    <string name="pin_setup_confirm_subtitle">Confirm your PIN</string>
+    <string name="pin_setup_continue">CONTINUE</string>
+    <string name="pin_setup_error_mismatch">PINs do not match</string>
+    <string name="pin_setup_error_too_short">PIN must be 4 digits</string>
+    <string name="pin_setup_enter_desired_pin">Enter your desired PIN</string>
+    <string name="pin_setup_confirm_your_pin">Confirm PIN</string>
+    <string name="pin_setup_success_dialog_title">Successful registration</string>
+    <string name="pin_setup_incorrect_pin_title">You entered an incorrect PIN</string>
+
+    <!-- PIN Login Screen -->
+    <string name="pin_login_title">ENTER PIN</string>
+    <string name="pin_login_subtitle">Enter your PIN to access</string>
+    <string name="pin_login_forgot">Forgot PIN?</string>
+    <string name="pin_login_error_incorrect">Incorrect PIN</string>
+    <string name="pin_login_error_attempts">Attempts remaining: %d</string>
+    <string name="pin_login_app_is_blocked">App is blocked</string>
+    <string name="pin_login_enter_your_pin">Enter PIN</string>
+    <string name="pin_login_incorrect_with_attempts">Incorrect PIN. Remaining attempts: %d</string>
+    <string name="pin_login_app_blocked_contact_support">App is blocked. Contact support.</string>
+
+    <!-- PDF Viewer Screen -->
+    <string name="pdf_title">Terms and Conditions</string>
+    <string name="pdf_loading_message">Loading document…</string>
+    <string name="pdf_error_message">Error loading document</string>
+
+    <!-- Landing Screen -->
+    <string name="landing_transaction_button">TRANSACTION</string>
+    <string name="landing_welcome">Welcome</string>
+    <string name="landing_welcome_description">to Payten Soft POS application, which provides you with a fast, secure and simple way to accept payment cards and Flik instant payments.</string>
+    <string name="landing_new_transaction_button">NEW TRANSACTION</string>
+
+    <!-- First Page -->
+    <string name="first_page_login">LOGIN</string>
+    <string name="first_page_register">REGISTER</string>
+    <string name="first_soft">Soft</string>
+    <string name="first_pos">POS</string>
+    <string name="first_motto">Fast. Secure. Anytime.</string>
+    <string name="first_description">Simple way to accept card payments and Flik accounts.</string>
+    <string name="first_become_user_button">BECOME A USER</string>
+
+    <!-- Common -->
+    <string name="button_back">Back</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="loading">Loading…</string>
+    <string name="error_generic">An error occurred</string>
+
+    <!-- Dialog Messages -->
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_success_title">Success</string>
+    <string name="dialog_button_ok">OK</string>
+    <string name="dialog_button_ok_default">OK</string>
+    <string name="dialog_button_back_default">BACK</string>
+
+    <!-- Terms and Conditions Checkbox -->
+    <string name="terms_text_part1">I agree to the general </string>
+    <string name="terms_text_link">terms and conditions</string>
+    <string name="terms_text_part2"> for renting POS equipment, accepting payment cards and Flik instant payments.</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -20,6 +21,7 @@ import com.payten.whitelabel.ui.theme.MyriadPro
 import kotlinx.coroutines.delay
 import com.payten.whitelabel.ui.components.NumericKeypad
 import com.payten.whitelabel.ui.components.PinIndicators
+import com.payten.whitelabel.R
 
 /**
  * PIN Login screen for returning users.
@@ -49,6 +51,9 @@ fun PinLoginScreen(
     var errorDialogMessage by remember { mutableStateOf("") }
 
     val isAppBlocked = sharedPreferences.pull(SharedPreferencesKeys.APP_BLOCKED, false)
+    val appBlockedErrorMessage = stringResource(R.string.pin_login_app_blocked_contact_support)
+
+    val wrongPINErrorMessage = stringResource(R.string.pin_login_incorrect_with_attempts)
 
     LaunchedEffect(pin.length) {
         if (pin.length == 4) {
@@ -66,10 +71,10 @@ fun PinLoginScreen(
 
                 if (attemptsRemaining == 0) {
                     sharedPreferences.push(SharedPreferencesKeys.APP_BLOCKED, true)
-                    errorMessage = "Aplikacija je blokirana. Kontaktirajte podršku."
+                    errorMessage = appBlockedErrorMessage
                     showErrorDialog = true
                 } else {
-                    errorMessage = "Netačan PIN. Preostali pokušaji: $attemptsRemaining"
+                    errorMessage = wrongPINErrorMessage + attemptsRemaining
                     showErrorDialog = true
                 }
 
@@ -104,9 +109,9 @@ fun PinLoginScreen(
 
                 Text(
                     text = if (isAppBlocked) {
-                        "Aplikacija je blokirana"
+                        stringResource(R.string.pin_login_app_is_blocked)
                     } else {
-                        "Unesite PIN"
+                        stringResource(R.string.pin_login_enter_your_pin)
                     },
                     fontSize = 20.sp,
                     fontFamily = MyriadPro,
@@ -135,7 +140,7 @@ fun PinLoginScreen(
 
                 if (!isAppBlocked) {
                     Text(
-                        text = "Zaboravili ste PIN?",
+                        text = stringResource(R.string.pin_login_forgot),
                         fontSize = 14.sp,
                         fontFamily = MyriadPro,
                         fontWeight = FontWeight.Normal,
@@ -169,7 +174,9 @@ fun PinLoginScreen(
             CustomDialog(
                 isSuccess = false,
                 title = errorDialogMessage,
-                buttonText = if (attemptsRemaining == 0) "U REDU" else "NAZAD",
+                buttonText =
+                    if (attemptsRemaining == 0) stringResource(R.string.dialog_button_ok_default)
+                    else stringResource(R.string.dialog_button_back_default),
                 onDismiss = {
                     showErrorDialog = false
                     if (attemptsRemaining == 0) {

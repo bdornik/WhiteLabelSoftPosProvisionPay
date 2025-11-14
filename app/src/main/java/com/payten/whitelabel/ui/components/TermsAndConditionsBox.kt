@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -16,6 +17,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.payten.whitelabel.ui.theme.MyriadPro
+import com.payten.whitelabel.R
 
 /**
  * T&C acceptance box with checkbox and clickable link to view full terms.
@@ -79,7 +81,7 @@ private fun ClickableTermsText(
                 color = MaterialTheme.colorScheme.onTertiary
             )
         ) {
-            append("Slažem se sa opštim ")
+            append(stringResource(R.string.terms_text_part1))
         }
 
         // The clickable portion itself
@@ -95,7 +97,7 @@ private fun ClickableTermsText(
                 textDecoration = TextDecoration.Underline
             )
         ) {
-            append("uslovima i odredbama")
+            append(stringResource(R.string.terms_text_link))
         }
         pop()
 
@@ -105,7 +107,7 @@ private fun ClickableTermsText(
                 color = MaterialTheme.colorScheme.onTertiary
             )
         ) {
-            append(" za iznajmljivanje POS opreme, prihvatanje platnih kartica i Flik instant plaćanja.")
+            append(stringResource(R.string.terms_text_part2))
         }
     }
 

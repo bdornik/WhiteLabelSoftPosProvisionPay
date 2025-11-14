@@ -12,12 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.payten.whitelabel.R
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
 
@@ -103,7 +105,8 @@ fun CustomDialog(
                         .height(56.dp)
                 ) {
                     Text(
-                        text = buttonText ?: if (isSuccess) "U REDU" else "NAZAD",
+                        text = buttonText ?: if (isSuccess) stringResource(R.string.dialog_button_ok_default)
+                        else stringResource(R.string.dialog_button_back_default),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -120,7 +123,7 @@ fun CustomDialogSuccessPreview() {
     AppTheme {
         CustomDialog(
             isSuccess = true,
-            title = "Uspešna registracija",
+            title = stringResource(R.string.pin_setup_success_dialog_title),
             onDismiss = {}
         )
     }
@@ -132,7 +135,7 @@ fun CustomDialogErrorPreview() {
     AppTheme {
         CustomDialog(
             isSuccess = false,
-            title = "Uneli ste neispravan PIN",
+            title = stringResource(R.string.pin_setup_incorrect_pin_title),
             onDismiss = {}
         )
     }

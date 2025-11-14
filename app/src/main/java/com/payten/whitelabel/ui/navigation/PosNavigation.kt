@@ -16,6 +16,7 @@ import com.payten.whitelabel.ui.screens.PdfViewerScreen
 import com.payten.whitelabel.ui.screens.PinLoginScreen
 import com.payten.whitelabel.ui.screens.PinSetupScreen
 import com.payten.whitelabel.ui.screens.RegistrationPage
+import com.payten.whitelabel.ui.screens.SettingsScreen
 import com.payten.whitelabel.ui.screens.SplashScreen
 
 /**
@@ -185,6 +186,23 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.navigate("pin_login") {
                         popUpTo(0) { inclusive = true }
                     }
+                }
+            )
+        }
+        composable("settings"){
+            SettingsScreen(
+                sharedPreferences = sharedPreferences,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onProfileClick = {
+                    navController.navigate("profile")
+                },
+                onChangePinClick = {
+                    navController.navigate("pin_setup")
+                },
+                onTermsClick = {
+                    navController.navigate("pdf_terms")
                 }
             )
         }

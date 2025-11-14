@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -51,6 +52,7 @@ import com.payten.whitelabel.viewmodel.RegistrationViewModel
 import com.simant.MainApplication
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import com.payten.whitelabel.R
 
 /**
  * Registration screen for new users.
@@ -235,7 +237,7 @@ fun RegistrationPage(
                 Spacer(modifier = Modifier.height((96).dp))
 
                 Text(
-                    text = "REGISTRACIJA",
+                    text = stringResource(R.string.registration_title),
                     fontSize = 20.sp,
                     fontFamily = MyriadPro,
                     fontWeight = FontWeight.Bold,
@@ -305,7 +307,7 @@ fun RegistrationPage(
             CustomDialog(
                 isSuccess = false,
                 title = errorMessage,
-                buttonText = "NAZAD",
+                buttonText = stringResource(R.string.dialog_button_back_default),
                 onDismiss = {
                     showErrorDialog = false
                 }
@@ -346,16 +348,16 @@ private fun RegistrationForm(
     ) {
         // User ID field
         CustomTextField(
-            label = "ID Korisnika",
-            placeholder = "Unesite svoj korisnički ID",
+            label = stringResource(R.string.registration_user_id_label),
+            placeholder = stringResource(R.string.registration_user_id_hint),
             value = userId,
             onValueChange = onUserIdChange
         )
 
         // Activation code field
         CustomTextField(
-            label = "Aktivacioni kod",
-            placeholder = "Unesite aktivacioni kod",
+            label = stringResource(R.string.registration_activation_code_label),
+            placeholder = stringResource(R.string.registration_activation_code_hint),
             value = activationCode,
             onValueChange = onActivationCodeChange
         )
@@ -395,7 +397,7 @@ private fun RegistrationForm(
                 )
             } else {
                 Text(
-                    text = "NASTAVI",
+                    text = stringResource(R.string.pin_setup_continue),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )

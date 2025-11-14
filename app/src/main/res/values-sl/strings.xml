@@ -229,7 +229,6 @@
 
     <string name="processing_label">Obdelava v teku...</string>
     <string name="processing_label_wait">Prosimo, počakajte.</string>
-    <string name="register_checkbox"></string>
     <string name="register_checkbox_2">Strinjam se s Splošnimi pogoji za najem POS opreme, sprejemanje plačilnih kartic in Flik takojšnjih plačil.</string>
     <string name="terms_conditions">Pogoji uporabe</string>
     <string name="settings_contact">Konktaktni podatki</string>
@@ -290,4 +289,93 @@
 
 
 
+<string name="language_sr">Srbščina</string>
+
+    <!-- Menu Screen -->
+    <string name="menu_traffic">Promet</string>
+    <string name="menu_settings">Nastavitve</string>
+    <string name="menu_end_of_day">Konec dneva</string>
+    <string name="menu_sign_out">Odjava</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">NASTAVITVE</string>
+    <string name="settings_profile">Profil</string>
+    <string name="settings_change_pin">Spremeni PIN</string>
+    <string name="settings_language">Jezik</string>
+    <string name="settings_terms">Pogoji uporabe</string>
+    <string name="settings_contact_info">Kontaktni podatki</string>
+    <string name="settings_language_dialog_title">Izberite jezik</string>
+    <string name="settings_dialog_cancel">Prekliči</string>
+
+    <!-- Registration Screen -->
+    <string name="registration_title">REGISTRACIJA</string>
+    <string name="registration_user_id_label">ID uporabnika</string>
+    <string name="registration_user_id_hint">Vnesite svoj ID uporabnika</string>
+    <string name="registration_activation_code_label">Aktivacijska koda</string>
+    <string name="registration_activation_code_hint">Vnesite aktivacijsko kodo</string>
+    <string name="registration_continue">NADALJUJ</string>
+    <string name="registration_terms_part1">Sprejmem </string>
+    <string name="registration_terms_link">Pogoje uporabe</string>
+
+    <!-- PIN Setup Screen -->
+    <string name="pin_setup_title">NASTAVITEV PIN</string>
+    <string name="pin_setup_subtitle">Vnesite 4-mestno PIN kodo, ki jo boste uporabljali za dostop do aplikacije</string>
+    <string name="pin_setup_confirm_subtitle">Potrdite svoj PIN</string>
+    <string name="pin_setup_continue">NADALJUJ</string>
+    <string name="pin_setup_error_mismatch">PIN kode se ne ujemajo</string>
+    <string name="pin_setup_error_too_short">PIN mora imeti 4 števke</string>
+    <string name="pin_setup_enter_desired_pin">Vnesite želeno PIN kodo</string>
+    <string name="pin_setup_confirm_your_pin">Potrdite PIN</string>
+    <string name="pin_setup_success_dialog_title">Uspešna registracija</string>
+    <string name="pin_setup_incorrect_pin_title">Vnesli ste napačen PIN</string>
+
+    <!-- PIN Login Screen -->
+    <string name="pin_login_title">VNESITE PIN</string>
+    <string name="pin_login_subtitle">Vnesite svoj PIN za dostop</string>
+    <string name="pin_login_forgot">Ste pozabili PIN?</string>
+    <string name="pin_login_error_incorrect">Napačen PIN</string>
+    <string name="pin_login_error_attempts">Preostali poskusi: %d</string>
+    <string name="pin_login_app_is_blocked">Aplikacija je blokirana</string>
+    <string name="pin_login_enter_your_pin">Vnesite PIN</string>
+    <string name="pin_login_incorrect_with_attempts">Napačen PIN. Preostali poskusi: %d</string>
+    <string name="pin_login_app_blocked_contact_support">Aplikacija je blokirana. Obrnite se na podporo.</string>
+
+    <!-- PDF Viewer Screen -->
+    <string name="pdf_title">Pogoji in določila</string>
+    <string name="pdf_loading_message">Nalaganje dokumenta…</string>
+    <string name="pdf_error_message">Napaka pri nalaganju dokumenta</string>
+
+    <!-- Landing Screen -->
+    <string name="landing_transaction_button">TRANSAKCIJA</string>
+    <string name="landing_welcome">Dobrodošli</string>
+    <string name="landing_welcome_description">v aplikacijo Payten Soft POS, ki vam zagotavlja hiter, varen in preprost način sprejemanja plačilnih kartic in Flik takojšnjih plačil.</string>
+    <string name="landing_new_transaction_button">NOVA TRANSAKCIJA</string>
+
+    <!-- First Page -->
+    <string name="first_page_login">PRIJAVA</string>
+    <string name="first_page_register">REGISTRACIJA</string>
+    <string name="first_soft">Soft</string>
+    <string name="first_pos">POS</string>
+    <string name="first_motto">Hitro. Varno. Kadarkoli.</string>
+    <string name="first_description">Preprost način sprejemanja plačil s karticami in Flik računi.</string>
+    <string name="first_become_user_button">POSTANITE UPORABNIK</string>
+
+    <!-- Common -->
+    <string name="button_back">Nazaj</string>
+    <string name="button_confirm">Potrdi</string>
+    <string name="button_cancel">Prekliči</string>
+    <string name="loading">Nalaganje…</string>
+    <string name="error_generic">Prišlo je do napake</string>
+
+    <!-- Dialog Messages -->
+    <string name="dialog_error_title">Napaka</string>
+    <string name="dialog_success_title">Uspeh</string>
+    <string name="dialog_button_ok">V REDU</string>
+    <string name="dialog_button_ok_default">V REDU</string>
+    <string name="dialog_button_back_default">NAZAJ</string>
+
+    <!-- Terms and Conditions Checkbox -->
+    <string name="terms_text_part1">Strinjam se s splošnimi </string>
+    <string name="terms_text_link">pogoji in določili</string>
+    <string name="terms_text_part2"> za najem POS opreme, sprejemanje plačilnih kartic in Flik takojšnjih plačil.</string>
 </resources>

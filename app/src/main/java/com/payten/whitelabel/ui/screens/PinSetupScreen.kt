@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +20,7 @@ import com.payten.whitelabel.ui.components.NumericKeypad
 import com.payten.whitelabel.ui.components.PinIndicators
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
+import com.payten.whitelabel.R
 
 /**
  * PIN Setup screen for creating a new PIN.
@@ -77,7 +79,7 @@ fun PinSetupScreen(
                 Spacer(modifier = Modifier.height((96).dp))
 
                 Text(
-                    text = "REGISTRACIJA",
+                    text = stringResource(R.string.registration_title),
                     fontSize = 20.sp,
                     fontFamily = MyriadPro,
                     fontWeight = FontWeight.Bold,
@@ -97,9 +99,9 @@ fun PinSetupScreen(
             ) {
                 Text(
                     text = if (confirmedPin == null) {
-                        "Unesite željeni PIN"
+                        stringResource(R.string.pin_setup_enter_desired_pin)
                     } else {
-                        "Potvrdite PIN"
+                        stringResource(R.string.pin_setup_confirm_your_pin)
                     },
                     fontSize = 24.sp,
                     fontFamily = MyriadPro,
@@ -136,8 +138,8 @@ fun PinSetupScreen(
         if (showSuccessDialog) {
             CustomDialog(
                 isSuccess = true,
-                title = "Uspešna registracija",
-                buttonText = "U REDU",
+                title = stringResource(R.string.pin_setup_success_dialog_title),
+                buttonText = stringResource(R.string.dialog_button_ok_default),
                 onDismiss = {
                     showSuccessDialog = false
                     onPinSetupComplete(confirmedPin ?: "")
@@ -148,8 +150,8 @@ fun PinSetupScreen(
         if (showErrorDialog) {
             CustomDialog(
                 isSuccess = false,
-                title = "Uneli ste neispravan PIN",
-                buttonText = "NAZAD",
+                title = stringResource(R.string.pin_setup_incorrect_pin_title),
+                buttonText = stringResource(R.string.dialog_button_back_default),
                 onDismiss = {
                     showErrorDialog = false
                     pin = ""

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -121,7 +122,7 @@ private fun WelcomeContent(
     ) {
 
         Text(
-            text = "Dobrodošli",
+            text = stringResource(R.string.landing_welcome),
             fontSize = 24.sp,
             fontFamily = MyriadPro,
             fontWeight = FontWeight.Bold,
@@ -139,7 +140,7 @@ private fun WelcomeContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "u Payten Soft POS aplikaciju, koja vam pruža brz, siguran i jednostavan način prihvatanja platnih kartica i Flik instant plaćanja.",
+            text = stringResource(R.string.landing_welcome_description),
             fontSize = 16.sp,
             fontFamily = MyriadPro,
             fontWeight = FontWeight.Normal,
@@ -168,7 +169,7 @@ private fun TransactionButton(
             .height(56.dp)
     ) {
         Text(
-            text = "NOVA TRANSAKCIJA",
+            text = stringResource(R.string.landing_new_transaction_button),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = MyriadPro,

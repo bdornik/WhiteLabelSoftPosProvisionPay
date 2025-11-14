@@ -5,12 +5,13 @@ import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -19,6 +20,7 @@ import com.github.barteksc.pdfviewer.PDFView
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.viewmodel.TermsConditionsViewModel
 import java.io.File
+import com.payten.whitelabel.R
 
 /**
  * PDF Viewer screen for displaying Terms & Conditions.
@@ -48,15 +50,15 @@ fun PdfViewerScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Uslovi i odredbe",
+                        text = stringResource(R.string.pdf_title),
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Nazad"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null
                         )
                     }
                 },
@@ -87,7 +89,7 @@ fun PdfViewerScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Učitavanje dokumenta...",
+                            text = stringResource(R.string.pdf_loading_message),
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -104,7 +106,7 @@ fun PdfViewerScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Greška pri učitavanju dokumenta",
+                            text = stringResource(R.string.pdf_error_message),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.error
                         )

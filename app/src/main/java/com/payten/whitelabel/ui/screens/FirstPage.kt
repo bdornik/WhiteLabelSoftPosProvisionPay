@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -102,7 +103,7 @@ fun FirstPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit) {
             {
                 Column(modifier = Modifier.height(89.dp)) {
                     Text(
-                        text= "Brzo. Bezbedno. Bilo kada.",
+                        text= stringResource(R.string.first_motto),
                         color = MaterialTheme.colorScheme.onTertiary,
                         fontSize = 24.sp,
                         fontFamily = MyriadPro,
@@ -111,7 +112,7 @@ fun FirstPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit) {
 
                     Spacer (modifier = Modifier.height(22.dp))
                     Text(
-                        text = "Jednostavan način prihvatanja plaćanja karticama i Flik računima.",
+                        text = stringResource(R.string.first_description),
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 16.sp,
                         fontFamily = MyriadPro,
@@ -133,7 +134,7 @@ fun FirstPage(onNavigateToLogin: () -> Unit, onNavigateToRegister: () -> Unit) {
                     )
                 ) {
                     Text(
-                        text = "POSTANITE KORISNIK",
+                        text = stringResource(R.string.first_become_user_button),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OTP Smart POS</string>
+    <string name="app_name">Payten SofPOS</string>
 
     <string name="app_name_first">OTP</string>
     <string name="app_name_second">Soft POS</string>
@@ -219,8 +219,8 @@
     <string name="month_11_long">Novembra</string>
     <string name="month_12_long">Decembra</string>
     <string name="language">Jezik</string>
-    <string name="language_en">Angleški</string>
-    <string name="language_slo">Slovenski</string>
+    <string name="language_en">Engleski</string>
+    <string name="language_slo">Slovenački</string>
     <string name="forgot_pin">Pozabljen PIN?</string>
     <string name="change_pin_header">Sprememba PIN-a</string>
     <string name="send_activation_code">Pošljite aktivacijsko kodo</string>
@@ -229,7 +229,6 @@
 
     <string name="processing_label">Obdelava v teku...</string>
     <string name="processing_label_wait">Prosimo, počakajte.</string>
-    <string name="register_checkbox"></string>
     <string name="register_checkbox_2">Strinjam se s Splošnimi pogoji za najem POS opreme, sprejemanje plačilnih kartic in Flik takojšnjih plačil.</string>
     <string name="terms_conditions">Pogoji uporabe</string>
     <string name="settings_contact">Konktaktni podatki</string>
@@ -287,5 +286,94 @@
     <string name="reference_accept">Potrdi</string>
     <string name="connection_timeout_message">Časovna omejitev povezave</string>
 
+    <string name="language_sr">Srpski</string>
+
+    <!-- Menu Screen -->
+    <string name="menu_traffic">Promet</string>
+    <string name="menu_settings">Podešavanja</string>
+    <string name="menu_end_of_day">Presek dana</string>
+    <string name="menu_sign_out">Odjava</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">PODEŠAVANJA</string>
+    <string name="settings_profile">Profil</string>
+    <string name="settings_change_pin">Promeni PIN</string>
+    <string name="settings_language">Jezik</string>
+    <string name="settings_terms">Uslovi korišćenja</string>
+    <string name="settings_contact_info">Kontakt detalji</string>
+    <string name="settings_language_dialog_title">Izaberite jezik</string>
+    <string name="settings_dialog_cancel">Otkaži</string>
+
+    <!-- Registration Screen -->
+    <string name="registration_title">REGISTRACIJA</string>
+    <string name="registration_user_id_label">ID Korisnika</string>
+    <string name="registration_user_id_hint">Unesite svoj korisnički ID</string>
+    <string name="registration_activation_code_label">Aktivacioni kod</string>
+    <string name="registration_activation_code_hint">Unesite aktivacioni kod</string>
+    <string name="registration_continue">NASTAVI</string>
+    <string name="registration_terms_part1">Prihvatam </string>
+    <string name="registration_terms_link">Uslove korišćenja</string>
+
+    <!-- PIN Setup Screen -->
+    <string name="pin_setup_title">POSTAVLJANJE PIN-a</string>
+    <string name="pin_setup_subtitle">Unesite 4-cifreni PIN koji ćete koristiti za pristup aplikaciji</string>
+    <string name="pin_setup_confirm_subtitle">Potvrdite svoj PIN</string>
+    <string name="pin_setup_continue">NASTAVI</string>
+    <string name="pin_setup_error_mismatch">PIN kodovi se ne poklapaju</string>
+    <string name="pin_setup_error_too_short">PIN mora imati 4 cifre</string>
+    <string name="pin_setup_enter_desired_pin">Unesite željeni PIN</string>
+    <string name="pin_setup_confirm_your_pin">Potvrdite PIN</string>
+    <string name="pin_setup_success_dialog_title">Uspešna registracija</string>
+    <string name="pin_setup_incorrect_pin_title">Uneli ste neispravan PIN</string>
+
+    <!-- PIN Login Screen -->
+    <string name="pin_login_title">UNESITE PIN</string>
+    <string name="pin_login_subtitle">Unesite svoj PIN za pristup</string>
+    <string name="pin_login_forgot">Zaboravili ste PIN?</string>
+    <string name="pin_login_error_incorrect">Pogrešan PIN</string>
+    <string name="pin_login_error_attempts">Preostalo pokušaja: %d</string>
+    <string name="pin_login_app_is_blocked">Aplikacija je blokirana</string>
+    <string name="pin_login_enter_your_pin">Unesite PIN</string>
+    <string name="pin_login_incorrect_with_attempts">Netačan PIN. Preostali pokušaji: %d</string>
+    <string name="pin_login_app_blocked_contact_support">Aplikacija je blokirana. Kontaktirajte podršku.</string>
+
+    <!-- PDF Viewer Screen -->
+    <string name="pdf_title">Uslovi i odredbe</string>
+    <string name="pdf_loading_message">Učitavanje dokumenta…</string>
+    <string name="pdf_error_message">Greška pri učitavanju dokumenta</string>
+
+    <!-- Landing Screen -->
+    <string name="landing_transaction_button">TRANSAKCIJA</string>
+    <string name="landing_welcome">Dobrodošli</string>
+    <string name="landing_welcome_description">u Payten Soft POS aplikaciju, koja vam pruža brz, siguran i jednostavan način prihvatanja platnih kartica i Flik instant plaćanja.</string>
+    <string name="landing_new_transaction_button">NOVA TRANSAKCIJA</string>
+
+    <!-- First Page -->
+    <string name="first_page_login">PRIJAVA</string>
+    <string name="first_page_register">REGISTRACIJA</string>
+    <string name="first_soft">Soft</string>
+    <string name="first_pos">POS</string>
+    <string name="first_motto">Brzo. Bezbedno. Bilo kada.</string>
+    <string name="first_description">Jednostavan način prihvatanja plaćanja karticama i Flik računima.</string>
+    <string name="first_become_user_button">POSTANITE KORISNIK</string>
+
+    <!-- Common -->
+    <string name="button_back">Nazad</string>
+    <string name="button_confirm">Potvrdi</string>
+    <string name="button_cancel">Otkaži</string>
+    <string name="loading">Učitavanje…</string>
+    <string name="error_generic">Došlo je do greške</string>
+
+    <!-- Dialog Messages -->
+    <string name="dialog_error_title">Greška</string>
+    <string name="dialog_success_title">Uspeh</string>
+    <string name="dialog_button_ok">U REDU</string>
+    <string name="dialog_button_ok_default">U REDU</string>
+    <string name="dialog_button_back_default">NAZAD</string>
+
+    <!-- Terms and Conditions Checkbox -->
+    <string name="terms_text_part1">Slažem se sa opštim </string>
+    <string name="terms_text_link">uslovima i odredbama</string>
+    <string name="terms_text_part2"> za iznajmljivanje POS opreme, prihvatanje platnih kartica i Flik instant plaćanja.</string>
 
 </resources>

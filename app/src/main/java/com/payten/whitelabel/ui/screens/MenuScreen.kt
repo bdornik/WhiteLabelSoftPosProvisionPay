@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -77,7 +78,7 @@ fun MenuScreen(
             ) {
                 MenuItemWithArrow(
                     iconRes = R.drawable.traffic,
-                    title = "Promet",
+                    title = stringResource(R.string.menu_traffic),
                     onClick = onTrafficClick
                 )
 
@@ -85,7 +86,7 @@ fun MenuScreen(
 
                 MenuItemWithArrow(
                     iconRes = R.drawable.settings,
-                    title = "Podešavanja",
+                    title = stringResource(R.string.menu_settings),
                     onClick = onSettingsClick
                 )
 
@@ -93,7 +94,7 @@ fun MenuScreen(
 
                 MenuItemWithArrow(
                     iconRes = R.drawable.overview,
-                    title = "Presek dana",
+                    title = stringResource(R.string.menu_end_of_day),
                     onClick = onEndOfDayClick
                 )
 
@@ -105,7 +106,7 @@ fun MenuScreen(
 
                 MenuItemWithClickableIcon(
                     iconRes = R.drawable.sign_out,
-                    title = "Odjava",
+                    title = stringResource(R.string.menu_sign_out),
                     onClick = onSignOutClick
                 )
             }
