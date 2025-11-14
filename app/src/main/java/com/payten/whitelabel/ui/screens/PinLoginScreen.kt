@@ -1,5 +1,6 @@
 package com.payten.whitelabel.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -96,9 +99,18 @@ fun PinLoginScreen(
                 .fillMaxSize()
                 .align(Alignment.TopCenter)
         ) {
-            Spacer(modifier = Modifier.height(120.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Image(
+                painter = painterResource(id = R.drawable.payten_logo_final_rgb),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(144.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Column(
                 modifier = Modifier
@@ -136,21 +148,7 @@ fun PinLoginScreen(
                     isError = showError
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
-
-                if (!isAppBlocked) {
-                    Text(
-                        text = stringResource(R.string.pin_login_forgot),
-                        fontSize = 14.sp,
-                        fontFamily = MyriadPro,
-                        fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { onForgotPin() }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(80.dp))
+                Spacer(modifier = Modifier.height(60.dp))
 
                 if (!isAppBlocked) {
                     NumericKeypad(
@@ -167,7 +165,21 @@ fun PinLoginScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(48.dp))
+
+                if (!isAppBlocked) {
+                    Text(
+                        text = stringResource(R.string.pin_login_forgot),
+                        fontSize = 14.sp,
+                        fontFamily = MyriadPro,
+                        fontWeight = FontWeight.Normal,
+                        color = MaterialTheme.colorScheme.primary,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable { onForgotPin() }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
         if (showErrorDialog) {
