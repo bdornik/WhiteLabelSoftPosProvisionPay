@@ -407,4 +407,9 @@
     <string name="sms_consent_denied">Dostop do SMS zavrnjen</string>
     <string name="wrong_otp_code">Napačna SMS koda</string>
     <string name="wrong_credentials">Napačni podatki</string>
+
+    <!-- Amount Entry Screen -->
+    <string name="amount_entry_title">VNESITE ZNESEK</string>
+    <string name="amount_entry_continue">NADALJUJ</string>
+    <string name="currency_rsd">RSD</string>
 </resources>

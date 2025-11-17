@@ -32,7 +32,7 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.payten.whitelabel.R
 import com.payten.whitelabel.dto.OtpCheckDto
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
-import com.payten.whitelabel.ui.SmsBroadcastReceiver
+import com.payten.whitelabel.utils.SmsBroadcastReceiver
 import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.components.CustomDialog
 import com.payten.whitelabel.ui.theme.MyriadPro

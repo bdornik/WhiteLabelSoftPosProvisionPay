@@ -404,4 +404,9 @@
     <string name="sms_consent_denied">Pristup SMS-u odbijen</string>
     <string name="wrong_otp_code">Pogrešan SMS kod</string>
     <string name="wrong_credentials">Pogrešni kredencijali</string>
+
+    <!-- Amount Entry Screen -->
+    <string name="amount_entry_title">UNESITE IZNOS</string>
+    <string name="amount_entry_continue">NASTAVI</string>
+    <string name="currency_rsd">RSD</string>
 </resources>

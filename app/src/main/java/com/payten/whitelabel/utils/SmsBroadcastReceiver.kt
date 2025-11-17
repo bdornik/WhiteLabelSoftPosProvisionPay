@@ -1,4 +1,4 @@
-package com.payten.whitelabel.ui
+package com.payten.whitelabel.utils
 
 import android.content.BroadcastReceiver
 import android.content.Context

@@ -415,4 +415,9 @@
     <string name="sms_consent_denied">SMS access denied</string>
     <string name="wrong_otp_code">Wrong SMS code</string>
     <string name="wrong_credentials">Wrong credentials</string>
+
+    <!-- Amount Entry Screen -->
+    <string name="amount_entry_title">ENTER AMOUNT</string>
+    <string name="amount_entry_continue">CONTINUE</string>
+    <string name="currency_rsd">RSD</string>
 </resources>

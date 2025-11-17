@@ -9,6 +9,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.config.SupercaseConfig
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
+import com.payten.whitelabel.ui.screens.AmountEntryScreen
 import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
 import com.payten.whitelabel.ui.screens.FirstPage
 import com.payten.whitelabel.ui.screens.LandingScreen
@@ -126,8 +127,8 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     }
                 },
                 onForgotPin = {
-                    // TODO: Navigate to Forgot PIN flow
-                    // navController.navigate("forgot_pin")
+                    // Navigates to the PIN verification screen to choose a new PIN.
+                    navController.navigate("change_pin_verification")
                 },
                 onLoginFailed = {
                     // App blocked - reset to splash
@@ -140,7 +141,8 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
         composable("landing") {
             LandingScreen(
                 onNavigateToTransaction = {
-                    navController.navigate("transaction")  // TODO: Implement TransactionScreen
+                    // Navigates to the amount entry screen.
+                    navController.navigate("amount_entry")
                 },
                 onNavigateToMenu = {
                     // Navigates to the Menu screen from the top-right buton on the landing page.
@@ -247,6 +249,18 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 onVerificationComplete = {
                     // Navigates to PIN setup screen to change the PIN.
                     navController.navigate("pin_setup")
+                }
+            )
+        }
+        composable("amount_entry"){
+            AmountEntryScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onContinue = {
+                    amountInPare ->
+                    // Navigate to payment method choice with the desired amount.
+                    navController.navigate("payment_method/$amountInPare")
                 }
             )
         }
