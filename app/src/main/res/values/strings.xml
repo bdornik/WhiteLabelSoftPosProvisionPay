@@ -409,4 +409,12 @@
     <string name="amount_entry_title">UNESITE IZNOS</string>
     <string name="amount_entry_continue">NASTAVI</string>
     <string name="currency_rsd">RSD</string>
+
+    <!-- Payment Method Screen -->
+    <string name="payment_method_title">NAČIN PLAĆANJA</string>
+    <string name="payment_method_amount_label">Iznos transakcije</string>
+    <string name="payment_method_select_label">IZABERITE NAČIN PLAĆANJA</string>
+    <string name="payment_method_card">Plaćanje karticom</string>
+    <string name="payment_method_ips">IPS paćanje</string>
+    <string name="payment_method_continue">NASTAVI</string>
 </resources>

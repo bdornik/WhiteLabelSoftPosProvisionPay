@@ -412,4 +412,12 @@
     <string name="amount_entry_title">VNESITE ZNESEK</string>
     <string name="amount_entry_continue">NADALJUJ</string>
     <string name="currency_rsd">RSD</string>
+
+    <!-- Payment Method Screen -->
+    <string name="payment_method_title">NAČIN PLAČILA</string>
+    <string name="payment_method_amount_label">Znesek transakcije</string>
+    <string name="payment_method_select_label">IZBERITE NAČIN PLAČILA</string>
+    <string name="payment_method_card">Plačilo s kartico</string>
+    <string name="payment_method_ips">IPS plačilo</string>
+    <string name="payment_method_continue">NADALJUJ</string>
 </resources>

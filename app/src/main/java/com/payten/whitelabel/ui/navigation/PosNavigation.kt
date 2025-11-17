@@ -2,9 +2,11 @@ package com.payten.whitelabel.ui.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.config.SupercaseConfig
@@ -14,6 +16,7 @@ import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
 import com.payten.whitelabel.ui.screens.FirstPage
 import com.payten.whitelabel.ui.screens.LandingScreen
 import com.payten.whitelabel.ui.screens.MenuScreen
+import com.payten.whitelabel.ui.screens.PaymentMethodScreen
 import com.payten.whitelabel.ui.screens.PdfViewerScreen
 import com.payten.whitelabel.ui.screens.PinLoginScreen
 import com.payten.whitelabel.ui.screens.PinSetupScreen
@@ -261,6 +264,24 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     amountInPare ->
                     // Navigate to payment method choice with the desired amount.
                     navController.navigate("payment_method/$amountInPare")
+                }
+            )
+        }
+        composable(
+            "payment_method/{amountInPare}",
+                    listOf(navArgument("amountInPare") {type = NavType.LongType })
+        ){
+            backStackEntry ->
+            val amountInPare = backStackEntry.arguments?.getLong("amountInPare") ?: 0L
+
+            PaymentMethodScreen(
+                amountInPare = amountInPare,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onContinue = { method ->
+                    // Navigate to tip selection screen.
+                    navController.navigate("tip_selection/$amountInPare/${method.name}")
                 }
             )
         }

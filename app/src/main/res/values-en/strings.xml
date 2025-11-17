@@ -420,4 +420,12 @@
     <string name="amount_entry_title">ENTER AMOUNT</string>
     <string name="amount_entry_continue">CONTINUE</string>
     <string name="currency_rsd">RSD</string>
+
+    <!-- Payment Method Screen -->
+    <string name="payment_method_title">PAYMENT METHOD</string>
+    <string name="payment_method_amount_label">Transaction amount</string>
+    <string name="payment_method_select_label">SELECT PAYMENT METHOD</string>
+    <string name="payment_method_card">Card payment</string>
+    <string name="payment_method_ips">IPS payment</string>
+    <string name="payment_method_continue">CONTINUE</string>
 </resources>
