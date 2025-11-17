@@ -387,4 +387,24 @@
     <string name="profile_city_label">Mesto</string>
     <string name="profile_tid_label">TID</string>
 
+    <!-- Change PIN Verification Screen -->
+    <string name="change_pin_verification_title">SPREMENI PIN</string>
+    <string name="change_pin_user_id_label">ID uporabnika</string>
+    <string name="change_pin_user_id_hint">Vnesite ID uporabnika</string>
+    <string name="change_pin_activation_code_label">Aktivacijska koda</string>
+    <string name="change_pin_activation_code_hint">Vnesite aktivacijsko kodo</string>
+    <string name="change_pin_continue">NADALJUJ</string>
+    <string name="wrong_activation_code_info">Napačna aktivacijska koda</string>
+
+    <!-- SMS Verification Screen -->
+    <string name="sms_send_code">POŠLJI AKTIVACIJSKO KODO</string>
+    <string name="sms_info_text">Aktivacijska koda bo poslana prek SMS-a na vašo telefonsko številko</string>
+    <string name="sms_send_failed">Pošiljanje SMS sporočila ni uspelo</string>
+    <string name="sending_sms">Pošiljam SMS…</string>
+    <string name="waiting_for_sms">Čakam na SMS kodo…</string>
+    <string name="verifying_code">Preverjam kodo…</string>
+    <string name="sms_code_not_found">Koda ni najdena v SMS sporočilu</string>
+    <string name="sms_consent_denied">Dostop do SMS zavrnjen</string>
+    <string name="wrong_otp_code">Napačna SMS koda</string>
+    <string name="wrong_credentials">Napačni podatki</string>
 </resources>

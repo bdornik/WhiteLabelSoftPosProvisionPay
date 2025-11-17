@@ -394,4 +394,25 @@
     <string name="profile_address_label">Address</string>
     <string name="profile_city_label">City</string>
     <string name="profile_tid_label">TID</string>
+
+    <!-- Change PIN Verification Screen -->
+    <string name="change_pin_verification_title">CHANGE PIN</string>
+    <string name="change_pin_user_id_label">User ID</string>
+    <string name="change_pin_user_id_hint">Enter user ID</string>
+    <string name="change_pin_activation_code_label">Activation Code</string>
+    <string name="change_pin_activation_code_hint">Enter activation code</string>
+    <string name="change_pin_continue">CONTINUE</string>
+    <string name="wrong_activation_code_info">Wrong activation code</string>
+
+    <!-- SMS Verification Screen -->
+    <string name="sms_send_code">SEND ACTIVATION CODE</string>
+    <string name="sms_info_text">Activation code will be sent via SMS to your phone number</string>
+    <string name="sms_send_failed">Failed to send SMS</string>
+    <string name="sending_sms">Sending SMS…</string>
+    <string name="waiting_for_sms">Waiting for SMS code…</string>
+    <string name="verifying_code">Verifying code…</string>
+    <string name="sms_code_not_found">Code not found in SMS</string>
+    <string name="sms_consent_denied">SMS access denied</string>
+    <string name="wrong_otp_code">Wrong SMS code</string>
+    <string name="wrong_credentials">Wrong credentials</string>
 </resources>

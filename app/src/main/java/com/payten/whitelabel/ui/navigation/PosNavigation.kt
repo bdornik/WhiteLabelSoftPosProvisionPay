@@ -9,6 +9,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.config.SupercaseConfig
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
+import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
 import com.payten.whitelabel.ui.screens.FirstPage
 import com.payten.whitelabel.ui.screens.LandingScreen
 import com.payten.whitelabel.ui.screens.MenuScreen
@@ -18,6 +19,7 @@ import com.payten.whitelabel.ui.screens.PinSetupScreen
 import com.payten.whitelabel.ui.screens.ProfileScreen
 import com.payten.whitelabel.ui.screens.RegistrationPage
 import com.payten.whitelabel.ui.screens.SettingsScreen
+import com.payten.whitelabel.ui.screens.SmsVerificationScreen
 import com.payten.whitelabel.ui.screens.SplashScreen
 
 /**
@@ -205,8 +207,8 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.navigate("profile")
                 },
                 onChangePinClick = {
-                    // Navigates to the PIN setup screen.
-                    navController.navigate("pin_setup")
+                    // Navigates to the PIN verification screen.
+                    navController.navigate("change_pin_verification")
                 },
                 onTermsClick = {
                     // Opens the T&C PDF file.
@@ -219,6 +221,32 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 sharedPreferences = sharedPreferences,
                 onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+        composable("change_pin_verification"){
+            ChangePinVerificationScreen(
+                sharedPreferences = sharedPreferences,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onVerificationSuccess = {
+                    // Navigates to SMS activation code screen.
+                    navController.navigate("send_sms") {
+                        popUpTo("change_pin_verification"){ inclusive = true }
+                    }
+                }
+            )
+        }
+        composable("send_sms"){
+            SmsVerificationScreen(
+                sharedPreferences = sharedPreferences,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onVerificationComplete = {
+                    // Navigates to PIN setup screen to change the PIN.
+                    navController.navigate("pin_setup")
                 }
             )
         }

@@ -384,4 +384,24 @@
     <string name="profile_city_label">Grad</string>
     <string name="profile_tid_label">TID</string>
 
+    <!-- Change PIN Verification Screen -->
+    <string name="change_pin_verification_title">PROMENI PIN</string>
+    <string name="change_pin_user_id_label">ID Korisnika</string>
+    <string name="change_pin_user_id_hint">Unesite ID korisnika</string>
+    <string name="change_pin_activation_code_label">Aktivacioni kod</string>
+    <string name="change_pin_activation_code_hint">Unesite aktivacioni kod</string>
+    <string name="change_pin_continue">NASTAVI</string>
+    <string name="wrong_activation_code_info">Pogrešan aktivacioni kod</string>
+
+    <!-- SMS Verification Screen -->
+    <string name="sms_send_code">POŠALJI AKTIVACIONI KOD</string>
+    <string name="sms_info_text">Aktivacioni kod stiže SMS-om na vaš broj telefona</string>
+    <string name="sms_send_failed">Slanje SMS-a nije uspelo</string>
+    <string name="sending_sms">Šaljem SMS…</string>
+    <string name="waiting_for_sms">Čekam SMS kod…</string>
+    <string name="verifying_code">Proveravam kod…</string>
+    <string name="sms_code_not_found">Kod nije pronađen u SMS-u</string>
+    <string name="sms_consent_denied">Pristup SMS-u odbijen</string>
+    <string name="wrong_otp_code">Pogrešan SMS kod</string>
+    <string name="wrong_credentials">Pogrešni kredencijali</string>
 </resources>

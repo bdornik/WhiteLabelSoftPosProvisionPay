@@ -301,6 +301,10 @@ dependencies {
 
     // Mockito inline
     testImplementation("org.mockito:mockito-inline:5.2.0")
+
+    // SMS User Consent API
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.gms:play-services-auth-api-phone:18.1.0")
 }
 
 apply plugin: 'com.google.gms.google-services'
