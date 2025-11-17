@@ -428,4 +428,11 @@
     <string name="payment_method_card">Card payment</string>
     <string name="payment_method_ips">IPS payment</string>
     <string name="payment_method_continue">CONTINUE</string>
+
+    <!-- Tip Selection Screen -->
+    <string name="tip_selection_title">TIP</string>
+    <string name="tip_selection_label">SELECT TIP</string>
+    <string name="tip_custom">Custom amount</string>
+    <string name="tip_no_tip">No tip</string>
+    <string name="tip_confirm">CONFIRM</string>
 </resources>

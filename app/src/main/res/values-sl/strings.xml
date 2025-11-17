@@ -420,4 +420,11 @@
     <string name="payment_method_card">Plačilo s kartico</string>
     <string name="payment_method_ips">IPS plačilo</string>
     <string name="payment_method_continue">NADALJUJ</string>
+
+    <!-- Tip Selection Screen -->
+    <string name="tip_selection_title">NAPITNINA</string>
+    <string name="tip_selection_label">IZBERITE NAPITNINO</string>
+    <string name="tip_custom">Vnos po izbiri</string>
+    <string name="tip_no_tip">Brez napitnine</string>
+    <string name="tip_confirm">POTRDI</string>
 </resources>

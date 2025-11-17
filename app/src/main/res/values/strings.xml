@@ -417,4 +417,11 @@
     <string name="payment_method_card">Plaćanje karticom</string>
     <string name="payment_method_ips">IPS paćanje</string>
     <string name="payment_method_continue">NASTAVI</string>
+
+    <!-- Tip Selection Screen -->
+    <string name="tip_selection_title">NAPOJNICA</string>
+    <string name="tip_selection_label">IZABERITE NAPOJNICU</string>
+    <string name="tip_custom">Unos po izboru</string>
+    <string name="tip_no_tip">Bez napojnice</string>
+    <string name="tip_confirm">POTVRDI</string>
 </resources>

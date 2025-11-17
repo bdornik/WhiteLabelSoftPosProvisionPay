@@ -16,6 +16,7 @@ import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
 import com.payten.whitelabel.ui.screens.FirstPage
 import com.payten.whitelabel.ui.screens.LandingScreen
 import com.payten.whitelabel.ui.screens.MenuScreen
+import com.payten.whitelabel.ui.screens.PaymentMethod
 import com.payten.whitelabel.ui.screens.PaymentMethodScreen
 import com.payten.whitelabel.ui.screens.PdfViewerScreen
 import com.payten.whitelabel.ui.screens.PinLoginScreen
@@ -25,6 +26,7 @@ import com.payten.whitelabel.ui.screens.RegistrationPage
 import com.payten.whitelabel.ui.screens.SettingsScreen
 import com.payten.whitelabel.ui.screens.SmsVerificationScreen
 import com.payten.whitelabel.ui.screens.SplashScreen
+import com.payten.whitelabel.ui.screens.TipSelectionScreen
 
 /**
  * Main navigation component for the Payten POS application.
@@ -282,6 +284,30 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 onContinue = { method ->
                     // Navigate to tip selection screen.
                     navController.navigate("tip_selection/$amountInPare/${method.name}")
+                }
+            )
+        }
+        composable(
+            "tip_selection/{amountInPare}/{paymentMethod}",
+            listOf(
+                navArgument("amountInPare") { type = NavType.LongType},
+                navArgument("paymentMethod") { type = NavType.StringType}
+            )
+            ){ backStackEntry ->
+            val amountInPare = backStackEntry.arguments?.getLong("amountInPare") ?: 0L
+            val paymentMethodStr = backStackEntry.arguments?.getString("paymentMethod") ?: "CARD"
+            val paymentMethod = PaymentMethod.valueOf(paymentMethodStr)
+
+            TipSelectionScreen(
+                amountInPare = amountInPare,
+                paymentMethod = paymentMethod,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onConfirm = { finalAmountInPare, tipPercent ->
+                    Log.d("Navigation", "Starting transaction - amount: $finalAmountInPare, tip: $tipPercent%, method: $paymentMethod")
+
+                    //TODO: Here we will start the TransactionActivity that will be separate
                 }
             )
         }
