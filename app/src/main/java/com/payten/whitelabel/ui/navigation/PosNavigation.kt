@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.config.SupercaseConfig
+import com.payten.whitelabel.dto.TransactionDetailsDto
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.screens.AmountEntryScreen
 import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
@@ -49,15 +50,15 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
         startDestination = "splash" // Initial screen of the app
     ) {
         composable("splash") {
-        SplashScreen(
-            sharedPreferences = sharedPreferences,
-            onNavigateToNext = { destination ->
-                navController.navigate(destination) {
-                    popUpTo("splash") { inclusive = true }
+            SplashScreen(
+                sharedPreferences = sharedPreferences,
+                onNavigateToNext = { destination ->
+                    navController.navigate(destination) {
+                        popUpTo("splash") { inclusive = true }
+                    }
                 }
-            }
-        )
-    }
+            )
+        }
 
         composable("first") {
             Log.d("Navigation", "First screen composable")
@@ -127,7 +128,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 sharedPreferences = sharedPreferences,
                 onLoginSuccess = {
                     // Navigates to the landing page after a successful login.
-                     navController.navigate("landing") {
+                    navController.navigate("landing") {
                         popUpTo("pin_login") { inclusive = true }
                     }
                 },
@@ -155,7 +156,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 }
             )
         }
-        composable("menu"){
+        composable("menu") {
             val merchantName = sharedPreferences.pull(
                 SharedPreferencesKeys.MERCHANT_NAME,
                 ""
@@ -203,7 +204,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 }
             )
         }
-        composable("settings"){
+        composable("settings") {
             SettingsScreen(
                 sharedPreferences = sharedPreferences,
                 onNavigateBack = {
@@ -223,7 +224,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 }
             )
         }
-        composable("profile"){
+        composable("profile") {
             ProfileScreen(
                 sharedPreferences = sharedPreferences,
                 onNavigateBack = {
@@ -231,7 +232,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 }
             )
         }
-        composable("change_pin_verification"){
+        composable("change_pin_verification") {
             ChangePinVerificationScreen(
                 sharedPreferences = sharedPreferences,
                 onNavigateBack = {
@@ -240,12 +241,12 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 onVerificationSuccess = {
                     // Navigates to SMS activation code screen.
                     navController.navigate("send_sms") {
-                        popUpTo("change_pin_verification"){ inclusive = true }
+                        popUpTo("change_pin_verification") { inclusive = true }
                     }
                 }
             )
         }
-        composable("send_sms"){
+        composable("send_sms") {
             SmsVerificationScreen(
                 sharedPreferences = sharedPreferences,
                 onNavigateBack = {
@@ -257,13 +258,12 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 }
             )
         }
-        composable("amount_entry"){
+        composable("amount_entry") {
             AmountEntryScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                onContinue = {
-                    amountInPare ->
+                onContinue = { amountInPare ->
                     // Navigate to payment method choice with the desired amount.
                     navController.navigate("payment_method/$amountInPare")
                 }
@@ -271,9 +271,8 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
         }
         composable(
             "payment_method/{amountInPare}",
-                    listOf(navArgument("amountInPare") {type = NavType.LongType })
-        ){
-            backStackEntry ->
+            listOf(navArgument("amountInPare") { type = NavType.LongType })
+        ) { backStackEntry ->
             val amountInPare = backStackEntry.arguments?.getLong("amountInPare") ?: 0L
 
             PaymentMethodScreen(
@@ -290,10 +289,10 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
         composable(
             "tip_selection/{amountInPare}/{paymentMethod}",
             listOf(
-                navArgument("amountInPare") { type = NavType.LongType},
-                navArgument("paymentMethod") { type = NavType.StringType}
+                navArgument("amountInPare") { type = NavType.LongType },
+                navArgument("paymentMethod") { type = NavType.StringType }
             )
-            ){ backStackEntry ->
+        ) { backStackEntry ->
             val amountInPare = backStackEntry.arguments?.getLong("amountInPare") ?: 0L
             val paymentMethodStr = backStackEntry.arguments?.getString("paymentMethod") ?: "CARD"
             val paymentMethod = PaymentMethod.valueOf(paymentMethodStr)
@@ -304,13 +303,49 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                onConfirm = { finalAmountInPare, tipPercent ->
-                    Log.d("Navigation", "Starting transaction - amount: $finalAmountInPare, tip: $tipPercent%, method: $paymentMethod")
+                onTransactionComplete = { transactionData ->
+                    // Navigate to transaction result screen
+                    navController.navigate("transaction_result") {
+                        // Clean up back stack - remove all transaction flow screens
+                        popUpTo("home") {
+                            saveState = false
+                        }
+                    }
 
-                    //TODO: Here we will start the TransactionActivity that will be separate
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("transaction_data", transactionData)
                 }
             )
         }
-        //Other screens
+        composable("transaction_result") {
+            val transactionData = navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<TransactionDetailsDto>("transaction_data")
+
+            if (transactionData != null) {
+                // TODO: TransactionScreen
+                // TransactionScreen(
+                //     transactionData = transactionData,
+                //     onNavigateHome = {
+                //         navController.navigate("home") {
+                //             popUpTo("home") { inclusive = false }
+                //         }
+                //     },
+                //     onShare = { /* TODO */ },
+                //     onPrint = { /* TODO */ }
+                // )
+
+                androidx.compose.material3.Text("Transaction Result - TODO")
+            } else {
+                // No transaction data - navigate back to home
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = false }
+                    }
+                }
+            }
+            //Other screens
+        }
     }
 }

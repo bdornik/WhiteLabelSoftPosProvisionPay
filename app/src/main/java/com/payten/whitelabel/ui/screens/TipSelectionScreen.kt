@@ -1,6 +1,11 @@
 package com.payten.whitelabel.ui.screens
 
+import android.app.Activity
+import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,10 +25,15 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import com.payten.whitelabel.R
+import com.payten.whitelabel.activities.IpsActivity
+import com.payten.whitelabel.activities.PosActivity
+import com.payten.whitelabel.dto.TransactionDetailsDto
 import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
+import kotlin.jvm.java
 
 /**
  * Tip selection screen.
@@ -33,16 +43,17 @@ import com.payten.whitelabel.ui.theme.MyriadPro
  * @param amountInPare Transaction amount in minor units (pare)
  * @param paymentMethod Selected payment method
  * @param onNavigateBack Callback when back button is clicked
- * @param onConfirm Callback with final amount when user confirms
+ * @param onTransactionComplete Callback with transaction data when hardware activity completes
  */
 @Composable
 fun TipSelectionScreen(
     amountInPare: Long,
     paymentMethod: PaymentMethod,
     onNavigateBack: () -> Unit = {},
-    onConfirm: (finalAmountInPare: Long, tipPercent: Int) -> Unit = { _, _ -> }
+    onTransactionComplete: (TransactionDetailsDto) -> Unit = {}
 ) {
     val TAG = "TipSelectionScreen"
+    val context = LocalContext.current
 
     var selectedTip by remember { mutableStateOf<TipOption?>(null) }
 
@@ -60,6 +71,30 @@ fun TipSelectionScreen(
     }
 
     val isButtonEnabled = selectedTip != null
+
+    val transactionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        Log.d(TAG, "Transaction activity returned with result: ${result.resultCode}")
+
+        if (result.resultCode == Activity.RESULT_OK) {
+            val transactionData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                result.data?.getSerializableExtra("transaction_data", TransactionDetailsDto::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                result.data?.getSerializableExtra("transaction_data") as? TransactionDetailsDto
+            }
+
+            if (transactionData != null) {
+                Log.d(TAG, "Transaction completed successfully: ${transactionData.response}")
+                onTransactionComplete(transactionData)
+            } else {
+                Log.e(TAG, "Transaction data is null!")
+            }
+        } else {
+            Log.d(TAG, "Transaction was canceled or failed")
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -257,8 +292,28 @@ fun TipSelectionScreen(
                             TipOption.NoTip -> 0
                             TipOption.Custom -> 0 // TODO
                         }
-                        Log.d(TAG, "Confirm clicked - final amount: $finalAmount, tip: $tipPercent%")
-                        onConfirm(finalAmount, tipPercent)
+
+                        val tipAmount = finalAmount - amountInPare
+
+                        Log.d(TAG, "Confirm clicked - launching ${paymentMethod.name} activity")
+                        Log.d(TAG, "Amount: $amountInPare, Tip: $tipAmount, Total: $finalAmount")
+
+                        val intent = when (paymentMethod) {
+                            PaymentMethod.CARD -> {
+                                Intent(context, PosActivity::class.java).apply {
+                                    putExtra("Amount", amountInPare.toString())
+                                    putExtra("Tip", tipAmount.toString())
+                                    putExtra("TotalAmount", formatAmount(finalAmount))
+                                }
+                            }
+                            PaymentMethod.IPS -> {
+                                Intent(context, IpsActivity::class.java).apply {
+                                    putExtra("Amount", finalAmount.toString())
+                                }
+                            }
+                        }
+
+                        transactionLauncher.launch(intent)
                     }
                 },
                 enabled = isButtonEnabled,
@@ -382,7 +437,7 @@ fun TipSelectionScreenPreview() {
             amountInPare = 234000L,
             paymentMethod = PaymentMethod.CARD,
             onNavigateBack = {},
-            onConfirm = { _, _ -> }
+            onTransactionComplete = {}
         )
     }
 }

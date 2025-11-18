@@ -1,11 +1,11 @@
 package com.payten.whitelabel.activities
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.graphics.Typeface
 import android.media.AudioManager
 import android.media.ToneGenerator
@@ -17,8 +17,8 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.cioccarellia.ksprefs.KsPrefs
@@ -64,6 +64,8 @@ import org.json.JSONObject
 import java.util.*
 import javax.inject.Inject
 import kotlin.concurrent.schedule
+import androidx.core.graphics.toColorInt
+import org.threeten.bp.LocalDateTime
 
 
 @AndroidEntryPoint
@@ -91,45 +93,7 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
     private var tip = ""
 
-
-    private var parametersNotReady = false
-
-    var resultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                logger.info("packagename: $providedPackageName")
-                if (providedPackageName.isEmpty()) {
-                    setResult(Activity.RESULT_OK)
-                    finish()
-                } else {
-                    val intent = packageManager.getLaunchIntentForPackage(providedPackageName)
-                    val obj = AppToAppResponseDto(
-                        AppToAppSingleResponseDto(
-                            AppToAppSingleResponseStatusDto(
-                                "00", "Placanje uspesno", data
-                            ), ""
-                        )
-                    )
-                    val gson = Converters.registerLocalDateTime(GsonBuilder()).create()
-                    logger.info("Sending to packagename: ${providedPackageName} dto: ${obj}")
-                    if (intent != null) {
-                        intent.putExtra("RESPONSE_JSON_STRING", gson.toJson(obj))
-                    } else {
-                        Toast.makeText(
-                            applicationContext,
-                            "Prosledjen packageName nije validan",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    setResult(Activity.RESULT_OK, intent)
-                    finish()
-                }
-            }
-        }
-
     val SIMCORE_TRUE: Byte = 0x01
-    val ACTIVITY_TIMER: Long = 2000
-    val SIMCORE_SCTERMINATE: Byte = 0x04
     private var lbin: ByteArray? = null
     private var lHash: ByteArray? = null
 
@@ -154,7 +118,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                             "Enable NFC and Try Again",
                             Toast.LENGTH_LONG
                         ).show()
-//                        finish()
                     }
 
                     NfcAdapter.STATE_TURNING_ON -> Toast.makeText(
@@ -169,7 +132,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                             "Enable NFC and Restart SOFTPOS",
                             Toast.LENGTH_LONG
                         ).show()
-//                        finish()
                     }
 
                     else -> {
@@ -179,6 +141,7 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -194,7 +157,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         window.statusBarColor = ContextCompat.getColor(this, R.color.backgroundAmount)
 
-
         try {
             SoftPOSSDK.getInstance().transactionInterface.cancelTransaction()
             MainApplication.getInstance().paymentData.transactionType =
@@ -206,7 +168,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         MainApplication.getInstance().paymentData.transactionType =
             PaymentData.TransactionType.GOODS.internalType
 
-
         val amount = intent.getStringExtra("Amount")
         if (intent.hasExtra("providedPackageName")) {
             providedPackageName = intent.getStringExtra("providedPackageName")!!
@@ -216,47 +177,24 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
         binding.currency.text = SupercaseConfig.CURRENCY_STRING
 
-
         if (intent.hasExtra("Tip")) {
-            //paymentAdditionalData = createJsonAdditionalData(intent.getStringExtra("Tip").toString())
             tip = AmountUtil.formatAmount(intent.getStringExtra("Tip").toString())
-
             formattedAmount = AmountUtil.formatAmount(intent.getStringExtra("TotalAmount").toString())
-            binding.amountValue.text = "$formattedAmount"
+            binding.amountValue.text = formattedAmount
         }
 
-        paymentAdditionalData =
-            createJsonAdditionalData(
-                intent.getStringExtra("Tip").toString(),
-                intent.getStringExtra("uniqueId").toString()
-            )
+        paymentAdditionalData = createJsonAdditionalData(
+            intent.getStringExtra("Tip").toString(),
+            intent.getStringExtra("uniqueId").toString()
+        )
 
-
-
-
-//        if (amount?.length == 1) {
-//            formattedAmount = "0,0$amount"
-//        } else if (amount?.length == 2) {
-//            formattedAmount = "0,$amount"
-//        } else {
-//            var preDotsString = "${amount?.subSequence(0, amount.length - 2)}"
-//            val postDotsString = "${amount?.subSequence(amount.length - 2, amount.length)}"
-//            formattedAmount = "${
-//                preDotsString.reversed()
-//                    .chunked(3)
-//                    .joinToString(".")
-//                    .reversed()
-//            },$postDotsString"
-//        }
-        binding.amountValue.text = "${formattedAmount}"
+        binding.amountValue.text = formattedAmount
 
         binding.back.setOnClickListener {
             finish()
         }
 
-
-
-        handleCancelButton(false)
+        handleCancelButton()
 
         val sdkStatus = SimantApplication.getSDKStatus()
         logger.info { "SDK Status: $sdkStatus" }
@@ -264,9 +202,8 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
             MainApplication.getInstance().mtmsListener.setListener(this)
             MainApplication.getInstance().cvmsListener.setListener(this)
-            MainApplication.getInstance().transactionOutcomeObserver.transactionResultListener =
-                this
-            MainApplication.getInstance().loyaltyObserver.setLoyaltyActionListener(this)
+            MainApplication.getInstance().transactionOutcomeObserver.transactionResultListener = this
+            MainApplication.getInstance().loyaltyObserver.loyaltyActionListener = this
             MainApplication.getInstance().configurationInterface.setDisplayInterface(this)
 
             val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
@@ -288,15 +225,7 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                 if (MainApplication.getInstance().cardCommunicationProvider.interfaceType == CardCommunicationProvider.InterfaceType.STATIC) {
                     MainApplication.getInstance().cardCommunicationProvider.connectReader(this)
                 }
-
-
             }
-//
-//            if (amount != null) {
-//                val paymentData = MainApplication.getInstance().paymentData
-//                Log.i(TAG, "POS payment amount: ${amount.replace(",", "").toLong()}")
-//                MainApplication.getInstance().setPaymentAmount(amount.replace(",", "").toLong())
-//            }
 
             if (amount != null) {
                 MainApplication.getInstance().setPaymentAmount(AmountUtil.setAmount(amount))
@@ -338,8 +267,7 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
             MainApplication.getInstance().mtmsListener.setListener(null)
             MainApplication.getInstance().cvmsListener.setListener(null)
-            MainApplication.getInstance().transactionOutcomeObserver.transactionResultListener =
-                null
+            MainApplication.getInstance().transactionOutcomeObserver.transactionResultListener = null
             MainApplication.getInstance().loyaltyObserver.loyaltyActionListener = null
             MainApplication.getInstance().configurationInterface.setDisplayInterface(null)
 
@@ -358,12 +286,9 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         val discovery = IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
         val tagFilters = arrayOf(discovery)
         val i = Intent(this, javaClass).addFlags(
-            Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
         )
-
-        var pi: PendingIntent? = null
-        pi = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val pi = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_MUTABLE)
         } else {
             PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_ONE_SHOT)
@@ -381,7 +306,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                 val dialogBinding: DialogPinRegistrationBinding =
                     DialogPinRegistrationBinding.inflate(layoutInflater)
 
-//                handleDialogDarkMode(dialogBinding)
                 dialogBinding.icon.setImageResource(R.drawable.icon_warning)
                 dialogBinding.warningLabel.text = this.getString(R.string.label_nfc_off)
                 dialogBinding.btn.text = this.getString(R.string.button_nfc_go)
@@ -416,14 +340,9 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                 )
             }
         } catch (e: Exception) {
-            logger.error { "Starting transaction failed: ${e}" }
+            logger.error { "Starting transaction failed: $e" }
             logException(e.message)
         }
-    }
-
-    private fun successfulTransaction() {
-        setResult(Activity.RESULT_OK)
-        finish()
     }
 
     private fun handleDarkLightMode() {
@@ -435,16 +354,8 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
             )
             binding.amountValue.setTextColor(ContextCompat.getColor(this, R.color.white))
             binding.amountValue.setBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.globalBlackDialog
-                )
+                ContextCompat.getColor(this, R.color.globalBlackDialog)
             )
-//            ContextCompat.getColorStateList(this, R.color.suffixDarkMode)?.let {
-//                binding.enterAmountLayout.setSuffixTextColor(
-//                    it
-//                )
-//            }
         } else {
             binding.root.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
             DrawableCompat.setTint(
@@ -453,75 +364,16 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
             )
             binding.amountValue.setTextColor(ContextCompat.getColor(this, R.color.bigLabelBlack))
             binding.amountValue.setBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.amountBackground
-                )
+                ContextCompat.getColor(this, R.color.amountBackground)
             )
-//            ContextCompat.getColorStateList(this, R.color.suffixDarkMode)?.let {
-//                binding.enterAmountLayout.setSuffixTextColor(
-//                    it
-//                )
-//            }
         }
     }
 
-//    private fun handleDarkLightMode() {
-//        if(sharedPreferences.pull(SharedPreferencesKeys.IS_DARK_MODE, false)){
-//            binding.root.setBackgroundColor(ContextCompat.getColor(this, R.color.globalBlack))
-//            binding.labelMethod.setTextColor(ContextCompat.getColor(this, R.color.white))
-//            binding.labelPos.setTextColor(ContextCompat.getColor(this, R.color.white))
-//            binding.dina.setImageResource(R.drawable.icon_dina_white)
-//            DrawableCompat.setTint(
-//                DrawableCompat.wrap(binding.back.drawable),
-//                ContextCompat.getColor(this, R.color.white)
-//            )
-//            DrawableCompat.setTint(
-//                DrawableCompat.wrap(binding.visa.drawable),
-//                ContextCompat.getColor(this, R.color.white)
-//            )
-//
-//        }else{
-//            binding.root.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
-//            binding.labelMethod.setTextColor(ContextCompat.getColor(this, R.color.black))
-//            binding.labelPos.setTextColor(ContextCompat.getColor(this, R.color.bigLabelBlack))
-//            binding.dina.setImageResource(R.drawable.icon_dina)
-//
-//            DrawableCompat.setTint(
-//                DrawableCompat.wrap(binding.visa.drawable),
-//                ContextCompat.getColor(this, R.color.visa_blue)
-//            )
-//
-//            DrawableCompat.setTint(
-//                DrawableCompat.wrap(binding.back.drawable),
-//                ContextCompat.getColor(this, R.color.bigLabelBlack)
-//            )
-//        }
-//    }
-//
-//    private fun handleDialogDarkMode(dialogBinding : DialogPinRegistrationBinding){
-//        if(sharedPreferences.pull(SharedPreferencesKeys.IS_DARK_MODE, false)){
-//            dialogBinding.root.setBackgroundColor(ContextCompat.getColor(this, R.color.globalBlackDialog))
-//            dialogBinding.warningLabel.setTextColor(ContextCompat.getColor(this, R.color.white))
-//            dialogBinding.btn.setBackgroundColor(ContextCompat.getColor(this, R.color.globalBlackDialog))
-//        }
-//    }
-
-    private fun handleCancelButton(isEnabled: Boolean) {
-//        if(isEnabled){
-//            binding.btn.backgroundTintList = ContextCompat.getColorStateList(this, R.color.globalOrange);
-//            binding.btn.setTextColor(ContextCompat.getColorStateList(this, R.color.white))
-//            binding.btn.isEnabled = true
-//        } else {
-//            binding.btn.backgroundTintList = ContextCompat.getColorStateList(this, R.color.gray);
-//            binding.btn.setTextColor(ContextCompat.getColorStateList(this, R.color.white))
-//            binding.btn.isEnabled = false
-//        }
+    private fun handleCancelButton() {
+        // Empty implementation
     }
 
-
     override fun onTransactionProcessing() {
-        // start spinner
         Log.i("LED","onTransactionProcessing")
         logger.info { "Transaction onTransactionProcessing" }
         setLedIndicators(0x02, true)
@@ -529,19 +381,16 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
     override fun onTransactionSuccessful() {
         Log.i("LED","onTransactionSuccessful")
-
         logger.info { "Transaction onTransactionSuccessful" }
         setLedIndicators(0x0F, false)
     }
 
     override fun onTransactionDeclined() {
         Log.i("LED","onTransactionDeclined")
-
         logger.info { "Transaction onTransactionDeclined" }
 
         playAudioIndication(false)
         setLedIndicators(0x0F, false)
-
 
         if (shouldIgnoreDecline) {
             resetTransaction()
@@ -554,20 +403,16 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                 val dialogBinding: DialogPinRegistrationBinding =
                     DialogPinRegistrationBinding.inflate(layoutInflater)
 
-//                handleDialogDarkMode(dialogBinding)
                 dialogBinding.icon.setImageResource(R.drawable.icon_warning)
-                dialogBinding.warningLabel.text =
-                    "${this.getString(R.string.label_transaction_declined)}"
+                dialogBinding.warningLabel.text = this.getString(R.string.label_transaction_declined)
                 dialogBinding.btn.text = this.getString(R.string.transaction_button_reset)
 
                 dialogBinding.btn.setOnClickListener {
                     dialog.dismiss()
-
                     this.resetTransaction()
                     binding.pinOverlay.visibility = View.INVISIBLE
                     binding.back.visibility = View.INVISIBLE
                     binding.btn.visibility = View.VISIBLE
-
                 }
                 dialog.setContentView(dialogBinding.root)
                 dialog.show()
@@ -580,7 +425,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
     override fun onTransactionEnded(p0: String?) {
         Log.i("LED","onTransactionEnded")
-
         logger.info { "Transaction onTransactionEnded ${p0}" }
 
         setLedIndicators(0x0F, false)
@@ -589,26 +433,23 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         } else {
             this@PosActivity.runOnUiThread {
                 try {
-                    //startB if is true redirect to newActivity and immediately go back
                     val dialog = Dialog(this)
                     val dialogBinding: DialogPinRegistrationBinding =
                         DialogPinRegistrationBinding.inflate(layoutInflater)
 
                     handleDialogDarkMode(dialogBinding)
                     dialogBinding.icon.setImageResource(R.drawable.icon_warning)
-                    dialogBinding.warningLabel.text =
-                        "${this.getString(R.string.label_transaction_expired)}"
+                    dialogBinding.warningLabel.text = this.getString(R.string.label_transaction_expired)
                     dialogBinding.btn.text = this.getString(R.string.transaction_void_button_reset)
 
                     dialogBinding.btn.setOnClickListener {
                         dialog.dismiss()
-
                         finish()
                     }
                     dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
                     dialog.setContentView(dialogBinding.root)
                     dialog.show()
-                } catch (e: Exception) {
+                } catch (_: Exception) {
 
                 }
             }
@@ -617,7 +458,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
     override fun onTransactionCancelled() {
         Log.i("LED","onTransactionCancelled")
-
         setLedIndicators(0x0F, false)
         logger.info { "Transaction onTransactionCancelled" }
         finish()
@@ -625,7 +465,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
     override fun onTransactionNotStarted(p0: String?) {
         Log.i("LED","onTransactionNotStarted")
-
         logger.info { "Transaction SDK onTransactionNotStarted ${p0}" }
         playAudioIndication(false)
         setLedIndicators(0x0F, false)
@@ -638,7 +477,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
     override fun onTransactionOnline() {
         Log.i("LED","onTransactionOnline")
-
         setLedIndicators(0x0F, true)
         this@PosActivity.runOnUiThread {
             Timer().schedule(1000) {
@@ -649,7 +487,7 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
             }
             binding.btn.visibility = View.INVISIBLE
             binding.spinner.visibility = View.VISIBLE
-            handleCancelButton(true)
+            handleCancelButton()
         }
         val mToneGenerator = ToneGenerator(AudioManager.STREAM_SYSTEM, 50)
         mToneGenerator.startTone(ToneGenerator.TONE_SUP_ERROR, 500)
@@ -676,9 +514,11 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
     override fun onOnlineResponse(p0: GetTransactionResult?) {
         logger.info { "onOnlineResponse2 response data: ${p0?.transactionResponseData?.responseCode} statusCode: ${p0?.transactionResponseData?.statusCode}" }
+
         if (p0?.transactionResponseData?.statusCode.equals("p", true)) {
             return
         }
+
         if (p0?.transactionResponseData?.statusCode.equals("A", true)) {
             this@PosActivity.runOnUiThread {
                 try {
@@ -706,66 +546,55 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                             recordId = p0.transactionResponseData!!.recordId,
                             listName = "",
                             color = -1,
-                            tipAmount = "0.0"
+                            tipAmount = if (tip.isNotEmpty()) tip else "0.0"
                         )
                     }
 
-                    if (p0?.transactionResponseData?.operationName.equals(
-                            "Void",
-                            true
-                        )
-                    ) transactionData?.operationName = "Storno"
+                    if (p0?.transactionResponseData?.operationName.equals("Void", true)) {
+                        transactionData?.operationName = "Storno"
+                    }
 
                     if (providedPackageName.isEmpty()) {
-                        val intent = Intent(this, TransactionActivity::class.java)
-                        if (p0?.transactionResponseData != null) {
-                            intent.putExtra("data", transactionData)
-                        }
-
-                        if (tip.isNotEmpty()){
-                            intent.putExtra("tip", tip)
-                            intent.putExtra("totalAmount",  binding.amountValue.text)
-
-                        }
 
                         if (!p0?.transactionResponseData?.responseCode.equals("00", true)) {
-                            resultLauncher.launch(intent)
+                            val resultIntent = Intent().apply {
+                                putExtra("transaction_data", transactionData)
+                            }
+                            setResult(RESULT_OK, resultIntent)
                             finish()
                         } else {
-
-                            if (p0?.transactionResponseData?.applicationLabel!!.contains(
-                                    "visa", true
-                                )
-                            ) {
+                            if (p0?.transactionResponseData?.applicationLabel!!.contains("visa", true)) {
+                                // VISA animation
                                 binding.visaViewLayout.visibility = View.VISIBLE
                                 binding.pinOverlay.visibility = View.GONE
-                                //binding.visaView.isSoundEnabled = true
                                 binding.visaView.isSoundEffectsEnabled = true
-                                binding.visaView.setBackgroundColor(Color.parseColor("#ffffff"));
-                                binding.visaView.backdropColor = Color.parseColor("#ffffff")
+                                binding.visaView.setBackgroundColor("#ffffff".toColorInt())
+                                binding.visaView.backdropColor = "#ffffff".toColorInt()
                                 binding.visaView.animate {
-//                                    binding.visaView.visibility = View.GONE
-
-                                    resultLauncher.launch(intent)
+                                    val resultIntent = Intent().apply {
+                                        putExtra("transaction_data", transactionData)
+                                    }
+                                    setResult(RESULT_OK, resultIntent)
                                     finish()
-
                                 }
-                            } else if (p0?.transactionResponseData?.applicationLabel!!.contains(
-                                    "card", true
-                                )
-                            ) {
+                            } else if (p0.transactionResponseData?.applicationLabel!!.contains("card", true)) {
+                                // MASTERCARD animation
                                 binding.mcardView.visibility = View.VISIBLE
-                                sonicController.prepare(context = this,
+                                sonicController.prepare(
+                                    context = this,
                                     sonicType = SonicType.SOUND_AND_ANIMATION,
                                     onPrepareListener = object : OnPrepareListener {
                                         override fun onPrepared(statusCode: Int) {
-                                            playSonic(intent)
+                                            playSonicAndReturn(transactionData)
                                         }
-                                    })
+                                    }
+                                )
                             } else {
-                                resultLauncher.launch(intent)
+                                val resultIntent = Intent().apply {
+                                    putExtra("transaction_data", transactionData)
+                                }
+                                setResult(RESULT_OK, resultIntent)
                                 finish()
-
                             }
                         }
                     } else {
@@ -796,7 +625,7 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                                 Toast.LENGTH_LONG
                             ).show()
                         }
-                        setResult(Activity.RESULT_OK, intent)
+                        setResult(RESULT_OK, intent)
                         finish()
                     }
                 } catch (e: Exception) {
@@ -804,6 +633,7 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                 }
             }
         }
+
         if (p0?.transactionResponseData?.statusCode.equals("D", true)) {
             val dialog = Dialog(this)
             val dialogBinding: DialogPinRegistrationBinding =
@@ -811,12 +641,42 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
             handleDialogDarkMode(dialogBinding)
             dialogBinding.icon.setImageResource(R.drawable.icon_warning)
-            dialogBinding.warningLabel.text =
-                "${this.getString(R.string.label_transaction_declined)}"
+            dialogBinding.warningLabel.text = this.getString(R.string.label_transaction_declined)
             dialogBinding.btn.text = this.getString(R.string.transaction_void_button_reset)
 
             dialogBinding.btn.setOnClickListener {
                 dialog.dismiss()
+
+                val transactionData = TransactionDetailsDto(
+                    aid = "",
+                    applicationLabel = "",
+                    authorizationCode = "",
+                    bankName = "",
+                    cardNumber = "",
+                    dateTime = LocalDateTime.now().toString(),
+                    merchantId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_MERCHANT_ID),
+                    merchantName = sharedPreferences.pull(SharedPreferencesKeys.MERCHANT_NAME),
+                    message = this.getString(R.string.label_transaction_declined),
+                    operationName = resources.getString(R.string.label_operation_sales),
+                    response = "05",
+                    rrn = "",
+                    code = "",
+                    status = "D",
+                    terminalId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_TERMINAL_ID),
+                    amount = intent.getStringExtra("Amount") ?: "0.00",
+                    isIps = false,
+                    sdkStatus = null,
+                    billStatus = null,
+                    color = -1,
+                    recordId = "",
+                    listName = "",
+                    tipAmount = if (tip.isNotEmpty()) tip else "0.0"
+                )
+
+                val resultIntent = Intent().apply {
+                    putExtra("transaction_data", transactionData)
+                }
+                setResult(RESULT_OK, resultIntent)
                 finish()
             }
             dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -872,37 +732,35 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
             SoftPOSSDK.resetReaderOutcome()
             SoftPOSSDK.getInstance().transactionInterface.cancelTransaction()
             finish()
-        } else
+        } else {
             returnFailToApp()
-
-
+        }
     }
 
-    //Create private method to play sonic
-    private fun playSonic(intent: Intent) {
+    private fun playSonicAndReturn(transactionData: TransactionDetailsDto?) {
         binding.pinOverlay.visibility = View.INVISIBLE
         binding.back.visibility = View.INVISIBLE
         if (!sonicController.isPlaying) {
             sonicController.play(onCompleteListener = object : OnCompleteListener {
                 override fun onComplete(statusCode: Int) {
-                    resultLauncher.launch(intent)
-                   //finish()
+                    val resultIntent = Intent().apply {
+                        putExtra("transaction_data", transactionData)
+                    }
+                    setResult(RESULT_OK, resultIntent)
+                    finish()
                 }
             }, sonicView = binding.mcardView)
         }
     }
 
-
+    @SuppressLint("DefaultLocale")
     override fun getDialogConfiguration(): CVMEDlgFragmentConfigurator {
-
         Log.i(TAG,"getDialogConfiguration")
 
         val config = CVMEDlgFragmentConfigurator()
 
         config.key0ContainerId = R.id.keypad_1_container
         R.id.keypad_2
-
-
 
         config.key0Id = R.id.keypad_0
         config.key1Id = R.id.keypad_1
@@ -938,13 +796,12 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         config.dialogTheme = android.R.style.Theme_NoTitleBar_Fullscreen
         config.dialogStyle = DialogFragment.STYLE_NORMAL
 
-
         config.activity = this@PosActivity
 
         val okConfig = CVMEElementConfig()
         okConfig.text = "OK"
-        okConfig.textColor = Color.parseColor("#000000")
-        okConfig.backgroundColor = Color.parseColor("#28a745")
+        okConfig.textColor = "#000000".toColorInt()
+        okConfig.backgroundColor = "#28a745".toColorInt()
         okConfig.fontSize = 50
         okConfig.height = 100
         okConfig.width = 100
@@ -953,8 +810,8 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
         val clearConfig = CVMEElementConfig()
         clearConfig.text = "Clr"
-        clearConfig.textColor = Color.parseColor("#000000")
-        clearConfig.backgroundColor = Color.parseColor("#ffff00")
+        clearConfig.textColor = "#000000".toColorInt()
+        clearConfig.backgroundColor = "#ffff00".toColorInt()
         clearConfig.fontSize = 50
         clearConfig.height = 100
         clearConfig.width = 100
@@ -963,15 +820,13 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
 
         val cancelConfig = CVMEElementConfig()
         cancelConfig.text = "Can"
-        cancelConfig.textColor = Color.parseColor("#000000")
-        cancelConfig.backgroundColor = Color.parseColor("#EB3223")
+        cancelConfig.textColor = "#000000".toColorInt()
+        cancelConfig.backgroundColor = "#EB3223".toColorInt()
         cancelConfig.fontSize = 50
         cancelConfig.height = 100
         cancelConfig.width = 100
         cancelConfig.font = Typeface.create("Roboto", Typeface.NORMAL)
         config.cancelConfig = cancelConfig
-
-
 
         config.infoText = "Info Text"
         config.infoText = CurrencyTable.FormattedAmount(
@@ -985,10 +840,9 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         config.isResetTimerOnClear = true
         config.restartTimerOnKeyInSeconds = 5
 
-
         val keyConfig = CVMEElementKeyConfig()
-        keyConfig.textColor = Color.parseColor("#000000")
-        keyConfig.backgroundColor = Color.parseColor("#FFFFFF")
+        keyConfig.textColor = "#000000".toColorInt()
+        keyConfig.backgroundColor = "#FFFFFF".toColorInt()
         keyConfig.fontSize = 90
         keyConfig.height = 120
         keyConfig.width = 120
@@ -1001,18 +855,12 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         keyConfig.randomAngle = randomAngle
         config.keyConfig = keyConfig
 
-//        config.setPinDot1Id(R.id.circle1)
-//        config.setPinDot2Id(R.id.circle2)
-//        config.setPinDot3Id(R.id.circle3)
-//        config.setPinDot4Id(R.id.circle4)
-
-        okConfig.setText("");
-        config.setOKConfig(okConfig);
-        clearConfig.setText("");
-        config.setCLEARConfig(clearConfig);
-        cancelConfig.setText("");
-        config.setCANCELConfig(cancelConfig);
-
+        okConfig.text = ""
+        config.okConfig = okConfig
+        clearConfig.text = ""
+        config.clearConfig = clearConfig
+        cancelConfig.text = ""
+        config.cancelConfig = cancelConfig
 
         return config
     }
@@ -1028,18 +876,16 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
     }
 
     override fun onLoyaltyOnlineResponse(p0: TransactResult?) {
-//        TODO("Not yet implemented")
+        // Empty implementation
     }
 
     override fun displayStop(p0: UserInterfaceData?) {
-//        TODO("Not yet implemented")
+        // Empty implementation
     }
 
     override fun displayMessage(p0: UserInterfaceData?) {
         Log.i("LED","displayMessage")
-
-//        TODO("Not yet implemented")
-        logger.info { "Display message ${p0}" }
+        logger.info { "Display message $p0" }
 
         if (p0?.uirdStatus == UserInterfaceData.UIRDStatus.UIRD_STATUS_CARD_READ_SUCCESSFULLY) {
             playAudioIndication(true)
@@ -1079,102 +925,82 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
                 Toast.LENGTH_LONG
             ).show()
         }
-        setResult(Activity.RESULT_OK, intent)
+        setResult(RESULT_OK, intent)
         finish()
     }
-
 
     private fun handleDialogDarkMode(dialogBinding: DialogPinRegistrationBinding) {
         if (sharedPreferences.pull(SharedPreferencesKeys.IS_DARK_MODE, false)) {
             dialogBinding.root.setBackgroundColor(
-                ContextCompat.getColor(
-                    this, R.color.globalBlackDialog
-                )
+                ContextCompat.getColor(this, R.color.globalBlackDialog)
             )
             dialogBinding.warningLabel.setTextColor(ContextCompat.getColor(this, R.color.white))
             dialogBinding.btn.setBackgroundColor(
-                ContextCompat.getColor(
-                    this, R.color.globalBlackDialog
-                )
+                ContextCompat.getColor(this, R.color.globalBlackDialog)
             )
         }
     }
 
-
     override fun onTransactionIdle() {
         Log.i("LED","onTransactionIdle")
-
         setLedIndicators(0x01, true)
-        //showErrorFlag = true
     }
 
     override fun onTransactionReadyToRead() {
         Log.i("LED","onTransactionReadyToRead")
-
         setLedIndicators(0x01, true)
     }
 
-
     private fun setLedIndicators(ledOn: Int, isLedON: Boolean) {
-        if (isLedON == false) pLedOn = 0;
-        this@PosActivity?.runOnUiThread(Runnable() {
-            if ((ledOn and 0x01 == 0x01) && (pLedOn and 0x01 != 0x01)){
+        if (!isLedON) pLedOn = 0
+        this@PosActivity.runOnUiThread {
+            if ((ledOn and 0x01 == 0x01) && (pLedOn and 0x01 != 0x01)) {
                 Log.i("LED", "1 | $isLedON")
                 ledIndicator(1, isLedON)
             }
-            if ((ledOn and 0x02 == 0x02) && (pLedOn and 0x02 != 0x02)){
+            if ((ledOn and 0x02 == 0x02) && (pLedOn and 0x02 != 0x02)) {
                 Log.i("LED", "2 | $isLedON")
                 ledIndicator(2, isLedON)
             }
-
-            if ((ledOn and 0x04 == 0x04) && (pLedOn and 0x04 != 0x04)){
+            if ((ledOn and 0x04 == 0x04) && (pLedOn and 0x04 != 0x04)) {
                 Log.i("LED", "3 | $isLedON")
-
                 ledIndicator(3, isLedON)
             }
-
-            if ((ledOn and 0x08 == 0x08) && (pLedOn and 0x08 != 0x08)){
+            if ((ledOn and 0x08 == 0x08) && (pLedOn and 0x08 != 0x08)) {
                 Log.i("LED", "4 | $isLedON")
-
                 ledIndicator(4, isLedON)
             }
-
-            if ((isLedON) && (pLedOn and ledOn != ledOn)){
+            if ((isLedON) && (pLedOn and ledOn != ledOn)) {
                 Log.i("LED", "5 | $isLedON")
-
-                pLedOn += ledOn;
+                pLedOn += ledOn
             }
-        })
+        }
     }
 
     private fun ledIndicator(ledId: Int, isLedON: Boolean) {
-        var imageView: View?
-        var drawable: Int
-        when (ledId) {
-            1 -> imageView = binding.visualIndicatorLed1
-            2 -> imageView = binding.visualIndicatorLed2
-            3 -> imageView = binding.visualIndicatorLed3
-            4 -> imageView = binding.visualIndicatorLed4
-            else -> imageView = binding.visualIndicatorLed4
+        val imageView = when (ledId) {
+            1 -> binding.visualIndicatorLed1
+            2 -> binding.visualIndicatorLed2
+            3 -> binding.visualIndicatorLed3
+            4 -> binding.visualIndicatorLed4
+            else -> binding.visualIndicatorLed4
         }
-        if (isLedON)
-            drawable = R.drawable.circle_primary
+        val drawable: Int = if (isLedON)
+            R.drawable.circle_primary
         else
-            drawable = R.drawable.circle_grey
-        imageView?.setBackgroundResource(drawable)
+            R.drawable.circle_grey
+        imageView.setBackgroundResource(drawable)
     }
 
     private fun playAudioIndication(isSuccessTone: Boolean) {
         try {
             this@PosActivity.runOnUiThread {
-                val mToneGenerator =
-                    ToneGenerator(AudioManager.STREAM_SYSTEM, 50)
+                val mToneGenerator = ToneGenerator(AudioManager.STREAM_SYSTEM, 50)
                 if (isSuccessTone) {
                     mToneGenerator.startTone(ToneGenerator.TONE_SUP_ERROR, 500)
                     Handler().postDelayed({
                         mToneGenerator.release()
                     }, 501)
-
                 } else {
                     mToneGenerator.startTone(ToneGenerator.TONE_PROP_ACK, 600)
                     Handler().postDelayed({
@@ -1184,10 +1010,8 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
             }
         } catch (e: Exception) {
             logger.info { "RING RING:  $e.message" }
-            //AppLog.instance.error(AppLogKeys.PlayAudioError, "${e.javaClass.name} ${e.localizedMessage} ${e.stackTraceToString()}")
         }
     }
-
 
     fun createJsonAdditionalData(tip: String, uniqueId: String): String {
         val paytenAdditionalData = JSONObject()
@@ -1200,7 +1024,6 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
             if (tip != "null") {
                 logger.info { "Tip:  $tip" }
                 paytenTrnx.put("tipAmount", createTipData(tip))
-
             }
         } catch (e: java.lang.Exception) {
             logger.error { e.message }
@@ -1209,15 +1032,10 @@ class PosActivity : BaseActivity(), TransactionResultListener, LoyaltyActionList
         paytenAdditionalData.put("paytenTransactionRequest", paytenTrnx)
         logger.info { "AddtionalData:  $paytenAdditionalData" }
         return paytenAdditionalData.toString()
-
     }
-
 
     fun createTipData(tip: String): String {
-        var formatedTip = tip.replace(".","").replace(",","")
-
+        val formatedTip = tip.replace(".","").replace(",","")
         return formatedTip.padStart(12, '0')
     }
-
-
 }
