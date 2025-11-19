@@ -435,4 +435,25 @@
     <string name="tip_custom">Custom amount</string>
     <string name="tip_no_tip">No tip</string>
     <string name="tip_confirm">CONFIRM</string>
+
+    <!-- Transaction Screen -->
+    <string name="transaction_back">Back</string>
+    <string name="transaction_print">Print</string>
+    <string name="transaction_share">Share</string>
+
+    <!-- Receipt labels -->
+    <string name="transaction_receipt_amount_label">Transaction Amount</string>
+    <string name="transaction_receipt_amount">AMOUNT</string>
+    <string name="transaction_receipt_tip">TIP</string>
+    <string name="transaction_receipt_status">STATUS</string>
+    <string name="transaction_receipt_mid">MID</string>
+    <string name="transaction_receipt_tid">TID</string>
+    <string name="transaction_receipt_merchant">MERCHANT</string>
+    <string name="transaction_receipt_card_number">CARD NUMBER</string>
+    <string name="transaction_receipt_auth_code">AUTHORIZATION</string>
+    <string name="transaction_receipt_operation">OPERATION</string>
+    <string name="transaction_receipt_response">RESPONSE</string>
+    <string name="transaction_receipt_message">MESSAGE</string>
+    <string name="transaction_receipt_aid">AID</string>
+    <string name="transaction_receipt_e2e">E2E</string>
 </resources>

@@ -424,4 +424,25 @@
     <string name="tip_custom">Unos po izboru</string>
     <string name="tip_no_tip">Bez napojnice</string>
     <string name="tip_confirm">POTVRDI</string>
+
+    <!-- Transaction Screen -->
+    <string name="transaction_back">Назад</string>
+    <string name="transaction_print">Штампај</string>
+    <string name="transaction_share">Подели</string>
+
+    <!-- Receipt labels -->
+    <string name="transaction_receipt_amount_label">Iznos transakcije</string>
+    <string name="transaction_receipt_amount">IZNOS</string>
+    <string name="transaction_receipt_tip">NAPOJNICA</string>
+    <string name="transaction_receipt_status">STATUS</string>
+    <string name="transaction_receipt_mid">MID</string>
+    <string name="transaction_receipt_tid">TID</string>
+    <string name="transaction_receipt_merchant">TRGOVAC</string>
+    <string name="transaction_receipt_card_number">BROJ KARTICE</string>
+    <string name="transaction_receipt_auth_code">AUTORIZACIJA</string>
+    <string name="transaction_receipt_operation">OPERACIJA</string>
+    <string name="transaction_receipt_response">ODGOVOR</string>
+    <string name="transaction_receipt_message">PORUKA</string>
+    <string name="transaction_receipt_aid">AID</string>
+    <string name="transaction_receipt_e2e">E2E</string>
 </resources>
