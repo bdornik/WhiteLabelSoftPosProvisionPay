@@ -225,7 +225,7 @@ class AmountUtil {
 
         }
 
-        private fun formatAmount(sdkAmount: Long): String {
+        fun formatAmount(sdkAmount: Long): String {
             var formattedAmount = ""
             formattedAmount = sdkAmount.toString()
             if (formattedAmount.length == 1) {

@@ -426,9 +426,9 @@
     <string name="tip_confirm">POTVRDI</string>
 
     <!-- Transaction Screen -->
-    <string name="transaction_back">Назад</string>
-    <string name="transaction_print">Штампај</string>
-    <string name="transaction_share">Подели</string>
+    <string name="transaction_back">Nazad</string>
+    <string name="transaction_print">Štampaj</string>
+    <string name="transaction_share">Podeli</string>
 
     <!-- Receipt labels -->
     <string name="transaction_receipt_amount_label">Iznos transakcije</string>
@@ -445,4 +445,10 @@
     <string name="transaction_receipt_message">PORUKA</string>
     <string name="transaction_receipt_aid">AID</string>
     <string name="transaction_receipt_e2e">E2E</string>
+
+        <!-- Card Processing Screen -->
+    <string name="card_processing_title">POS</string>
+    <string name="card_processing_amount_label">Iznos transakcije</string>
+    <string name="card_processing_tap_card_label">PRISLONITE KARTICU</string>
+    <string name="card_processing_cancel">PREKINI TRANSAKCIJU</string>
 </resources>

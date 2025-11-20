@@ -456,4 +456,10 @@
     <string name="transaction_receipt_message">MESSAGE</string>
     <string name="transaction_receipt_aid">AID</string>
     <string name="transaction_receipt_e2e">E2E</string>
+
+    <!-- Card Processing Screen -->
+    <string name="card_processing_title">POS</string>
+    <string name="card_processing_amount_label">Transaction Amount</string>
+    <string name="card_processing_tap_card_label">TAP YOUR CARD</string>
+    <string name="card_processing_cancel">CANCEL TRANSACTION</string>
 </resources>

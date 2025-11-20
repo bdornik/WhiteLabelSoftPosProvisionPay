@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import com.payten.whitelabel.R
 import com.payten.whitelabel.activities.IpsActivity
-import com.payten.whitelabel.activities.PosActivity
 import com.payten.whitelabel.dto.TransactionDetailsDto
 import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.theme.AppTheme
@@ -50,6 +49,7 @@ fun TipSelectionScreen(
     amountInPare: Long,
     paymentMethod: PaymentMethod,
     onNavigateBack: () -> Unit = {},
+    onContinueCard: (tipAmount: Long) -> Unit = {},
     onTransactionComplete: (TransactionDetailsDto) -> Unit = {}
 ) {
     val TAG = "TipSelectionScreen"
@@ -72,10 +72,10 @@ fun TipSelectionScreen(
 
     val isButtonEnabled = selectedTip != null
 
-    val transactionLauncher = rememberLauncherForActivityResult(
+    val ipsTransactionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        Log.d(TAG, "Transaction activity returned with result: ${result.resultCode}")
+        Log.d(TAG, "IPS transaction returned: ${result.resultCode}")
 
         if (result.resultCode == Activity.RESULT_OK) {
             val transactionData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -86,13 +86,9 @@ fun TipSelectionScreen(
             }
 
             if (transactionData != null) {
-                Log.d(TAG, "Transaction completed successfully: ${transactionData.response}")
+                Log.d(TAG, "IPS transaction completed: ${transactionData.response}")
                 onTransactionComplete(transactionData)
-            } else {
-                Log.e(TAG, "Transaction data is null!")
             }
-        } else {
-            Log.d(TAG, "Transaction was canceled or failed")
         }
     }
 
@@ -286,34 +282,22 @@ fun TipSelectionScreen(
 
             Button(
                 onClick = {
-                    selectedTip?.let { tip ->
-                        val tipPercent = when (tip) {
-                            is TipOption.Percentage -> tip.percent
-                            TipOption.NoTip -> 0
-                            TipOption.Custom -> 0 // TODO
-                        }
-
+                    selectedTip?.let { _ ->
                         val tipAmount = finalAmount - amountInPare
 
-                        Log.d(TAG, "Confirm clicked - launching ${paymentMethod.name} activity")
-                        Log.d(TAG, "Amount: $amountInPare, Tip: $tipAmount, Total: $finalAmount")
+                        Log.d(TAG, "Confirm clicked")
 
-                        val intent = when (paymentMethod) {
+                        when (paymentMethod) {
                             PaymentMethod.CARD -> {
-                                Intent(context, PosActivity::class.java).apply {
-                                    putExtra("Amount", amountInPare.toString())
-                                    putExtra("Tip", tipAmount.toString())
-                                    putExtra("TotalAmount", formatAmount(finalAmount))
-                                }
+                                onContinueCard(tipAmount)
                             }
                             PaymentMethod.IPS -> {
-                                Intent(context, IpsActivity::class.java).apply {
+                                val intent = Intent(context, IpsActivity::class.java).apply {
                                     putExtra("Amount", finalAmount.toString())
                                 }
+                                ipsTransactionLauncher.launch(intent)
                             }
                         }
-
-                        transactionLauncher.launch(intent)
                     }
                 },
                 enabled = isButtonEnabled,

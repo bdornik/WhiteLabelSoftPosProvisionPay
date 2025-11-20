@@ -58,6 +58,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activities.HeadlessPaymentActivity"
+            android:theme="@style/Theme.Transparent"
+            android:noHistory="true"
+            android:excludeFromRecents="true" />
+        <activity
             android:name="com.payten.whitelabel.activities.CustomAmountActivity"
             android:exported="false" />
         <activity

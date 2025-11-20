@@ -1,7 +1,14 @@
 package com.payten.whitelabel.ui.navigation
 
+import android.app.Activity
+import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,10 +16,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
+import com.payten.whitelabel.activities.HeadlessPaymentActivity
 import com.payten.whitelabel.config.SupercaseConfig
 import com.payten.whitelabel.dto.TransactionDetailsDto
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.screens.AmountEntryScreen
+import com.payten.whitelabel.ui.screens.CardProcessingScreen
 import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
 import com.payten.whitelabel.ui.screens.FirstPage
 import com.payten.whitelabel.ui.screens.LandingScreen
@@ -28,6 +37,9 @@ import com.payten.whitelabel.ui.screens.SettingsScreen
 import com.payten.whitelabel.ui.screens.SmsVerificationScreen
 import com.payten.whitelabel.ui.screens.SplashScreen
 import com.payten.whitelabel.ui.screens.TipSelectionScreen
+import com.payten.whitelabel.ui.screens.TransactionScreen
+import com.payten.whitelabel.activities.PosActivity
+import com.payten.whitelabel.utils.AmountUtil.Companion.formatAmount
 
 /**
  * Main navigation component for the Payten POS application.
@@ -303,18 +315,71 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 onNavigateBack = {
                     navController.popBackStack()
                 },
+                onContinueCard = { tipAmount ->
+                    navController.navigate("card_tap/$amountInPare/$tipAmount")
+                },
                 onTransactionComplete = { transactionData ->
-                    // Navigate to transaction result screen
                     navController.navigate("transaction_result") {
-                        // Clean up back stack - remove all transaction flow screens
-                        popUpTo("home") {
-                            saveState = false
-                        }
+                        popUpTo("landing") { inclusive = false }
                     }
-
                     navController.currentBackStackEntry
                         ?.savedStateHandle
                         ?.set("transaction_data", transactionData)
+                }
+            )
+        }
+        composable(
+            "card_tap/{amountInPare}/{tipAmount}",
+            listOf(
+                navArgument("amountInPare") {type = NavType.LongType},
+                navArgument("tipAmount") { type = NavType.LongType}
+            )
+        ){ backStackEntry ->
+            val amountInPare = backStackEntry.arguments?.getLong("amountInPare") ?: 0L
+            val tipAmount = backStackEntry.arguments?.getLong("tipAmount") ?: 0L
+            val context = LocalContext.current
+
+            val transactionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val transactionData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        result.data?.getSerializableExtra("transaction_data", TransactionDetailsDto::class.java)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        result.data?.getSerializableExtra("transaction_data") as? TransactionDetailsDto
+                    }
+
+                    if (transactionData != null) {
+                        navController.navigate("transaction_result") {
+                            popUpTo("landing") { inclusive = false }
+                        }
+                        navController.currentBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("transaction_data", transactionData)
+                    }
+                } else {
+                    navController.popBackStack()
+                }
+            }
+
+            LaunchedEffect(Unit) {
+                val totalAmount = amountInPare + tipAmount
+                val intent = Intent(context, HeadlessPaymentActivity::class.java).apply {
+                    putExtra("Amount", amountInPare.toString())
+                    putExtra("Tip", tipAmount.toString())
+                    putExtra("TotalAmount", formatAmount(totalAmount))
+                }
+                transactionLauncher.launch(intent)
+            }
+
+            CardProcessingScreen(
+                amountInPare = amountInPare,
+                tipAmount = tipAmount,
+                onNavigateBack = {
+                    // Cancel transaction and go back
+                    Log.d("Navigation", "Card processing cancelled by user")
+                    navController.popBackStack()
                 }
             )
         }
@@ -324,24 +389,31 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 ?.get<TransactionDetailsDto>("transaction_data")
 
             if (transactionData != null) {
-                // TODO: TransactionScreen
-                // TransactionScreen(
-                //     transactionData = transactionData,
-                //     onNavigateHome = {
-                //         navController.navigate("home") {
-                //             popUpTo("home") { inclusive = false }
-                //         }
-                //     },
-                //     onShare = { /* TODO */ },
-                //     onPrint = { /* TODO */ }
-                // )
+                Log.d("Navigation", "Showing transaction result for: ${transactionData.response}")
 
-                androidx.compose.material3.Text("Transaction Result - TODO")
+                TransactionScreen(
+                    transactionData = transactionData,
+                    onNavigateHome = {
+                        Log.d("Navigation", "Navigating back to landing")
+                        // Navigate back to landing screen
+                        navController.navigate("landing") {
+                            popUpTo("landing") { inclusive = false }
+                        }
+                    },
+                    onShare = {
+                        // TODO: Implement share functionality
+                        Log.d("Navigation", "Share clicked")
+                    },
+                    onPrint = {
+                        // TODO: Implement print functionality
+                        Log.d("Navigation", "Print clicked")
+                    }
+                )
             } else {
-                // No transaction data - navigate back to home
-                androidx.compose.runtime.LaunchedEffect(Unit) {
-                    navController.navigate("home") {
-                        popUpTo("home") { inclusive = false }
+                Log.e("Navigation", "No transaction data found - returning to landing")
+                LaunchedEffect(Unit) {
+                    navController.navigate("landing") {
+                        popUpTo("landing") { inclusive = false }
                     }
                 }
             }
