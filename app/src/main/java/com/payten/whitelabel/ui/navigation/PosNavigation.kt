@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
@@ -38,7 +39,6 @@ import com.payten.whitelabel.ui.screens.SmsVerificationScreen
 import com.payten.whitelabel.ui.screens.SplashScreen
 import com.payten.whitelabel.ui.screens.TipSelectionScreen
 import com.payten.whitelabel.ui.screens.TransactionScreen
-import com.payten.whitelabel.activities.PosActivity
 import com.payten.whitelabel.utils.AmountUtil.Companion.formatAmount
 
 /**
@@ -52,6 +52,7 @@ import com.payten.whitelabel.utils.AmountUtil.Companion.formatAmount
  *
  * To be expanded further.
  * */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PosNavigation(sharedPreferences: KsPrefs) {
     //Manages navigation state
@@ -252,7 +253,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 },
                 onVerificationSuccess = {
                     // Navigates to SMS activation code screen.
-                    navController.navigate("send_sms") {
+                    navController.navigate("pin_setup") {
                         popUpTo("change_pin_verification") { inclusive = true }
                     }
                 }

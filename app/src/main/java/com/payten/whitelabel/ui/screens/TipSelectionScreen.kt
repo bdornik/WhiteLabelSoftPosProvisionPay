@@ -15,7 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -119,55 +119,31 @@ fun TipSelectionScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .shadow(
+                            elevation = 4.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            clip = false
+                        )
                         .background(
-                            brush = Brush.horizontalGradient(
-                                colorStops = arrayOf(
-                                    0.0f to Color(0xFF001F1F),
-                                    0.6f to Color(0xFF001F3F),
-                                    1.0f to Color(0xFF0051A8)
-                                )
-                            ),
+                            color = Color.White,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                             shape = RoundedCornerShape(16.dp)
                         )
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.payment_method_amount_label),
-                            fontSize = 18.sp,
-                            fontFamily = MyriadPro,
-                            fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colorScheme.surface
-                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = Color.White.copy(alpha = 0.2f),
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .border(
-                                    width = 1.5.dp,
-                                    color = MaterialTheme.colorScheme.surface,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .padding(horizontal = 6.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.currency_rsd),
-                                fontSize = 14.sp,
-                                fontFamily = MyriadPro,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.White
-                            )
-                        }
-                    }
+                    Text(
+                        text = stringResource(R.string.payment_method_amount_label),
+                        fontSize = 14.sp,
+                        fontFamily = MyriadPro,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -175,8 +151,20 @@ fun TipSelectionScreen(
                         text = displayAmount,
                         fontSize = 44.sp,
                         fontFamily = MyriadPro,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = stringResource(R.string.currency_rsd),
+                        fontSize = 16.sp,
+                        fontFamily = MyriadPro,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
                     )
                 }
             }

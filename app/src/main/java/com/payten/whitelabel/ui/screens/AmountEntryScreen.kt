@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,18 +65,23 @@ fun AmountEntryScreen(
             )
 
             Spacer(modifier = Modifier.weight(1f))
-            
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
                     .border(
-                        width = 2.dp,
+                        width = 1.dp,
                         color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(12.dp)
                     )
+                    .shadow(
+                        elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            )
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
@@ -83,8 +89,8 @@ fun AmountEntryScreen(
                             shape = RoundedCornerShape(12.dp)
                         )
                         .padding(24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = displayAmount,
@@ -92,34 +98,19 @@ fun AmountEntryScreen(
                         fontFamily = MyriadPro,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
-                        modifier = Modifier.weight(1f)
+                        textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
-                            .border(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    shape = RoundedCornerShape(4.dp)
-                            )
-                            .size(width = 36.dp, height = 24.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.currency_rsd),
-                            fontSize = 14.sp,
-                            fontFamily = MyriadPro,
-                            fontWeight = FontWeight.Normal,
-                            color = Color.Gray
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.currency_rsd),
+                        fontSize = 16.sp,
+                        fontFamily = MyriadPro,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
 

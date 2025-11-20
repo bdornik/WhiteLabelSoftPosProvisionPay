@@ -1,11 +1,20 @@
 package com.payten.whitelabel.ui.screens
 
+import android.app.Activity
+import android.content.Context
+import android.content.IntentFilter
+import android.os.Build
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -16,32 +25,39 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.payten.whitelabel.R
+import com.payten.whitelabel.dto.OtpCheckDto
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
+import com.payten.whitelabel.utils.SmsBroadcastReceiver
 import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.components.CustomDialog
 import com.payten.whitelabel.ui.components.CustomTextField
 import com.payten.whitelabel.ui.theme.MyriadPro
+import com.payten.whitelabel.viewmodel.ForgotPinModel
 
 /**
  * Screen for verifying user identity before PIN change.
  *
- * Verifies User ID and Activation Code LOCALLY from SharedPreferences.
- * NO API calls - just local credential verification.
+ * User enters credentials, clicks "Send SMS", SMS is auto-read and verified.
  *
  * @param sharedPreferences SharedPreferences instance
  * @param onNavigateBack Callback when back button is clicked
- * @param onVerificationSuccess Callback when credentials are verified (navigate to SMS screen)
+ * @param onVerificationSuccess Callback when OTP is verified (navigate to PIN change)
+ * @param viewModel ViewModel for SMS and OTP handling
  */
+@RequiresApi(Build.VERSION_CODES.O, TIRAMISU)
 @Composable
 fun ChangePinVerificationScreen(
     sharedPreferences: KsPrefs,
     onNavigateBack: () -> Unit = {},
-    onVerificationSuccess: () -> Unit = {}
+    onVerificationSuccess: () -> Unit = {},
+    viewModel: ForgotPinModel = hiltViewModel()
 ) {
-    val TAG = "ChangePinVerificationScreen"
+    val TAG = "ChangePinVerification"
     val context = LocalContext.current
 
     var userId by remember {
@@ -50,6 +66,113 @@ fun ChangePinVerificationScreen(
     var activationCode by remember { mutableStateOf("") }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var smsListenerStarted by remember { mutableStateOf(false) }
+
+    val smsConsentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            val message = result.data?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
+            Log.d(TAG, "SMS received: $message")
+
+            val otpRegex = "\\b\\d{6}\\b".toRegex()
+            val extractedOtp = otpRegex.find(message ?: "")?.value
+
+            if (extractedOtp != null) {
+                Log.d(TAG, "Extracted OTP: $extractedOtp")
+                activationCode = extractedOtp
+
+                viewModel.otpCheck(
+                    OtpCheckDto(
+                        userId = userId,
+                        activationCode = extractedOtp
+                    )
+                )
+            } else {
+                Log.e(TAG, "Could not extract OTP from SMS")
+                isLoading = false
+                errorMessage = context.getString(R.string.wrong_credentials)
+                showErrorDialog = true
+            }
+        } else {
+            Log.d(TAG, "SMS consent cancelled by user")
+            isLoading = false
+            errorMessage = context.getString(R.string.wrong_credentials)
+            showErrorDialog = true
+        }
+    }
+
+    LaunchedEffect(smsListenerStarted) {
+        if (smsListenerStarted) {
+            Log.d(TAG, "Starting SMS User Consent API")
+            try {
+                val client = SmsRetriever.getClient(context)
+                client.startSmsUserConsent(null)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start SMS retriever", e)
+            }
+        }
+    }
+
+    DisposableEffect(smsListenerStarted) {
+        if (!smsListenerStarted) {
+            return@DisposableEffect onDispose {}
+        }
+
+        val smsReceiver = SmsBroadcastReceiver { intent ->
+            Log.d(TAG, "SMS broadcast received")
+            smsConsentLauncher.launch(intent)
+        }
+
+        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+        context.registerReceiver(smsReceiver, intentFilter, Context.RECEIVER_EXPORTED)
+
+        onDispose {
+            Log.d(TAG, "Unregistering SMS receiver")
+            try {
+                context.unregisterReceiver(smsReceiver)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error unregistering receiver", e)
+            }
+        }
+    }
+
+    val otpResponse by viewModel.otpResponse.observeAsState()
+
+    LaunchedEffect(otpResponse) {
+        otpResponse?.let { success ->
+            Log.d(TAG, "SMS send response: $success")
+
+            if (success) {
+                Log.d(TAG, "SMS sent successfully, waiting for incoming SMS")
+                smsListenerStarted = true
+            } else {
+                isLoading = false
+                errorMessage = context.getString(R.string.wrong_credentials)
+                showErrorDialog = true
+            }
+        }
+    }
+
+    val otpCheckResponse by viewModel.otpCheckResponse.observeAsState()
+
+    LaunchedEffect(otpCheckResponse) {
+        otpCheckResponse?.let { statusCode ->
+            Log.d(TAG, "OTP check response: $statusCode")
+            isLoading = false
+
+            if (statusCode.equals("00", ignoreCase = true)) {
+                sharedPreferences.push(SharedPreferencesKeys.APP_BLOCKED, false)
+                sharedPreferences.push(SharedPreferencesKeys.PIN_COUNT, 3)
+                Log.d(TAG, "OTP verified successfully, navigating to PIN change")
+                onVerificationSuccess()
+            } else {
+                errorMessage = context.getString(R.string.wrong_credentials)
+                showErrorDialog = true
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -72,7 +195,8 @@ fun ChangePinVerificationScreen(
                 onUserIdChange = { userId = it },
                 activationCode = activationCode,
                 onActivationCodeChange = { activationCode = it },
-                onContinue = {
+                isLoading = isLoading,
+                onSendSms = {
                     Log.d(TAG, "=== VERIFICATION DEBUG START ===")
                     Log.d(TAG, "Entered userId: '$userId'")
                     Log.d(TAG, "Entered activationCode: '${activationCode}'")
@@ -114,10 +238,11 @@ fun ChangePinVerificationScreen(
                         Log.d(TAG, "=== VERIFICATION DEBUG END ===")
 
                         if (isUserIdCorrect && isActCodeCorrect) {
-                            Log.d(TAG, "SUCCESS - Navigating")
-                            onVerificationSuccess()
+                            Log.d(TAG, "Credentials verified, sending SMS")
+                            isLoading = true
+                            viewModel.sendSms()
                         } else {
-                            Log.e(TAG, "FAILED - Error dialog")
+                            Log.e(TAG, "Credentials verification failed")
                             errorMessage = context.getString(R.string.wrong_credentials)
                             showErrorDialog = true
                         }
@@ -179,9 +304,10 @@ private fun ChangePinVerificationForm(
     onUserIdChange: (String) -> Unit,
     activationCode: String,
     onActivationCodeChange: (String) -> Unit,
-    onContinue: () -> Unit
+    isLoading: Boolean,
+    onSendSms: () -> Unit
 ) {
-    val isButtonEnabled = userId.isNotEmpty() && activationCode.isNotEmpty()
+    val isButtonEnabled = userId.isNotEmpty() && activationCode.isNotEmpty() && !isLoading
 
     Column(
         modifier = Modifier
@@ -205,25 +331,49 @@ private fun ChangePinVerificationForm(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(
-            onClick = onContinue,
-            enabled = isButtonEnabled,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
-            ),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.change_pin_continue),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
+        Text(
+            text = stringResource(R.string.sms_disclaimer),
+            fontSize = 14.sp,
+            fontFamily = MyriadPro,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(40.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        } else {
+            Button(
+                onClick = onSendSms,
+                enabled = isButtonEnabled,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.sms_send_code),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))

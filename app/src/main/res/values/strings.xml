@@ -330,7 +330,7 @@
     <!-- PIN Login Screen -->
     <string name="pin_login_title">UNESITE PIN</string>
     <string name="pin_login_subtitle">Unesite svoj PIN za pristup</string>
-    <string name="pin_login_forgot">Zaboravili ste PIN?</string>
+    <string name="pin_login_forgot">ZABORAVLJEN PIN?</string>
     <string name="pin_login_error_incorrect">Pogrešan PIN</string>
     <string name="pin_login_error_attempts">Preostalo pokušaja: %d</string>
     <string name="pin_login_app_is_blocked">Aplikacija je blokirana</string>
@@ -404,6 +404,7 @@
     <string name="sms_consent_denied">Pristup SMS-u odbijen</string>
     <string name="wrong_otp_code">Pogrešan SMS kod</string>
     <string name="wrong_credentials">Pogrešni kredencijali</string>
+    <string name="sms_disclaimer">Aktivacioni kod stiže SMS-om na Vaš broj telefona</string>
 
     <!-- Amount Entry Screen -->
     <string name="amount_entry_title">UNESITE IZNOS</string>

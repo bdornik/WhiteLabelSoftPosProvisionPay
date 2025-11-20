@@ -2,8 +2,8 @@ package com.payten.whitelabel.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,7 +13,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.favre.lib.crypto.bcrypt.BCrypt
@@ -48,9 +47,9 @@ fun PinLoginScreen(
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var attemptsRemaining by remember {
-        mutableStateOf(sharedPreferences.pull(SharedPreferencesKeys.PIN_COUNT, 3))
+        mutableIntStateOf(sharedPreferences.pull(SharedPreferencesKeys.PIN_COUNT, 3))
     }
-    var showErrorDialog by remember {mutableStateOf(false)}
+    var showErrorDialog by remember { mutableStateOf(false) }
     var errorDialogMessage by remember { mutableStateOf("") }
 
     val isAppBlocked = sharedPreferences.pull(SharedPreferencesKeys.APP_BLOCKED, false)
@@ -93,13 +92,13 @@ fun PinLoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .systemBarsPadding()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.TopCenter)
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
 
             Image(
                 painter = painterResource(id = R.drawable.payten_logo_final_rgb),
@@ -125,7 +124,7 @@ fun PinLoginScreen(
                     } else {
                         stringResource(R.string.pin_login_enter_your_pin)
                     },
-                    fontSize = 20.sp,
+                    fontSize = 24.sp,
                     fontFamily = MyriadPro,
                     fontWeight = FontWeight.Bold,
                     color = if (showError) MaterialTheme.colorScheme.error else Color.Black
@@ -168,34 +167,48 @@ fun PinLoginScreen(
                 Spacer(modifier = Modifier.height(48.dp))
 
                 if (!isAppBlocked) {
-                    Text(
-                        text = stringResource(R.string.pin_login_forgot),
-                        fontSize = 14.sp,
-                        fontFamily = MyriadPro,
-                        fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { onForgotPin() }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-        }
-        if (showErrorDialog) {
-            CustomDialog(
-                isSuccess = false,
-                title = errorDialogMessage,
-                buttonText =
-                    if (attemptsRemaining == 0) stringResource(R.string.dialog_button_ok_default)
-                    else stringResource(R.string.dialog_button_back_default),
-                onDismiss = {
-                    showErrorDialog = false
-                    if (attemptsRemaining == 0) {
-                        onLoginFailed()
+                    OutlinedButton(
+                        onClick = onForgotPin,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        border = androidx.compose.foundation.BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp)
+                            .fillMaxWidth()
+                            .height(56.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.pin_login_forgot),
+                            fontSize = 20.sp,
+                            fontFamily = MyriadPro,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
+
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
-            )
+            }
+            if (showErrorDialog) {
+                CustomDialog(
+                    isSuccess = false,
+                    title = errorDialogMessage,
+                    buttonText =
+                        if (attemptsRemaining == 0) stringResource(R.string.dialog_button_ok_default)
+                        else stringResource(R.string.dialog_button_back_default),
+                    onDismiss = {
+                        showErrorDialog = false
+                        if (attemptsRemaining == 0) {
+                            onLoginFailed()
+                        }
+                    }
+                )
+            }
         }
     }
 }

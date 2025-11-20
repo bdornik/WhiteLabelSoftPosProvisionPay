@@ -2,6 +2,7 @@ package com.payten.whitelabel.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -176,7 +177,12 @@ private fun AmountDisplayCard(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp),
+            .padding(horizontal = 24.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(12.dp)
+            ),
         color = Color.White,
         shape = RoundedCornerShape(16.dp),
         shadowElevation = 4.dp
@@ -187,36 +193,14 @@ private fun AmountDisplayCard(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.card_processing_amount_label),
-                    fontSize = 16.sp,
-                    fontFamily = MyriadPro,
-                    fontWeight = FontWeight.Normal,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.currency_rsd),
-                        fontSize = 12.sp,
-                        fontFamily = MyriadPro,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Gray
-                    )
-                }
-            }
+            Text(
+                text = stringResource(R.string.card_processing_amount_label),
+                fontSize = 14.sp,
+                fontFamily = MyriadPro,
+                fontWeight = FontWeight.Normal,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -225,7 +209,19 @@ private fun AmountDisplayCard(
                 fontSize = 40.sp,
                 fontFamily = MyriadPro,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = stringResource(R.string.currency_rsd),
+                fontSize = 16.sp,
+                fontFamily = MyriadPro,
+                fontWeight = FontWeight.Normal,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
             )
         }
     }

@@ -341,7 +341,7 @@
     <!-- PIN Login Screen -->
     <string name="pin_login_title">ENTER PIN</string>
     <string name="pin_login_subtitle">Enter your PIN to access</string>
-    <string name="pin_login_forgot">Forgot PIN?</string>
+    <string name="pin_login_forgot">FORGOT PIN?</string>
     <string name="pin_login_error_incorrect">Incorrect PIN</string>
     <string name="pin_login_error_attempts">Attempts remaining: %d</string>
     <string name="pin_login_app_is_blocked">App is blocked</string>
@@ -415,6 +415,7 @@
     <string name="sms_consent_denied">SMS access denied</string>
     <string name="wrong_otp_code">Wrong SMS code</string>
     <string name="wrong_credentials">Wrong credentials</string>
+    <string name="sms_disclaimer">The activation code will be sent via SMS to your phone number</string>
 
     <!-- Amount Entry Screen -->
     <string name="amount_entry_title">ENTER AMOUNT</string>
