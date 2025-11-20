@@ -41,11 +41,9 @@ import com.simcore.api.providers.CardCommunicationProvider
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KotlinLogging
 import org.json.JSONObject
-import java.util.*
 import javax.inject.Inject
-import kotlin.concurrent.schedule
 import com.payten.whitelabel.R
-import android.app.PendingIntent
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import kotlin.getValue
 import androidx.core.graphics.toColorInt
@@ -168,18 +166,6 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     override fun onResume() {
         super.onResume()
 
-        val discovery = IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
-        val tagFilters = arrayOf(discovery)
-        val i = Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-
-        val pi: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_MUTABLE)
-        } else {
-            PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_ONE_SHOT)
-        }
-
-        NfcAdapter.getDefaultAdapter(this).enableForegroundDispatch(this, pi, tagFilters, null)
-
         val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
         this.registerReceiver(mReceiver, filter)
 
@@ -188,9 +174,15 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
                 logger.error { "NFC Not enabled" }
                 returnResult(RESULT_CANCELED, "NFC not enabled")
                 finish()
+                return
             } else {
                 MainApplication.getInstance().setRealProviders()
-                TransactionApi.doTransaction(this@HeadlessPaymentActivity, MainApplication.getInstance().paymentData)
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (!isFinishing) {
+                        resetTransaction()
+                    }
+                }, 1000)
             }
         }
     }
@@ -205,21 +197,31 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         }
 
         unregisterReceiver(mReceiver)
-        MainApplication.getInstance().mtmsListener.setListener(null)
-        MainApplication.getInstance().cvmsListener.setListener(null)
-        MainApplication.getInstance().transactionOutcomeObserver.transactionResultListener = null
-        MainApplication.getInstance().loyaltyObserver.loyaltyActionListener = null
-        MainApplication.getInstance().configurationInterface.setDisplayInterface(null)
-        NfcAdapter.getDefaultAdapter(this).disableForegroundDispatch(this)
+        MainApplication.getInstance().mtmsListener.setListener(this)
+        MainApplication.getInstance().cvmsListener.setListener(this)
+        MainApplication.getInstance().transactionOutcomeObserver.transactionResultListener = this
+        MainApplication.getInstance().loyaltyObserver.loyaltyActionListener = this
+        MainApplication.getInstance().configurationInterface.setDisplayInterface(this)
     }
-
     private fun resetTransaction() {
-        try {
-            isFailedTransaction = false
-            TransactionApi.doTransaction(this@HeadlessPaymentActivity, MainApplication.getInstance().paymentData)
-        } catch (e: Exception) {
-            logger.error { "Starting transaction failed: $e" }
-            logException(e.message)
+        runOnUiThread {
+            try {
+                logger.info { "resetTransaction: calling doTransaction..." }
+                isFailedTransaction = false
+
+                // Safety check
+                val paymentData = MainApplication.getInstance().paymentData
+                if (paymentData == null) {
+                    logger.error { "PaymentData is null" }
+                    return@runOnUiThread
+                }
+
+                TransactionApi.doTransaction(this@HeadlessPaymentActivity, paymentData)
+            } catch (e: Exception) {
+                // Log the error instead of letting the app crash
+                logger.error { "CRASH PREVENTED in resetTransaction: ${e.message}" }
+                e.printStackTrace()
+            }
         }
     }
 
@@ -272,14 +274,18 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     }
 
     override fun onTransactionNotStarted(p0: String?) {
-        logger.info { "Transaction SDK onTransactionNotStarted $p0" }
-        playAudioIndication(false)
+        logger.info { "SDK onTransactionNotStarted: $p0" }
 
-        if (p0.equals("Parameters not Ready Yet", true)) {
-            Timer().schedule(2000) {
-                resetTransaction()
-            }
+        if (p0?.contains("Parameters not Ready", ignoreCase = true) == true) {
+            logger.info { "SDK params not ready. Retrying in 2 seconds..." }
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (!isFinishing && !isDestroyed) {
+                    resetTransaction()
+                }
+            }, 2000)
         } else {
+            playAudioIndication(false)
             returnResult(RESULT_CANCELED, "Transaction not started: $p0")
             finish()
         }
