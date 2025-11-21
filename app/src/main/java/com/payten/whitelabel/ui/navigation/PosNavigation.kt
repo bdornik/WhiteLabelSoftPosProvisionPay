@@ -24,6 +24,7 @@ import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.screens.AmountEntryScreen
 import com.payten.whitelabel.ui.screens.CardProcessingScreen
 import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
+import com.payten.whitelabel.ui.screens.FilterScreen
 import com.payten.whitelabel.ui.screens.FirstPage
 import com.payten.whitelabel.ui.screens.LandingScreen
 import com.payten.whitelabel.ui.screens.MenuScreen
@@ -464,8 +465,19 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                         ?.set("transaction_data", transactionData)
                 },
                 onFilterClick = {
-                    // TODO: Navigate to filter screen
-                    Log.d("Navigation", "Filter clicked")
+                    // Navigate to filter screen.
+                    navController.navigate("filter")
+                }
+            )
+        }
+        composable("filter"){
+            FilterScreen(
+                sharedPreferences = sharedPreferences,
+                onApplyFilter = {
+                    // TODO: Implement filtering method
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

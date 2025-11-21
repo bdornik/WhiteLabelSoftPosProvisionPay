@@ -475,4 +475,26 @@
     <string name="void_success_message">Transakcija je uspešno stornirana</string>
     <string name="void_failed_title">Storniranje neuspešno</string>
     <string name="void_processing">Storniranje u toku...</string>
+
+    <string name="filter_title">FILTER</string>
+    <string name="filter_clear_all">Izbriši sve filtere</string>
+    <string name="filter_date_label">Datum</string>
+    <string name="filter_date_from">Od</string>
+    <string name="filter_date_to">Do</string>
+    <string name="filter_select_date">Unesi datum</string>
+    <string name="filter_transaction_type">Tip transakcije</string>
+    <string name="filter_type_pos">POS</string>
+    <string name="filter_type_ips">IPS</string>
+    <string name="filter_transaction_status">Status transakcije</string>
+    <string name="filter_status_all">Sve</string>
+    <string name="filter_status_accepted">Odobrene</string>
+    <string name="filter_status_rejected">Odbijene</string>
+    <string name="filter_status_voided">Stornirane</string>
+    <string name="filter_sort_order">Razvrstajte</string>
+    <string name="filter_sort_date_desc">Opadajuće po datumu</string>
+    <string name="filter_sort_date_asc">Uzlazno po datumu</string>
+    <string name="filter_sort_amount_asc">Uzlazno po iznosu</string>
+    <string name="filter_sort_amount_desc">Opadajuće po iznosu</string>
+    <string name="filter_apply_button">PRIMENI FILTERE</string>
+    <string name="filter_selected_filters">Izabrani filteri</string>
 </resources>

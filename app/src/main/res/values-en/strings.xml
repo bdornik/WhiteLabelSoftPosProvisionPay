@@ -486,4 +486,26 @@
     <string name="void_success_message">Transaction has been successfully voided</string>
     <string name="void_failed_title">Void Failed</string>
     <string name="void_processing">Voiding transaction...</string>
+
+    <string name="filter_title">FILTER</string>
+    <string name="filter_clear_all">Clear all filters</string>
+    <string name="filter_date_label">Date</string>
+    <string name="filter_date_from">From</string>
+    <string name="filter_date_to">To</string>
+    <string name="filter_select_date">Select date</string>
+    <string name="filter_transaction_type">Transaction type</string>
+    <string name="filter_type_pos">POS</string>
+    <string name="filter_type_ips">IPS</string>
+    <string name="filter_transaction_status">Transaction status</string>
+    <string name="filter_status_all">All</string>
+    <string name="filter_status_accepted">Accepted</string>
+    <string name="filter_status_rejected">Rejected</string>
+    <string name="filter_status_voided">Voided</string>
+    <string name="filter_sort_order">Sort order</string>
+    <string name="filter_sort_date_desc">Descending by date</string>
+    <string name="filter_sort_date_asc">Ascending by date</string>
+    <string name="filter_sort_amount_asc">Ascending by amount</string>
+    <string name="filter_sort_amount_desc">Descending by amount</string>
+    <string name="filter_apply_button">APPLY FILTERS</string>
+    <string name="filter_selected_filters">Selected filters</string>
 </resources>
