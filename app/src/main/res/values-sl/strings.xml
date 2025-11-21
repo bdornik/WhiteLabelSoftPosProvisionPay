@@ -455,4 +455,18 @@
     <string name="card_processing_amount_label">Znesek transakcije</string>
     <string name="card_processing_tap_card_label">PRIBLIŽAJTE KARTICO</string>
     <string name="card_processing_cancel">PREKLIČI TRANSAKCIJO</string>
+
+    <string name="transactions_title">PROMETA</string>
+    <string name="transactions_filter">Filter</string>
+    <string name="transactions_report">Poročilo</string>
+    <string name="transaction_details">Podrobnosti transakcije</string>
+    <string name="transaction_status_accepted_label">Odobreno</string>
+    <string name="transaction_status_rejected_label">Zavrnjeno</string>
+    <string name="transaction_status_voided">Stornirano</string>
+    <string name="transaction_status_pending">V teku</string>
+    <string name="transaction_status_wrong_pin_message">Napačen PIN</string>
+    <string name="transaction_status_pin_not_entered_message">PIN ni vnesen</string>
+    <string name="transaction_status_reversed_message">Povrnjena</string>
+    <string name="transactions_empty">Ni najdenih transakcij</string>
+    <string name="transaction_void_button">STORNIRAJ TRANSAKCIJO</string>
 </resources>

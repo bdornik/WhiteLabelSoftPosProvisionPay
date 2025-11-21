@@ -463,4 +463,18 @@
     <string name="card_processing_amount_label">Transaction Amount</string>
     <string name="card_processing_tap_card_label">TAP YOUR CARD</string>
     <string name="card_processing_cancel">CANCEL TRANSACTION</string>
+
+    <string name="transactions_title">TRAFFIC</string>
+    <string name="transactions_filter">Filter</string>
+    <string name="transactions_report">Report</string>
+    <string name="transaction_details">Transaction details</string>
+    <string name="transaction_status_accepted_label">Approved</string>
+    <string name="transaction_status_rejected_label">Rejected</string>
+    <string name="transaction_status_voided">Voided</string>
+    <string name="transaction_status_pending">Pending</string>
+    <string name="transaction_status_wrong_pin_message">Wrong PIN</string>
+    <string name="transaction_status_pin_not_entered_message">PIN not entered</string>
+    <string name="transaction_status_reversed_message">Reversed</string>
+    <string name="transactions_empty">No transactions found</string>
+    <string name="transaction_void_button">VOID TRANSACTION</string>
 </resources>

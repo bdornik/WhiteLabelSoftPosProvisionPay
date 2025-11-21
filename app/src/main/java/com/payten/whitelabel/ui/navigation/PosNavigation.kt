@@ -39,6 +39,7 @@ import com.payten.whitelabel.ui.screens.SmsVerificationScreen
 import com.payten.whitelabel.ui.screens.SplashScreen
 import com.payten.whitelabel.ui.screens.TipSelectionScreen
 import com.payten.whitelabel.ui.screens.TransactionScreen
+import com.payten.whitelabel.ui.screens.TransactionsListScreen
 import com.payten.whitelabel.utils.AmountUtil.Companion.formatAmount
 
 /**
@@ -418,7 +419,61 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     }
                 }
             }
-            //Other screens
         }
+        composable("traffic"){
+            TransactionsListScreen(
+                sharedPreferences = sharedPreferences,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onTransactionDetailsClick = { transaction ->
+                    Log.d("Navigation", "Transaction details clicked: ${transaction.recordId}")
+
+                    // Convert TransactionDto to TransactionDetailsDto
+                    val transactionData = TransactionDetailsDto(
+                        aid = transaction.transactionId ?: "",
+                        applicationLabel = transaction.applicationLabel ?: "",
+                        authorizationCode = transaction.authorizationCode ?: "",
+                        bankName = "",
+                        cardNumber = transaction.maskedPAN ?: "",
+                        dateTime = transaction.transactionDate.toString(),
+                        merchantId = transaction.merchantId ?: "",
+                        merchantName = sharedPreferences.pull(SharedPreferencesKeys.MERCHANT_NAME, ""),
+                        message = transaction.screenMessage ?: "",
+                        operationName = transaction.operationName ?: "",
+                        response = transaction.responseCode ?: "",
+                        rrn = transaction.creaditTransferIdentificator ?: "",
+                        code = transaction.recordId,
+                        status = transaction.statusCode ?: "",
+                        terminalId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_TERMINAL_ID, ""),
+                        amount = transaction.amount,
+                        isIps = transaction.isIps ?: false,
+                        sdkStatus = transaction.status,
+                        billStatus = null,
+                        color = -1,
+                        recordId = transaction.recordId,
+                        listName = "",
+                        tipAmount = transaction.tipAmount
+                    )
+
+                    // Navigate to transaction details screen
+                    navController.navigate("transaction_result") {
+                        popUpTo("traffic") { inclusive = false }
+                    }
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("transaction_data", transactionData)
+                },
+                onVoidClick = { transaction ->
+                    // TODO: Implement void functionality
+                    Log.d("Navigation", "Void transaction clicked: ${transaction.recordId}")
+                },
+                onFilterClick = {
+                    // TODO: Navigate to filter screen
+                    Log.d("Navigation", "Filter clicked")
+                }
+            )
+        }
+        //Other screens
     }
 }
