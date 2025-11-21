@@ -477,4 +477,13 @@
     <string name="transaction_status_reversed_message">Reversed</string>
     <string name="transactions_empty">No transactions found</string>
     <string name="transaction_void_button">VOID TRANSACTION</string>
+
+    <string name="void_confirmation_title">Void Transaction</string>
+    <string name="void_confirmation_message">Are you sure you want to void this transaction?</string>
+    <string name="void_confirm_button">YES, VOID</string>
+    <string name="void_cancel_button">Cancel</string>
+    <string name="void_success_title">Transaction Voided</string>
+    <string name="void_success_message">Transaction has been successfully voided</string>
+    <string name="void_failed_title">Void Failed</string>
+    <string name="void_processing">Voiding transaction...</string>
 </resources>

@@ -199,7 +199,6 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.popBackStack()
                 },
                 onTrafficClick = {
-                    // TODO: Implement TrafficScreen
                     navController.navigate("traffic")
                 },
                 onSettingsClick = {
@@ -463,10 +462,6 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.currentBackStackEntry
                         ?.savedStateHandle
                         ?.set("transaction_data", transactionData)
-                },
-                onVoidClick = { transaction ->
-                    // TODO: Implement void functionality
-                    Log.d("Navigation", "Void transaction clicked: ${transaction.recordId}")
                 },
                 onFilterClick = {
                     // TODO: Navigate to filter screen

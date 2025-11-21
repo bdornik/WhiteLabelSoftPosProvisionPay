@@ -469,4 +469,13 @@
     <string name="transaction_status_reversed_message">Povrnjena</string>
     <string name="transactions_empty">Ni najdenih transakcij</string>
     <string name="transaction_void_button">STORNIRAJ TRANSAKCIJO</string>
+
+    <string name="void_confirmation_title">Storniranje transakcije</string>
+    <string name="void_confirmation_message">Ali ste prepričani, da želite stornirati to transakcijo?</string>
+    <string name="void_confirm_button">DA, STORNIRAJ</string>
+    <string name="void_cancel_button">Prekliči</string>
+    <string name="void_success_title">Transakcija stornirana</string>
+    <string name="void_success_message">Transakcija je bila uspešno stornirana</string>
+    <string name="void_failed_title">Storniranje neuspešno</string>
+    <string name="void_processing">Storniranje v teku...</string>
 </resources>

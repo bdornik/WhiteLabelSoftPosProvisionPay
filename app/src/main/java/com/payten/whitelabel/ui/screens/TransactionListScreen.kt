@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.R
+import com.payten.whitelabel.dto.TransactionDetailsDto
 import com.payten.whitelabel.dto.TransactionDto
 import com.payten.whitelabel.dto.transactions.GetTransactionsRequest
 import com.payten.whitelabel.enums.TransactionStatus
@@ -37,6 +38,8 @@ import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
 import com.payten.whitelabel.viewmodel.TrafficViewModel
+import com.payten.whitelabel.viewmodel.VoidTransactionState
+import com.payten.whitelabel.viewmodel.VoidTransactionViewModel
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -48,21 +51,48 @@ import org.threeten.bp.format.DateTimeFormatter
  * @param sharedPreferences SharedPreferences instance
  * @param onNavigateBack Callback when back button is clicked
  * @param onTransactionDetailsClick Callback when details icon is clicked
- * @param onVoidClick Callback when void button is clicked
  * @param onFilterClick Callback when filter button is clicked
- * @param viewModel ViewModel for managing transactions
+ * @param trafficViewModel ViewModel for managing transactions
+ * @param voidViewModel ViewModel for void operations
  */
 @Composable
 fun TransactionsListScreen(
     sharedPreferences: KsPrefs,
     onNavigateBack: () -> Unit = {},
     onTransactionDetailsClick: (TransactionDto) -> Unit = {},
-    onVoidClick: (TransactionDto) -> Unit = {},
     onFilterClick: () -> Unit = {},
-    viewModel: TrafficViewModel = hiltViewModel()
+    trafficViewModel: TrafficViewModel = hiltViewModel(),
+    voidViewModel: VoidTransactionViewModel = hiltViewModel()
 ) {
-    val transactions by viewModel.transactionResultsSuccess.observeAsState(emptyList())
+    val transactions by trafficViewModel.transactionResultsSuccess.observeAsState(emptyList())
+    val voidState by voidViewModel.voidState.observeAsState(VoidTransactionState.Idle)
+
     var expandedTransactionId by remember { mutableStateOf<String?>(null) }
+    var showVoidConfirmDialog by remember { mutableStateOf<TransactionDto?>(null) }
+
+    // Handle void state changes
+    LaunchedEffect(voidState) {
+        when (voidState) {
+            is VoidTransactionState.Success -> {
+                // Refresh transactions list after successful void
+                val userId = sharedPreferences.pull(SharedPreferencesKeys.USER_ID, "")
+                val terminalId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_TERMINAL_ID, "")
+                val dateFrom = LocalDateTime.now().minusDays(90)
+                val dateTo = LocalDateTime.now()
+                val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
+                trafficViewModel.getTransactionsFromServer(
+                    GetTransactionsRequest(
+                        userId = userId,
+                        dateFrom = dateFrom.format(dateFormatter),
+                        dateTo = dateTo.format(dateFormatter),
+                        tid = terminalId
+                    )
+                )
+            }
+            else -> {}
+        }
+    }
 
     // Load transactions when screen loads
     LaunchedEffect(Unit) {
@@ -74,7 +104,7 @@ fun TransactionsListScreen(
 
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
-        viewModel.getTransactionsFromServer(
+        trafficViewModel.getTransactionsFromServer(
             GetTransactionsRequest(
                 userId = userId,
                 dateFrom = dateFrom.format(dateFormatter),
@@ -125,7 +155,7 @@ fun TransactionsListScreen(
                                 onTransactionDetailsClick(transaction)
                             },
                             onVoidClick = {
-                                onVoidClick(transaction)
+                                showVoidConfirmDialog = transaction
                             }
                         )
                     }
@@ -136,7 +166,207 @@ fun TransactionsListScreen(
                 }
             }
         }
+
+        showVoidConfirmDialog?.let { transaction ->
+            VoidConfirmationDialog(
+                transaction = transaction,
+                onConfirm = {
+                    val transactionData = TransactionDetailsDto(
+                        aid = transaction.transactionId ?: "",
+                        applicationLabel = transaction.applicationLabel ?: "",
+                        authorizationCode = transaction.authorizationCode ?: "",
+                        bankName = "",
+                        cardNumber = transaction.maskedPAN ?: "",
+                        dateTime = transaction.transactionDate.toString(),
+                        merchantId = transaction.merchantId ?: "",
+                        merchantName = sharedPreferences.pull(SharedPreferencesKeys.MERCHANT_NAME, ""),
+                        message = transaction.screenMessage ?: "",
+                        operationName = transaction.operationName ?: "Prodaja",
+                        response = transaction.responseCode ?: "",
+                        rrn = transaction.creaditTransferIdentificator ?: "",
+                        code = transaction.recordId,
+                        status = transaction.statusCode ?: "",
+                        terminalId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_TERMINAL_ID, ""),
+                        amount = transaction.amount,
+                        isIps = transaction.isIps ?: false,
+                        sdkStatus = transaction.status,
+                        billStatus = null,
+                        color = -1,
+                        recordId = transaction.recordId,
+                        listName = "",
+                        tipAmount = transaction.tipAmount
+                    )
+
+                    voidViewModel.startVoidTransaction(transactionData)
+                    showVoidConfirmDialog = null
+                    expandedTransactionId = null
+                },
+                onDismiss = {
+                    showVoidConfirmDialog = null
+                }
+            )
+        }
+
+        // Processing overlay
+        if (voidState is VoidTransactionState.Processing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        text = stringResource(R.string.void_processing),
+                        color = Color.White,
+                        fontFamily = MyriadPro,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        }
+
+        // Success dialog
+        if (voidState is VoidTransactionState.Success) {
+            AlertDialog(
+                onDismissRequest = { voidViewModel.resetState() },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_success),
+                        contentDescription = null,
+                        tint = Color(0xFF4CAF50),
+                        modifier = Modifier.size(48.dp)
+                    )
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.void_success_title),
+                        fontFamily = MyriadPro,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.void_success_message),
+                        fontFamily = MyriadPro
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = { voidViewModel.resetState() }) {
+                        Text(
+                            text = stringResource(R.string.dialog_button_ok_default),
+                            fontFamily = MyriadPro
+                        )
+                    }
+                }
+            )
+        }
+
+        // Error dialog
+        if (voidState is VoidTransactionState.Failed) {
+            AlertDialog(
+                onDismissRequest = { voidViewModel.resetState() },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_warning),
+                        contentDescription = null,
+                        tint = Color(0xFFEB3223),
+                        modifier = Modifier.size(48.dp)
+                    )
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.void_failed_title),
+                        fontFamily = MyriadPro,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = {
+                    Text(
+                        text = (voidState as VoidTransactionState.Failed).message,
+                        fontFamily = MyriadPro
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = { voidViewModel.resetState() }) {
+                        Text(
+                            text = stringResource(R.string.dialog_button_ok_default),
+                            fontFamily = MyriadPro
+                        )
+                    }
+                }
+            )
+        }
     }
+}
+
+/**
+ * Void confirmation dialog
+ */
+@Composable
+private fun VoidConfirmationDialog(
+    transaction: TransactionDto,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.icon_warning),
+                contentDescription = null,
+                tint = Color(0xFFFFA000),
+                modifier = Modifier.size(48.dp)
+            )
+        },
+        title = {
+            Text(
+                text = stringResource(R.string.void_confirmation_title),
+                fontFamily = MyriadPro,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.void_confirmation_message),
+                    fontFamily = MyriadPro
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "${formatAmount(transaction.amount)} ${stringResource(R.string.currency_rsd)}",
+                    fontFamily = MyriadPro,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFEB3223)
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.void_confirm_button),
+                    fontFamily = MyriadPro
+                )
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.void_cancel_button),
+                    fontFamily = MyriadPro
+                )
+            }
+        }
+    )
 }
 
 /**
