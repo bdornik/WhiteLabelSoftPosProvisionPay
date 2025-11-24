@@ -212,6 +212,18 @@ fun RegistrationPage(
     // Handle SDK failure
     LaunchedEffect(sdkFailed) {
         sdkFailed?.let { error ->
+            sharedPreferences.push(SharedPreferencesKeys.IS_REGISTERED, false)
+
+            viewModel.logError(
+                viewModel.createErrorLog(
+                    sharedPreferences.pull(SharedPreferencesKeys.REGISTRATION_USER_ID, ""),
+                    error,
+                    com.payten.whitelabel.enums.ErrorDescription.registerOnSDK.name,
+                    context
+                ),
+                false
+            )
+
             isLoading = false
             errorMessage = "SDK registration unsuccessful: $error"
             showErrorDialog = true

@@ -55,17 +55,17 @@ fun FilterScreen(
 
     // Load current filters from SharedPreferences
     var selectedType by remember {
-        mutableStateOf(
+        mutableIntStateOf(
             sharedPreferences.pull(SharedPreferencesKeys.FILTER_TYPE, TransactionSource.POS.ordinal)
         )
     }
     var selectedStatus by remember {
-        mutableStateOf(
+        mutableIntStateOf(
             sharedPreferences.pull(SharedPreferencesKeys.FILTER_STATUS, TransactionStatusFilterType.ALL.ordinal)
         )
     }
     var selectedSort by remember {
-        mutableStateOf(
+        mutableIntStateOf(
             sharedPreferences.pull(SharedPreferencesKeys.FILTER_SORT, TransactionSortType.DateDesc.ordinal)
         )
     }
