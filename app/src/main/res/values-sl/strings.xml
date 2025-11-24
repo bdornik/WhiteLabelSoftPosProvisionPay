@@ -340,6 +340,7 @@
     <string name="pin_login_enter_your_pin">Vnesite PIN</string>
     <string name="pin_login_incorrect_with_attempts">Napačen PIN. Preostali poskusi: %d</string>
     <string name="pin_login_app_blocked_contact_support">Aplikacija je blokirana. Obrnite se na podporo.</string>
+    <string name="pin_login_verifying">Preverjanje…</string>
 
     <!-- PDF Viewer Screen -->
     <string name="pdf_title">Pogoji in določila</string>

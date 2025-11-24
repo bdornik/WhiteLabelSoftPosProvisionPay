@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
@@ -24,6 +26,7 @@ import kotlinx.coroutines.delay
 import com.payten.whitelabel.ui.components.NumericKeypad
 import com.payten.whitelabel.ui.components.PinIndicators
 import com.payten.whitelabel.R
+import com.payten.whitelabel.viewmodel.PinViewModel
 
 /**
  * PIN Login screen for returning users.
@@ -41,7 +44,8 @@ fun PinLoginScreen(
     sharedPreferences: KsPrefs,
     onLoginSuccess: () -> Unit = {},
     onForgotPin: () -> Unit = {},
-    onLoginFailed: () -> Unit = {}
+    onLoginFailed: () -> Unit = {},
+    viewModel: PinViewModel = hiltViewModel()
 ) {
     var pin by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
@@ -51,14 +55,35 @@ fun PinLoginScreen(
     }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorDialogMessage by remember { mutableStateOf("") }
+    var isRefreshingToken by remember { mutableStateOf(false) }
 
     val isAppBlocked = sharedPreferences.pull(SharedPreferencesKeys.APP_BLOCKED, false)
     val appBlockedErrorMessage = stringResource(R.string.pin_login_app_blocked_contact_support)
 
     val wrongPINErrorMessage = stringResource(R.string.pin_login_incorrect_with_attempts)
+    val tokenRefreshErrorMessage = stringResource(R.string.error)
+
+    val tokenRefreshSuccess by viewModel.getTokenSuccessfull.observeAsState()
+
+    LaunchedEffect(tokenRefreshSuccess) {
+        tokenRefreshSuccess?.let { success ->
+            isRefreshingToken = false
+
+            if (success) {
+                // Token refresh successful - navigate to landing
+                onLoginSuccess()
+            } else {
+                // Token refresh failed - show error
+                errorDialogMessage = tokenRefreshErrorMessage
+                showErrorDialog = true
+                // Reset PIN for retry
+                pin = ""
+            }
+        }
+    }
 
     LaunchedEffect(pin.length) {
-        if (pin.length == 4) {
+        if (pin.length == 4 && !isRefreshingToken) {
             delay(300)
 
             val storedPin = sharedPreferences.pull(SharedPreferencesKeys.PIN, "")
@@ -66,6 +91,9 @@ fun PinLoginScreen(
 
             if (result.verified) {
                 sharedPreferences.push(SharedPreferencesKeys.PIN_COUNT, 3)
+                isRefreshingToken = true
+                val isDummy = sharedPreferences.pull(SharedPreferencesKeys.DUMMY, false)
+                viewModel.refreshData(isDummy)
                 onLoginSuccess()
             } else {
                 attemptsRemaining--
@@ -77,7 +105,10 @@ fun PinLoginScreen(
                     showErrorDialog = true
                 } else {
                     errorMessage = wrongPINErrorMessage + attemptsRemaining
-                    showErrorDialog = true
+                    showError = true
+                    delay(2000)
+                    pin = ""
+                    showError = false
                 }
 
                 showError = true
@@ -119,10 +150,10 @@ fun PinLoginScreen(
             ) {
 
                 Text(
-                    text = if (isAppBlocked) {
-                        stringResource(R.string.pin_login_app_is_blocked)
-                    } else {
-                        stringResource(R.string.pin_login_enter_your_pin)
+                    text = when {
+                        isAppBlocked -> stringResource(R.string.pin_login_app_is_blocked)
+                        isRefreshingToken -> stringResource(R.string.pin_login_verifying)
+                        else -> stringResource(R.string.pin_login_enter_your_pin)
                     },
                     fontSize = 24.sp,
                     fontFamily = MyriadPro,
@@ -142,10 +173,17 @@ fun PinLoginScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                PinIndicators(
-                    pinLength = pin.length,
-                    isError = showError
-                )
+                if (isRefreshingToken) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                } else {
+                    PinIndicators(
+                        pinLength = pin.length,
+                        isError = showError
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(60.dp))
 

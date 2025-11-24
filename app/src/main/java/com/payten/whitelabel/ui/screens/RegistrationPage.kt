@@ -1,7 +1,9 @@
 package com.payten.whitelabel.ui.screens
 
 import android.app.Application
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,7 +38,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
@@ -46,7 +47,6 @@ import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.components.CustomDialog
 import com.payten.whitelabel.ui.components.CustomTextField
 import com.payten.whitelabel.ui.components.TermsAndConditionsBox
-import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
 import com.payten.whitelabel.viewmodel.RegistrationViewModel
 import com.simant.MainApplication
@@ -65,6 +65,7 @@ import com.payten.whitelabel.R
  * @param onNavigateNext Callback invoked when the registration is successful.
  * @param onViewTermsClick Callback invoked when the T&C link is clicked.
  * */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RegistrationPage(
     sharedPreferences: KsPrefs,
@@ -93,7 +94,6 @@ fun RegistrationPage(
     val hostKeysSuccess by viewModel.paytenGetHostKeys.observeAsState()
     val sdkSuccess by viewModel.sdkRegisterSuccess.observeAsState()
     val sdkFailed by viewModel.sdkRegisterFailed.observeAsState()
-    val healthCheckStatus by viewModel.healthCheck.observeAsState(false)
 
     // We are performing the health check on first composition
     LaunchedEffect(Unit) {
@@ -415,19 +415,5 @@ private fun RegistrationForm(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true, name = "Registration - Light")
-@Composable
-fun RegPreview() {
-    AppTheme {
-        RegistrationPage(
-            onNavigateBack = {},
-            onNavigateNext = { },
-            onViewTermsClick = {},
-            sharedPreferences = TODO(),
-            viewModel = TODO(),
-        )
     }
 }

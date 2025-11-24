@@ -337,6 +337,7 @@
     <string name="pin_login_enter_your_pin">Unesite PIN</string>
     <string name="pin_login_incorrect_with_attempts">Netačan PIN. Preostali pokušaji: %d</string>
     <string name="pin_login_app_blocked_contact_support">Aplikacija je blokirana. Kontaktirajte podršku.</string>
+    <string name="pin_login_verifying">Proveravanje…</string>
 
     <!-- PDF Viewer Screen -->
     <string name="pdf_title">Uslovi i odredbe</string>
