@@ -338,6 +338,17 @@
     <string name="pin_setup_success_dialog_title">Successful registration</string>
     <string name="pin_setup_incorrect_pin_title">You entered an incorrect PIN</string>
 
+    <!-- PIN Setup - Provisioning Steps -->
+    <string name="pin_setup_saving_pin">Saving PIN…</string>
+    <string name="pin_setup_initializing_sdk">Initializing SDK…</string>
+    <string name="pin_setup_refreshing_token">Refreshing token…</string>
+    <string name="pin_setup_configuring_terminal">Configuring terminal…</string>
+
+    <!-- PIN Setup - Error Messages -->
+    <string name="pin_setup_provisioning_failed">Provisioning failed. Please try again.</string>
+    <string name="pin_setup_sdk_provisioning_failed">SDK provisioning failed. Please try again.</string>
+    <string name="pin_setup_merchant_details_failed">Failed to fetch merchant details. Please try again.</string>
+
     <!-- PIN Login Screen -->
     <string name="pin_login_title">ENTER PIN</string>
     <string name="pin_login_subtitle">Enter your PIN to access</string>

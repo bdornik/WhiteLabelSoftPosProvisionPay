@@ -15,7 +15,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.activities.HeadlessPaymentActivity
 import com.payten.whitelabel.config.SupercaseConfig
@@ -121,16 +120,11 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
         }
         composable("pin_setup") {
             PinSetupScreen(
+                sharedPreferences = sharedPreferences,
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                onPinSetupComplete = { pin ->
-                    val encryptedPin = BCrypt
-                        .withDefaults()
-                        .hashToString(12, pin.toCharArray())
-                    sharedPreferences.push(SharedPreferencesKeys.PIN, encryptedPin)
-                    sharedPreferences.push(SharedPreferencesKeys.REGISTERED, true)
-
+                onPinSetupComplete = {
                     // Navigates to the landing page after a successful registration process.
                     navController.navigate("landing") {
                         popUpTo("landing") { inclusive = true }

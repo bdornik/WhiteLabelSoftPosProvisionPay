@@ -327,6 +327,17 @@
     <string name="pin_setup_success_dialog_title">Uspešna registracija</string>
     <string name="pin_setup_incorrect_pin_title">Uneli ste neispravan PIN</string>
 
+    <!-- PIN Setup - Provisioning Steps -->
+    <string name="pin_setup_saving_pin">Čuvanje PIN-a…</string>
+    <string name="pin_setup_initializing_sdk">Inicijalizacija SDK-a…</string>
+    <string name="pin_setup_refreshing_token">Osvežavanje tokena…</string>
+    <string name="pin_setup_configuring_terminal">Konfiguracija terminala…</string>
+
+    <!-- PIN Setup - Error Messages -->
+    <string name="pin_setup_provisioning_failed">Provizionisanje nije uspelo. Pokušajte ponovo.</string>
+    <string name="pin_setup_sdk_provisioning_failed">SDK provizionisanje nije uspelo. Pokušajte ponovo.</string>
+    <string name="pin_setup_merchant_details_failed">Neuspešno preuzimanje podataka o trgovcu. Pokušajte ponovo.</string>
+
     <!-- PIN Login Screen -->
     <string name="pin_login_title">UNESITE PIN</string>
     <string name="pin_login_subtitle">Unesite svoj PIN za pristup</string>
