@@ -452,6 +452,7 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         config.dialogStyle = DialogFragment.STYLE_NORMAL
         config.activity = this@HeadlessPaymentActivity
         config.autoRandomOrder = false
+        config.maxPINLength = 4
 
         // Display formatted amount (hide it by setting empty string)
         config.infoText = ""

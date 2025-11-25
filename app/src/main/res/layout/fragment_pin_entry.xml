@@ -250,11 +250,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- Empty space -->
-                <Space
+                <RelativeLayout
+                    android:id="@+id/keypad_ok_container"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:layout_marginEnd="12dp" />
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/pin_keypad_button"
+                    android:padding="20dp">
+                    <ImageView
+                        android:id="@+id/keypad_ok"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/check"
+                        android:scaleType="fitXY" />
+                </RelativeLayout>
 
                 <RelativeLayout
                     android:id="@+id/keypad_0_container"
@@ -271,7 +281,6 @@
                         android:scaleType="fitXY" />
                 </RelativeLayout>
 
-                <!-- Backspace button (mapped to SDK's clear) -->
                 <RelativeLayout
                     android:id="@+id/keypad_clear_container"
                     android:layout_width="80dp"
@@ -324,18 +333,5 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone" />
-
-        <!-- Hidden OK button (required by SDK but not used) -->
-        <RelativeLayout
-            android:id="@+id/keypad_ok_container"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="gone">
-            <ImageView
-                android:id="@+id/keypad_ok"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </RelativeLayout>
-
     </LinearLayout>
 </layout>

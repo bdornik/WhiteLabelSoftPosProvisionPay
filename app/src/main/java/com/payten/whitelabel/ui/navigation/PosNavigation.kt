@@ -347,12 +347,14 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     }
 
                     if (transactionData != null) {
+                        // Save data to Landing.
+                        navController.getBackStackEntry("landing")
+                            .savedStateHandle["transaction_data"] = transactionData
+
+                        // Navigate to the transaction result.
                         navController.navigate("transaction_result") {
                             popUpTo("landing") { inclusive = false }
                         }
-                        navController.currentBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("transaction_data", transactionData)
                     }
                 } else {
                     navController.popBackStack()
