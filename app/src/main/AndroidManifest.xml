@@ -32,6 +32,12 @@
     <uses-feature
         android:name="android.hardware.nfc"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <application
         android:name="com.simant.MainApplication"
@@ -60,7 +66,7 @@
         <activity
             android:name=".activities.HeadlessPaymentActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/Theme.App.Transparent"
             android:noHistory="true"
             android:excludeFromRecents="true" />
         <meta-data

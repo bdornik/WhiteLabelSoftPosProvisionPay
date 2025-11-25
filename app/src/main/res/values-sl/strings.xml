@@ -512,4 +512,8 @@
     <string name="filter_sort_amount_desc">Padajoče po znesku</string>
     <string name="filter_apply_button">UPORABI FILTRE</string>
     <string name="filter_selected_filters">Izbrani filtri</string>
+
+    <!-- Card PIN Entry -->
+    <string name="card_pin_entry_enter_pin">Vnesite PIN kartice</string>
+    <string name="card_pin_entry_cancel">Prekliči</string>
 </resources>

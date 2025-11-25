@@ -520,4 +520,8 @@
     <string name="filter_sort_amount_desc">Descending by amount</string>
     <string name="filter_apply_button">APPLY FILTERS</string>
     <string name="filter_selected_filters">Selected filters</string>
+
+    <!-- Card PIN Entry -->
+    <string name="card_pin_entry_enter_pin">Enter card PIN</string>
+    <string name="card_pin_entry_cancel">Cancel</string>
 </resources>

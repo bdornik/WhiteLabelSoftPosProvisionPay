@@ -509,4 +509,8 @@
     <string name="filter_sort_amount_desc">Opadajuće po iznosu</string>
     <string name="filter_apply_button">PRIMENI FILTERE</string>
     <string name="filter_selected_filters">Izabrani filteri</string>
+
+    <!-- Card PIN Entry -->
+    <string name="card_pin_entry_enter_pin">Unesite PIN kartice</string>
+    <string name="card_pin_entry_cancel">Otkaži</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.payten.whitelabel.activities
 
 import android.annotation.SuppressLint
-import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -30,7 +29,6 @@ import com.simant.MainApplication
 import com.simant.sample.SimantApplication
 import com.simant.softpos.api.CVMTransactionApi
 import com.simant.softpos.api.TransactionApi
-import com.simant.utils.CurrencyTable
 import com.simcore.api.SoftPOSSDK
 import com.simcore.api.interfaces.DisplayInterface
 import com.simcore.api.interfaces.LoyaltyActionListener
@@ -44,7 +42,15 @@ import org.json.JSONObject
 import javax.inject.Inject
 import com.payten.whitelabel.R
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.app.DialogFragment
+import android.graphics.Color
+import androidx.annotation.RequiresApi
 import kotlin.getValue
 import androidx.core.graphics.toColorInt
 
@@ -88,7 +94,7 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         logger.info { "onCreate HeadlessPaymentActivity" }
 
         // Make window invisible
-        setTheme(android.R.style.Theme_Translucent_NoTitleBar)
+        //setTheme(android.R.style.Theme_Translucent_NoTitleBar)
 
         val model2: PosViewModel by viewModels()
         model = model2
@@ -400,8 +406,10 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
     @SuppressLint("DefaultLocale")
     override fun getDialogConfiguration(): CVMEDlgFragmentConfigurator {
+        Log.d(TAG, "getDialogConfiguration() called - SDK requesting PIN dialog setup")
         val config = CVMEDlgFragmentConfigurator()
 
+        // Keypad button IDs
         config.key0Id = R.id.keypad_0
         config.key1Id = R.id.keypad_1
         config.key2Id = R.id.keypad_2
@@ -422,68 +430,46 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         config.key7ContainerId = R.id.keypad_7_container
         config.key8ContainerId = R.id.keypad_8_container
         config.key9ContainerId = R.id.keypad_9_container
-        config.autoRandomOrder = false
-        config.okId = R.id.keypad_ok
+
+        // Clear (backspace) and cancel buttons
         config.clearId = R.id.keypad_clear
-        config.cancelId = R.id.keypad_cancel
-        config.wildcardTextViewId = R.id.pinText
-        config.infoTextViewId = R.id.infoText
-        config.countDownTextViewId = R.id.countDownText
         config.clearContainerId = R.id.keypad_clear_container
+        config.cancelId = R.id.keypad_cancel
         config.cancelContainerId = R.id.keypad_cancel_container
+
+        // OK button (hidden in layout)
+        config.okId = R.id.keypad_ok
         config.okContainerId = R.id.keypad_ok_container
+
+        // Text views
+        config.wildcardTextViewId = R.id.pinText // Hidden - PIN entry managed by SDK
+        config.infoTextViewId = R.id.infoText // Amount display
+        config.countDownTextViewId = R.id.countDownText // Timer display
+
+        // Layout configuration
         config.layoutResourceID = R.layout.fragment_pin_entry
         config.dialogTheme = android.R.style.Theme_NoTitleBar_Fullscreen
         config.dialogStyle = DialogFragment.STYLE_NORMAL
         config.activity = this@HeadlessPaymentActivity
+        config.autoRandomOrder = false
 
-        val okConfig = CVMEElementConfig()
-        okConfig.text = "OK"
-        okConfig.textColor = "#000000".toColorInt()
-        okConfig.backgroundColor = "#28a745".toColorInt()
-        okConfig.fontSize = 50
-        okConfig.height = 100
-        okConfig.width = 100
-        okConfig.font = Typeface.create("Roboto", Typeface.NORMAL)
-        config.okConfig = okConfig
+        // Display formatted amount (hide it by setting empty string)
+        config.infoText = ""
 
-        val clearConfig = CVMEElementConfig()
-        clearConfig.text = "Clr"
-        clearConfig.textColor = "#000000".toColorInt()
-        clearConfig.backgroundColor = "#ffff00".toColorInt()
-        clearConfig.fontSize = 50
-        clearConfig.height = 100
-        clearConfig.width = 100
-        clearConfig.font = Typeface.create("Roboto", Typeface.NORMAL)
-        config.clearConfig = clearConfig
-
-        val cancelConfig = CVMEElementConfig()
-        cancelConfig.text = "Can"
-        cancelConfig.textColor = "#000000".toColorInt()
-        cancelConfig.backgroundColor = "#EB3223".toColorInt()
-        cancelConfig.fontSize = 50
-        cancelConfig.height = 100
-        cancelConfig.width = 100
-        cancelConfig.font = Typeface.create("Roboto", Typeface.NORMAL)
-        config.cancelConfig = cancelConfig
-
-        config.infoText = CurrencyTable.FormattedAmount(
-            String.format("%06d", MainApplication.getInstance().paymentData.amountTransaction),
-            MainApplication.getInstance().paymentData.currencyCode
-        )
+        // Timer configuration
         config.countDownTextFormat = "Preostalo sekundi %s"
         config.countDownTimeInSeconds = 30
         config.isResetTimerOnClear = true
         config.restartTimerOnKeyInSeconds = 5
 
+        // Key configuration - SDK uses this to render the buttons
         val keyConfig = CVMEElementKeyConfig()
         keyConfig.textColor = "#000000".toColorInt()
-        keyConfig.backgroundColor = "#FFFFFF".toColorInt()
-        keyConfig.fontSize = 90
-        keyConfig.height = 120
-        keyConfig.width = 120
-        keyConfig.font = Typeface.create("Roboto", Typeface.NORMAL)
-
+        keyConfig.backgroundColor = Color.TRANSPARENT
+        keyConfig.fontSize = 28
+        keyConfig.height = 40
+        keyConfig.width = 40
+        keyConfig.font = Typeface.DEFAULT_BOLD
         val randomAngle = CVMEElementKeyProperty()
         randomAngle.max = 0
         randomAngle.min = 0
@@ -491,14 +477,139 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         keyConfig.randomAngle = randomAngle
         config.keyConfig = keyConfig
 
-        okConfig.text = ""
-        config.okConfig = okConfig
+        // Clear button config (backspace) - tiny so it won't render over our icon
+        val clearConfig = CVMEElementConfig()
         clearConfig.text = ""
+        clearConfig.textColor = "#000000".toColorInt()
+        clearConfig.backgroundColor = "#FFFFFF".toColorInt()
+        clearConfig.fontSize = 1
+        clearConfig.height = 1
+        clearConfig.width = 1
+        clearConfig.font = Typeface.DEFAULT
         config.clearConfig = clearConfig
+
+        // Cancel button config - tiny so it won't render over our TextView
+        val cancelConfig = CVMEElementConfig()
         cancelConfig.text = ""
+        cancelConfig.textColor = "#E53935".toColorInt()
+        cancelConfig.backgroundColor = "#FFFFFF".toColorInt()
+        cancelConfig.fontSize = 1
+        cancelConfig.height = 1
+        cancelConfig.width = 1
+        cancelConfig.font = Typeface.DEFAULT
         config.cancelConfig = cancelConfig
 
+        // OK button config (hidden in layout)
+        val okConfig = CVMEElementConfig()
+        okConfig.text = ""
+        okConfig.textColor = "#000000".toColorInt()
+        okConfig.backgroundColor = "#FFFFFF".toColorInt()
+        okConfig.fontSize = 1
+        okConfig.height = 1
+        okConfig.width = 1
+        okConfig.font = Typeface.DEFAULT
+        config.okConfig = okConfig
+
+        // Set up PIN indicator updates after dialog is created
+        setupPinIndicatorUpdates()
+
+        Log.d(TAG, "Dialog configuration complete, returning to SDK")
         return config
+    }
+
+    /**
+     * Sets up a mechanism to update the visual PIN indicators as the user types.
+     * The SDK manages the PIN internally and updates the wildcardTextView with "*" characters.
+     * We observe this TextView to update our custom PIN indicator circles.
+     */
+    @Suppress("DEPRECATION")
+    private fun setupPinIndicatorUpdates() {
+        // Post delayed to allow SDK to create and show the dialog
+        // Try multiple times with increasing delays
+        var attemptCount = 0
+        val maxAttempts = 5
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun trySetup() {
+            Handler(Looper.getMainLooper()).postDelayed({
+                try {
+                    attemptCount++
+                    Log.d(TAG, "Attempting to find SDK dialog fragment (attempt $attemptCount/$maxAttempts)...")
+
+                    // SDK uses old android.app.FragmentManager, not AndroidX
+                    val fragmentManager = fragmentManager
+                    val fragments = fragmentManager?.fragments
+
+                    Log.d(TAG, "FragmentManager: $fragmentManager")
+                    Log.d(TAG, "Fragments list: $fragments")
+                    Log.d(TAG, "Found ${fragments?.size ?: 0} fragments")
+
+                    var found = false
+
+                    // Find all fragments and locate the PIN entry dialog
+                    fragments?.forEach { fragment ->
+                        Log.d(TAG, "Checking fragment: ${fragment?.javaClass?.simpleName}")
+                        fragment?.view?.let { dialogView ->
+                            Log.d(TAG, "Fragment has view, searching for PIN views...")
+                            // Find the PIN text view and indicator views
+                            val pinTextView = dialogView.findViewById<TextView>(R.id.pinText)
+                            val indicator1 = dialogView.findViewById<View>(R.id.pin_indicator_1)
+                            val indicator2 = dialogView.findViewById<View>(R.id.pin_indicator_2)
+                            val indicator3 = dialogView.findViewById<View>(R.id.pin_indicator_3)
+                            val indicator4 = dialogView.findViewById<View>(R.id.pin_indicator_4)
+
+                            Log.d(TAG, "pinTextView: $pinTextView, indicator1: $indicator1")
+
+                            if (pinTextView != null && indicator1 != null) {
+                                Log.d(TAG, "✓ Setting up PIN indicator text watcher")
+                                found = true
+
+                                // Add TextWatcher to observe PIN length
+                                pinTextView.addTextChangedListener(object : TextWatcher {
+                                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                                        val pinLength = s?.length ?: 0
+                                        Log.d(TAG, "PIN length changed: $pinLength")
+
+                                        // Update indicators based on PIN length
+                                        runOnUiThread {
+                                            indicator1.setBackgroundResource(
+                                                if (pinLength >= 1) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty
+                                            )
+                                            indicator2?.setBackgroundResource(
+                                                if (pinLength >= 2) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty
+                                            )
+                                            indicator3?.setBackgroundResource(
+                                                if (pinLength >= 3) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty
+                                            )
+                                            indicator4?.setBackgroundResource(
+                                                if (pinLength >= 4) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty
+                                            )
+                                        }
+                                    }
+
+                                    override fun afterTextChanged(s: Editable?) {}
+                                })
+                            }
+                        }
+                    }
+
+                    // If not found and haven't reached max attempts, try again
+                    if (!found && attemptCount < maxAttempts) {
+                        Log.d(TAG, "PIN views not found, retrying...")
+                        trySetup()
+                    } else if (!found) {
+                        Log.w(TAG, "Could not find PIN views after $maxAttempts attempts")
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error setting up PIN indicators", e)
+                    e.printStackTrace()
+                }
+            }, 300L * attemptCount) // Increasing delay: 300ms, 600ms, 900ms, etc.
+        }
+
+        trySetup()
     }
 
     // LoyaltyActionListener implementations
