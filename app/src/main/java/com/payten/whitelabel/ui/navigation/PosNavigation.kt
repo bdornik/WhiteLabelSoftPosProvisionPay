@@ -419,6 +419,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
         composable("traffic"){
             TransactionsListScreen(
                 sharedPreferences = sharedPreferences,
+                navController = navController,
                 onNavigateBack = {
                     navController.popBackStack()
                 },

@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.R
 import com.payten.whitelabel.dto.TransactionDetailsDto
@@ -52,56 +54,47 @@ import org.threeten.bp.format.DateTimeFormatter
  * @param onNavigateBack Callback when back button is clicked
  * @param onTransactionDetailsClick Callback when details icon is clicked
  * @param onFilterClick Callback when filter button is clicked
- * @param trafficViewModel ViewModel for managing transactions
- * @param voidViewModel ViewModel for void operations
  */
+@SuppressLint("UnrememberedGetBackStackEntry")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsListScreen(
     sharedPreferences: KsPrefs,
+    navController: NavController? = null,
     onNavigateBack: () -> Unit = {},
     onTransactionDetailsClick: (TransactionDto) -> Unit = {},
-    onFilterClick: () -> Unit = {},
-    trafficViewModel: TrafficViewModel = hiltViewModel(),
-    voidViewModel: VoidTransactionViewModel = hiltViewModel()
+    onFilterClick: () -> Unit = {}
 ) {
+    // Scope ViewModels to the NavController's graph so they survive navigation
+    // This keeps the ViewModel alive even when navigating back and forth
+    val trafficViewModel: TrafficViewModel = if (navController != null) {
+        hiltViewModel(
+            viewModelStoreOwner = navController.getBackStackEntry(navController.graph.id)
+        )
+    } else {
+        hiltViewModel()
+    }
+
+    val voidViewModel: VoidTransactionViewModel = if (navController != null) {
+        hiltViewModel(
+            viewModelStoreOwner = navController.getBackStackEntry(navController.graph.id)
+        )
+    } else {
+        hiltViewModel()
+    }
     val transactions by trafficViewModel.transactionResultsSuccess.observeAsState(emptyList())
     val voidState by voidViewModel.voidState.observeAsState(VoidTransactionState.Idle)
 
     var expandedTransactionId by remember { mutableStateOf<String?>(null) }
     var showVoidConfirmDialog by remember { mutableStateOf<TransactionDto?>(null) }
+    var isRefreshing by remember { mutableStateOf(false) }
 
-    // Handle void state changes
-    LaunchedEffect(voidState) {
-        when (voidState) {
-            is VoidTransactionState.Success -> {
-                // Refresh transactions list after successful void
-                val userId = sharedPreferences.pull(SharedPreferencesKeys.USER_ID, "")
-                val terminalId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_TERMINAL_ID, "")
-                val dateFrom = LocalDateTime.now().minusDays(90)
-                val dateTo = LocalDateTime.now()
-                val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-
-                trafficViewModel.getTransactionsFromServer(
-                    GetTransactionsRequest(
-                        userId = userId,
-                        dateFrom = dateFrom.format(dateFormatter),
-                        dateTo = dateTo.format(dateFormatter),
-                        tid = terminalId
-                    )
-                )
-            }
-            else -> {}
-        }
-    }
-
-    // Load transactions when screen loads
-    LaunchedEffect(Unit) {
+    // Function to load/refresh transactions
+    fun loadTransactions() {
         val userId = sharedPreferences.pull(SharedPreferencesKeys.USER_ID, "")
         val terminalId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_TERMINAL_ID, "")
-
         val dateFrom = LocalDateTime.now().minusDays(90)
         val dateTo = LocalDateTime.now()
-
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
         trafficViewModel.getTransactionsFromServer(
@@ -112,6 +105,35 @@ fun TransactionsListScreen(
                 tid = terminalId
             )
         )
+    }
+
+    // Handle void state changes
+    LaunchedEffect(voidState) {
+        when (voidState) {
+            is VoidTransactionState.Success -> {
+                // Refresh transactions list after successful void
+                loadTransactions()
+            }
+            else -> {}
+        }
+    }
+
+    // Load transactions only if not already loaded (ViewModel survives navigation)
+    LaunchedEffect(Unit) {
+        // Only load if we haven't loaded transactions yet
+        val shouldLoad = trafficViewModel.shouldLoadTransactions()
+        android.util.Log.d("TransactionListScreen", "shouldLoadTransactions: $shouldLoad, transactions: ${transactions?.size}")
+        if (shouldLoad) {
+            android.util.Log.d("TransactionListScreen", "Loading transactions...")
+            loadTransactions()
+        } else {
+            android.util.Log.d("TransactionListScreen", "Skipping load - transactions already loaded")
+        }
+    }
+
+    // Stop refresh indicator when transactions are loaded
+    LaunchedEffect(transactions) {
+        isRefreshing = false
     }
 
     Box(
@@ -131,37 +153,46 @@ fun TransactionsListScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (transactions.isNullOrEmpty()) {
-                EmptyTransactionsList()
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(transactions!!) { transaction ->
-                        TransactionCard(
-                            transaction = transaction,
-                            isExpanded = expandedTransactionId == transaction.recordId,
-                            onClick = {
-                                expandedTransactionId = if (expandedTransactionId == transaction.recordId) {
-                                    null
-                                } else {
-                                    transaction.recordId
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    loadTransactions()
+                },
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (transactions.isNullOrEmpty()) {
+                    EmptyTransactionsList()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(transactions!!) { transaction ->
+                            TransactionCard(
+                                transaction = transaction,
+                                isExpanded = expandedTransactionId == transaction.recordId,
+                                onClick = {
+                                    expandedTransactionId = if (expandedTransactionId == transaction.recordId) {
+                                        null
+                                    } else {
+                                        transaction.recordId
+                                    }
+                                },
+                                onDetailsClick = {
+                                    onTransactionDetailsClick(transaction)
+                                },
+                                onVoidClick = {
+                                    showVoidConfirmDialog = transaction
                                 }
-                            },
-                            onDetailsClick = {
-                                onTransactionDetailsClick(transaction)
-                            },
-                            onVoidClick = {
-                                showVoidConfirmDialog = transaction
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
                     }
                 }
             }

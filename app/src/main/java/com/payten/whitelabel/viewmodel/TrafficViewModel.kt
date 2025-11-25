@@ -1,8 +1,8 @@
 package com.payten.whitelabel.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.dto.*
 import com.payten.whitelabel.dto.ipsTransactions.GetIpsTransactionRequest
 import com.payten.whitelabel.dto.ipsTransactions.GetIpsTransactionResponse
@@ -19,8 +19,13 @@ import rs.digitalworx.takt.api.SupercaseApiService
 import javax.inject.Inject
 
 @HiltViewModel
-class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiService, private val sharedPreferences: KsPrefs,) : ViewModel() {
+class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiService) : ViewModel() {
     private val logger = KotlinLogging.logger {}
+
+    init {
+        logger.info { "TrafficViewModel instance created: ${this.hashCode()}" }
+        android.util.Log.d("TrafficViewModel", "TrafficViewModel instance created: ${this.hashCode()}")
+    }
 
     //val transactionResultsSuccess =  MutableLiveData<GetTransactionsResult>()
 
@@ -33,6 +38,19 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
     val sendEmailSuccess =  MutableLiveData<Boolean>()
     val sendEmailFailed =  MutableLiveData<Boolean>()
 
+    // Track whether transactions have been loaded to avoid reloading on navigation
+    private var hasLoadedTransactions = false
+
+    fun shouldLoadTransactions(): Boolean {
+        android.util.Log.d("TrafficViewModel", "shouldLoadTransactions: $hasLoadedTransactions (returning ${!hasLoadedTransactions})")
+        return !hasLoadedTransactions
+    }
+
+    fun markTransactionsAsLoaded() {
+        android.util.Log.d("TrafficViewModel", "markTransactionsAsLoaded: true")
+        hasLoadedTransactions = true
+    }
+
 //    fun getTransactions(inputData: GetTransactionsInputData) {
 //        viewModelScope.launch(Dispatchers.IO) {
 //            val gtr = TransactionApi.doGetTransactions(inputData)
@@ -44,33 +62,64 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
     private val compositeDisposable = CompositeDisposable()
     override fun onCleared() {
         super.onCleared()
+        logger.info { "TrafficViewModel cleared: ${this.hashCode()}" }
+        android.util.Log.d("TrafficViewModel", "TrafficViewModel cleared: ${this.hashCode()}")
         compositeDisposable.clear()
     }
 
     fun getTransactionsFromServer(request: GetTransactionsRequest){
-        logger.info("Transaction request: ${request}")
-        apiService
+        logger.info("Transaction request: $request")
+        val disposable = apiService
             .getTransaction(request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe ({ response ->
-                logger.info("Transaction successfull: ${response}")
+                logger.info("Transaction successfull: $response")
                 if(response.statusCode.equals("00", true)){
                     transactionResultsSuccess.postValue(prepackTransactions(response.data.transaction))
+                    markTransactionsAsLoaded()
                 } else {
                     transactionResultsSuccess.postValue(null)
                 }
             }, { error ->
-                logger.info("Transaction Unsuccessfull: ${error}")
+                logger.info("Transaction Unsuccessfull: $error")
                 transactionResultsSuccess.postValue(null)
             })
+
+        compositeDisposable.add(disposable)
     }
 
     private fun prepackTransactions(data: List<GetTransactionResponseData>): List<TransactionDto> {
 
         val resposne :ArrayList<TransactionDto> = arrayListOf()
         for (transaction in data){
-            logger.info { "Transaction data: " + transaction }
+            logger.info { "Transaction data: $transaction" }
+
+            // Map statusCode and responseCode to TransactionStatus
+            val status = when {
+                transaction.statusCode.equals("a", true) -> {
+                    when {
+                        transaction.responseCode.equals("00", true) -> com.payten.whitelabel.enums.TransactionStatus.Accepted
+                        transaction.responseCode.equals("06", true) -> com.payten.whitelabel.enums.TransactionStatus.Rejected
+                        transaction.responseCode.equals("17", true) -> com.payten.whitelabel.enums.TransactionStatus.WrongPin
+                        else -> com.payten.whitelabel.enums.TransactionStatus.Rejected
+                    }
+                }
+                transaction.statusCode.equals("f", true) || transaction.statusCode.equals("p", true) -> {
+                    com.payten.whitelabel.enums.TransactionStatus.Rejected
+                }
+                transaction.statusCode.equals("v", true) -> {
+                    com.payten.whitelabel.enums.TransactionStatus.Voided
+                }
+                transaction.statusCode.equals("s", true) -> {
+                    com.payten.whitelabel.enums.TransactionStatus.PinNotEntered
+                }
+                transaction.statusCode.equals("d", true) -> {
+                    com.payten.whitelabel.enums.TransactionStatus.Reversed
+                }
+                else -> com.payten.whitelabel.enums.TransactionStatus.Rejected
+            }
+
             val trnx = TransactionDto(
                 transaction.amount.toString(),
                 transaction.amount,
@@ -81,7 +130,7 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
                 transaction.responseCode,
                 TransactionSource.POS,
                 transaction.screenMessage,
-                null,
+                status,
                 transaction.authorizationCode,
                 transaction.maskedPAN,
                 transaction.merchantId,
@@ -92,37 +141,39 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
                 transaction.aid,
                 transaction.tipAmount.toString()
             )
-            logger.info { "Transaction: " + trnx }
+            logger.info { "Transaction: $trnx" }
             resposne.add(trnx)
         }
-        logger.info { "Transaction response: " + resposne }
+        logger.info { "Transaction response: $resposne" }
         return resposne
     }
 
+    @SuppressLint("CheckResult")
     fun cancelIpsTransaction(request: CancelIpsTransactionDto){
         apiService
             .cancelIpsTransactions(request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe ({ response ->
-                logger.info("Cancel ips transaction successfull: ${response}")
+                logger.info("Cancel ips transaction successfull: $response")
                 if(response.statusCode.equals("00", true)){
                     cancelIpsTransactionSuccess.postValue(true)
                 } else {
                     cancelIpsTransactionFailed.postValue(true)
                 }
-            }, { error ->
+            }, {
                 cancelIpsTransactionFailed.postValue(true)
             })
     }
 
+    @SuppressLint("CheckResult")
     fun sendEmailReport(request: SendEmailReportDto){
         apiService
             .sendEmailReport(request.dateFrom, request.dateFrom, request.email, request.fileFormat, request.terminalIdentification)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe ({ response ->
-                logger.info("Send email successfull: ${response}")
+                logger.info("Send email successfull: $response")
                 sendEmailSuccess.postValue(true)
             }, { error ->
                 logger.throwing(error)
