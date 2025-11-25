@@ -83,11 +83,11 @@ fun TransactionsListScreen(
         hiltViewModel()
     }
     val transactions by trafficViewModel.transactionResultsSuccess.observeAsState(emptyList())
+    val isLoading by trafficViewModel.isLoading.observeAsState(false)
     val voidState by voidViewModel.voidState.observeAsState(VoidTransactionState.Idle)
 
     var expandedTransactionId by remember { mutableStateOf<String?>(null) }
     var showVoidConfirmDialog by remember { mutableStateOf<TransactionDto?>(null) }
-    var isRefreshing by remember { mutableStateOf(false) }
 
     // Function to load/refresh transactions
     fun loadTransactions() {
@@ -131,11 +131,6 @@ fun TransactionsListScreen(
         }
     }
 
-    // Stop refresh indicator when transactions are loaded
-    LaunchedEffect(transactions) {
-        isRefreshing = false
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -154,9 +149,8 @@ fun TransactionsListScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             PullToRefreshBox(
-                isRefreshing = isRefreshing,
+                isRefreshing = isLoading,
                 onRefresh = {
-                    isRefreshing = true
                     loadTransactions()
                 },
                 modifier = Modifier.fillMaxSize()

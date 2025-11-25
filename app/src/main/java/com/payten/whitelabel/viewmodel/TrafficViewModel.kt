@@ -30,6 +30,7 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
     //val transactionResultsSuccess =  MutableLiveData<GetTransactionsResult>()
 
     val transactionResultsSuccess =  MutableLiveData<List<TransactionDto>?>()
+    val isLoading = MutableLiveData<Boolean>(false)
 
     val ipsTransactionResultsSuccess =  MutableLiveData<GetIpsTransactionResponse>()
 
@@ -69,6 +70,7 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
 
     fun getTransactionsFromServer(request: GetTransactionsRequest){
         logger.info("Transaction request: $request")
+        isLoading.postValue(true)
         val disposable = apiService
             .getTransaction(request)
             .subscribeOn(Schedulers.io())
@@ -81,9 +83,11 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
                 } else {
                     transactionResultsSuccess.postValue(null)
                 }
+                isLoading.postValue(false)
             }, { error ->
                 logger.info("Transaction Unsuccessfull: $error")
                 transactionResultsSuccess.postValue(null)
+                isLoading.postValue(false)
             })
 
         compositeDisposable.add(disposable)
