@@ -168,8 +168,23 @@ private fun ReceiptCard(transactionData: TransactionDetailsDto) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            // Calculate total amount (base + tip)
+            val totalAmount = remember(transactionData.amount, transactionData.tipAmount) {
+                try {
+                    val baseAmount = transactionData.amount.toDouble()
+                    val tipAmount = if (transactionData.tipAmount != "0.0" && transactionData.tipAmount.isNotEmpty()) {
+                        transactionData.tipAmount.toDouble()
+                    } else {
+                        0.0
+                    }
+                    (baseAmount + tipAmount).toString()
+                } catch (_: Exception) {
+                    transactionData.amount
+                }
+            }
+
             Text(
-                text = formatAmount(transactionData.amount),
+                text = formatAmount(totalAmount),
                 fontSize = 32.sp,
                 fontFamily = MyriadPro,
                 fontWeight = FontWeight.Bold,

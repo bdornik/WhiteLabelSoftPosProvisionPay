@@ -465,8 +465,23 @@ private fun TransactionCard(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
+                    // Calculate total amount (base + tip)
+                    val totalAmount = remember(transaction.amount, transaction.tipAmount) {
+                        try {
+                            val baseAmount = transaction.amount.toDouble()
+                            val tipAmount = if (transaction.tipAmount != "0.0" && transaction.tipAmount.isNotEmpty()) {
+                                transaction.tipAmount.toDouble()
+                            } else {
+                                0.0
+                            }
+                            (baseAmount + tipAmount).toString()
+                        } catch (_: Exception) {
+                            transaction.amount
+                        }
+                    }
+
                     Text(
-                        text = "${formatAmount(transaction.amount)} ${stringResource(R.string.currency_rsd)}",
+                        text = "${formatAmount(totalAmount)} ${stringResource(R.string.currency_rsd)}",
                         fontSize = 16.sp,
                         fontFamily = MyriadPro,
                         fontWeight = FontWeight.SemiBold,

@@ -329,6 +329,19 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         }
 
         if (p0?.transactionResponseData?.statusCode.equals("A", true)) {
+            // Convert tip from pare (cents) to decimal format (RSD)
+            val tipInDecimal = try {
+                if (tip.isNotEmpty()) {
+                    val tipInPare = tip.toLong()
+                    (tipInPare / 100.0).toString()
+                } else {
+                    "0.0"
+                }
+            } catch (e: Exception) {
+                logger.error { "Error converting tip: ${e.message}" }
+                "0.0"
+            }
+
             val transactionData = p0?.transactionResponseData?.let {
                 TransactionDetailsDto(
                     aid = p0.transactionResponseData.aid,
@@ -353,7 +366,7 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
                     recordId = p0.transactionResponseData!!.recordId,
                     listName = "",
                     color = -1,
-                    tipAmount = tip
+                    tipAmount = tipInDecimal
                 )
             }
 
