@@ -17,10 +17,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cioccarellia.ksprefs.KsPrefs
+import androidx.core.app.ShareCompat
 import com.payten.whitelabel.R
 import com.payten.whitelabel.activities.HeadlessPaymentActivity
 import com.payten.whitelabel.config.SupercaseConfig
 import com.payten.whitelabel.dto.TransactionDetailsDto
+import com.payten.whitelabel.dto.slip.Slip
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.screens.AmountEntryScreen
 import com.payten.whitelabel.ui.screens.CardProcessingScreen
@@ -400,8 +402,8 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                         navController.popBackStack()
                     },
                     onShare = {
-                        // TODO: Implement share functionality
                         Log.d("Navigation", "Share clicked")
+                        shareTransaction(context as Activity, transactionData)
                     },
                     onPrint = {
                         Log.d("Navigation", "Print clicked")
@@ -508,8 +510,8 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                         navController.popBackStack("traffic", inclusive = false)
                     },
                     onShare = {
-                        // TODO: Implement share functionality
                         Log.d("Navigation", "Share clicked")
+                        shareTransaction(context as Activity, transactionData)
                     },
                     onPrint = {
                         Log.d("Navigation", "Print clicked")
@@ -634,5 +636,124 @@ private fun printTransaction(
         Log.d("Navigation", "Print initiated successfully")
     } catch (e: Exception) {
         Log.e("Navigation", "Error printing transaction: ${e.message}", e)
+    }
+}
+
+/**
+ * Share transaction receipt via Android share sheet
+ */
+@SuppressLint("DefaultLocale")
+private fun shareTransaction(
+    activity: Activity,
+    transactionData: TransactionDetailsDto
+) {
+    try {
+        // Format dateTime
+        val dateTimeFormatter = org.threeten.bp.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        val parsedDateTime = try {
+            org.threeten.bp.LocalDateTime.parse(transactionData.dateTime)
+        } catch (_: Exception) {
+            org.threeten.bp.LocalDateTime.now()
+        }
+        val formattedDate = parsedDateTime.format(dateTimeFormatter)
+
+        // Format amount
+        val formattedAmount = try {
+            val amount = transactionData.amount.toDouble()
+            val tip = if (transactionData.tipAmount != "0.0" && transactionData.tipAmount.isNotEmpty()) {
+                transactionData.tipAmount.toDouble()
+            } else {
+                0.0
+            }
+            val total = amount + tip
+            String.format("%.2f", total)
+        } catch (_: Exception) {
+            transactionData.amount
+        }
+
+        // Format base amount
+        val formattedBaseAmount = try {
+            val amount = transactionData.amount.toDouble()
+            String.format("%.2f", amount)
+        } catch (_: Exception) {
+            transactionData.amount
+        }
+
+        // Format tip amount
+        val formattedTipAmount = try {
+            val tip = if (transactionData.tipAmount != "0.0" && transactionData.tipAmount.isNotEmpty()) {
+                transactionData.tipAmount.toDouble()
+            } else {
+                0.0
+            }
+            String.format("%.2f", tip)
+        } catch (_: Exception) {
+            "0.00"
+        }
+
+        // Determine status text
+        val statusText = when {
+            transactionData.response.equals("00", ignoreCase = true) ->
+                activity.resources.getString(R.string.transaction_status_accepted_label).uppercase()
+            transactionData.response.equals("06", ignoreCase = true) && transactionData.isIps ->
+                activity.resources.getString(R.string.transaction_status_canceled).uppercase()
+            else ->
+                activity.resources.getString(R.string.transaction_status_reversed_message).uppercase()
+        }
+
+        val shareText = if (transactionData.isIps) {
+            // IPS transaction format
+            """
+                ${activity.resources.getString(R.string.transaction_receipt_amount)}: $formattedAmount ${SupercaseConfig.CURRENCY_STRING}
+                ${activity.resources.getString(R.string.share_date)}: $formattedDate
+                ${activity.resources.getString(R.string.label_transaction_status)} $statusText
+                ${activity.resources.getString(R.string.label_transaction_e2e_ips)} ${transactionData.rrn}
+                ${activity.resources.getString(R.string.label_transaction_merchant_id)} ${transactionData.merchantId}
+                ${activity.resources.getString(R.string.label_transaction_terminal_id)} ${transactionData.terminalId}
+                ${activity.resources.getString(R.string.transaction_receipt_merchant)} ${transactionData.merchantName}
+                ${activity.resources.getString(R.string.transaction_receipt_operation)} ${transactionData.operationName}
+                ${activity.resources.getString(R.string.transaction_receipt_message)} ${transactionData.message}
+            """.trimIndent()
+        } else {
+            // Card transaction format using Slip class
+            val cardType = when {
+                transactionData.applicationLabel?.contains("visa", ignoreCase = true) == true -> "VISA"
+                transactionData.applicationLabel?.contains("master", ignoreCase = true) == true -> "MASTERCARD"
+                else -> ""
+            }
+
+            val slip = Slip(
+                statusText,
+                "$formattedAmount ${SupercaseConfig.CURRENCY_STRING}",
+                "$formattedBaseAmount ${SupercaseConfig.CURRENCY_STRING}",
+                "$formattedTipAmount ${SupercaseConfig.CURRENCY_STRING}",
+                formattedDate,
+                transactionData.merchantId,
+                transactionData.terminalId,
+                transactionData.merchantName,
+                transactionData.cardNumber!!,
+                transactionData.authorizationCode!!,
+                transactionData.operationName,
+                transactionData.response!!,
+                transactionData.message!!,
+                "", // installment
+                "", // uniqueId
+                cardType,
+                activity.resources
+            )
+
+            slip.toString()
+        }
+
+        // Share via Android share sheet
+        ShareCompat.IntentBuilder(activity)
+            .setText(shareText)
+            .setType("text/plain")
+            .setChooserTitle(activity.resources.getString(R.string.share_title))
+            .startChooser()
+
+        Log.d("Navigation", "Share initiated successfully")
+    } catch (e: Exception) {
+        Log.e("Navigation", "Error sharing transaction: ${e.message}", e)
     }
 }
