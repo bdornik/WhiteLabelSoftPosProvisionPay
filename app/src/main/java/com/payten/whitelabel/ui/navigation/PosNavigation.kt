@@ -1,5 +1,6 @@
 package com.payten.whitelabel.ui.navigation
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
@@ -16,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cioccarellia.ksprefs.KsPrefs
+import com.payten.whitelabel.R
 import com.payten.whitelabel.activities.HeadlessPaymentActivity
 import com.payten.whitelabel.config.SupercaseConfig
 import com.payten.whitelabel.dto.TransactionDetailsDto
@@ -385,6 +387,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             val transactionData = navController.previousBackStackEntry
                 ?.savedStateHandle
                 ?.get<TransactionDetailsDto>("transaction_data")
+            val context = LocalContext.current
 
             if (transactionData != null) {
                 Log.d("Navigation", "Showing transaction result for: ${transactionData.response}")
@@ -401,8 +404,8 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                         Log.d("Navigation", "Share clicked")
                     },
                     onPrint = {
-                        // TODO: Implement print functionality
                         Log.d("Navigation", "Print clicked")
+                        printTransaction(context as Activity, transactionData)
                     }
                 )
             } else {
@@ -492,6 +495,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             val transactionData = navController.previousBackStackEntry
                 ?.savedStateHandle
                 ?.get<TransactionDetailsDto>("transaction_data")
+            val context = LocalContext.current
 
             if (transactionData != null) {
                 Log.d("Navigation", "Showing transaction details from list: ${transactionData.recordId}")
@@ -508,8 +512,8 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                         Log.d("Navigation", "Share clicked")
                     },
                     onPrint = {
-                        // TODO: Implement print functionality
                         Log.d("Navigation", "Print clicked")
+                        printTransaction(context as Activity, transactionData)
                     }
                 )
             } else {
@@ -520,5 +524,115 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             }
         }
         //Other screens
+    }
+}
+
+/**
+ * Print transaction receipt via Bluetooth printer
+ */
+@SuppressLint("DefaultLocale")
+private fun printTransaction(
+    activity: Activity,
+    transactionData: TransactionDetailsDto
+) {
+    try {
+        // Determine card type
+        val cardType = when {
+            transactionData.applicationLabel?.contains("visa", ignoreCase = true) == true -> "VISA"
+            transactionData.applicationLabel?.contains("master", ignoreCase = true) == true -> "MASTERCARD"
+            else -> ""
+        }
+
+        // Format dateTime
+        val dateTimeFormatter = org.threeten.bp.format.DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+        val parsedDateTime = try {
+            org.threeten.bp.LocalDateTime.parse(transactionData.dateTime)
+        } catch (_: Exception) {
+            org.threeten.bp.LocalDateTime.now()
+        }
+        val formattedDate = parsedDateTime.format(dateTimeFormatter)
+
+        // Format amount
+        val formattedAmount = try {
+            val amount = transactionData.amount.toDouble()
+            val tip = if (transactionData.tipAmount != "0.0" && transactionData.tipAmount.isNotEmpty()) {
+                transactionData.tipAmount.toDouble()
+            } else {
+                0.0
+            }
+            val total = amount + tip
+            String.format("%.2f ${SupercaseConfig.CURRENCY_STRING}", total)
+        } catch (_: Exception) {
+            "${transactionData.amount} ${SupercaseConfig.CURRENCY_STRING}"
+        }
+
+        // Determine status text
+        val statusText = when {
+            transactionData.response.equals("00", ignoreCase = true) ->
+                activity.resources.getString(R.string.transaction_status_accepted_label).uppercase()
+            transactionData.response.equals("06", ignoreCase = true) && transactionData.isIps ->
+                activity.resources.getString(R.string.transaction_status_canceled).uppercase()
+            else ->
+                activity.resources.getString(R.string.transaction_status_reversed_message).uppercase()
+        }
+
+        // Build print text with special formatting codes
+        val printText = if (transactionData.isIps) {
+            // IPS transaction format
+            """
+                [L]
+                [C]================================
+                [L]
+                [C]${activity.resources.getString(R.string.transaction_receipt_amount)}: $formattedAmount
+                [L]
+                [L]${activity.resources.getString(R.string.share_date)} $formattedDate
+                [L]${activity.resources.getString(R.string.label_transaction_status)} $statusText
+                [L]${activity.resources.getString(R.string.label_transaction_e2e_ips)} ${transactionData.rrn}
+                [L]${activity.resources.getString(R.string.label_transaction_merchant_id)} ${transactionData.merchantId}
+                [L]${activity.resources.getString(R.string.label_transaction_terminal_id)} ${transactionData.terminalId}
+                [L]${activity.resources.getString(R.string.transaction_receipt_merchant)} ${transactionData.merchantName}
+                [L]${activity.resources.getString(R.string.transaction_receipt_operation)} ${transactionData.operationName}
+                [L]${activity.resources.getString(R.string.transaction_receipt_message)} ${transactionData.message}
+                [L]
+                [C]================================
+            """.trimIndent()
+        } else {
+            // Card transaction format
+            """
+                [L]
+                [C]================================
+                [L]
+                [C]${activity.resources.getString(R.string.transaction_receipt_amount)}: $formattedAmount
+                [L]
+                [L]${activity.resources.getString(R.string.share_date)} $formattedDate
+                [L]${activity.resources.getString(R.string.label_transaction_status)} $statusText
+                [L]${activity.resources.getString(R.string.label_transaction_merchant_id)} ${transactionData.merchantId}
+                [L]${activity.resources.getString(R.string.label_transaction_terminal_id)} ${transactionData.terminalId}
+                [L]${activity.resources.getString(R.string.transaction_receipt_merchant)} ${transactionData.merchantName}
+                [L]${activity.resources.getString(R.string.transaction_receipt_card_number)} ${transactionData.cardNumber}
+                [L]${activity.resources.getString(R.string.transaction_receipt_auth_code)} ${transactionData.authorizationCode}
+                [L]${activity.resources.getString(R.string.transaction_receipt_operation)} ${transactionData.operationName}
+                [L]${activity.resources.getString(R.string.transaction_receipt_response)} ${transactionData.response}
+                [L]${activity.resources.getString(R.string.transaction_receipt_message)} ${transactionData.message}
+                [L]
+                [C]<b>$cardType</b>
+                [L]
+                [C]================================
+            """.trimIndent()
+        }
+
+        // Get selected printer device from preferences (if any)
+        val selectedDevice: com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection? = null
+
+        // Print via Bluetooth
+        com.payten.whitelabel.utils.printer.PrintUtil.printBluetooth(
+            activity,
+            selectedDevice,
+            printText
+        )
+
+        Log.d("Navigation", "Print initiated successfully")
+    } catch (e: Exception) {
+        Log.e("Navigation", "Error printing transaction: ${e.message}", e)
     }
 }

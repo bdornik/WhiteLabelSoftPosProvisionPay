@@ -7,7 +7,7 @@ import com.sacbpp.core.bytes.ByteArrayFactory;
 public class SupercaseConfig {
 
     public static final String INSTITUTION = "OTP banka d.d.";
-    public static final String CURRENCY_STRING = "EUR";
+    public static final String CURRENCY_STRING = "RSD";
     public static final String dummyUsId = "google";
     public static final String dummyActCode = "27021994";
 
