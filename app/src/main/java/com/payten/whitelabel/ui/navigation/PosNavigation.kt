@@ -392,11 +392,9 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 TransactionScreen(
                     transactionData = transactionData,
                     onNavigateHome = {
-                        Log.d("Navigation", "Navigating back to landing")
-                        // Navigate back to landing screen
-                        navController.navigate("landing") {
-                            popUpTo("landing") { inclusive = false }
-                        }
+                        Log.d("Navigation", "Navigating back from transaction result")
+                        // Navigate back to previous screen (landing or traffic)
+                        navController.popBackStack()
                     },
                     onShare = {
                         // TODO: Implement share functionality
@@ -426,18 +424,28 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 onTransactionDetailsClick = { transaction ->
                     Log.d("Navigation", "Transaction details clicked: ${transaction.recordId}")
 
+                    // Format dateTime properly - convert LocalDateTime to ISO string format
+                    val formattedDateTime = transaction.transactionDate?.let { localDateTime ->
+                        try {
+                            val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                            localDateTime.format(formatter)
+                        } catch (_: Exception) {
+                            localDateTime.toString()
+                        }
+                    } ?: ""
+
                     // Convert TransactionDto to TransactionDetailsDto
                     val transactionData = TransactionDetailsDto(
-                        aid = transaction.transactionId ?: "",
+                        aid = transaction.applicationId,
                         applicationLabel = transaction.applicationLabel ?: "",
                         authorizationCode = transaction.authorizationCode ?: "",
                         bankName = "",
                         cardNumber = transaction.maskedPAN ?: "",
-                        dateTime = transaction.transactionDate.toString(),
-                        merchantId = transaction.merchantId ?: "",
+                        dateTime = formattedDateTime,
+                        merchantId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_MERCHANT_ID, ""),
                         merchantName = sharedPreferences.pull(SharedPreferencesKeys.MERCHANT_NAME, ""),
                         message = transaction.screenMessage ?: "",
-                        operationName = transaction.operationName ?: "",
+                        operationName = if (transaction.operationName.isNullOrEmpty()) "Prodaja" else transaction.operationName!!,
                         response = transaction.responseCode ?: "",
                         rrn = transaction.creaditTransferIdentificator ?: "",
                         code = transaction.recordId,
@@ -453,13 +461,11 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                         tipAmount = transaction.tipAmount
                     )
 
-                    // Navigate to transaction details screen
-                    navController.navigate("transaction_result") {
-                        popUpTo("traffic") { inclusive = false }
-                    }
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("transaction_data", transactionData)
+                    Log.d("Navigation", "Transaction data created: merchantId=${transactionData.merchantId}, operationName=${transactionData.operationName}, dateTime=${transactionData.dateTime}")
+
+                    // Navigate and pass data via navigation arguments
+                    navController.currentBackStackEntry?.savedStateHandle?.set("transaction_data", transactionData)
+                    navController.navigate("transaction_details_from_list")
                 },
                 onFilterClick = {
                     // Navigate to filter screen.
@@ -481,6 +487,37 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.popBackStack()
                 }
             )
+        }
+        composable("transaction_details_from_list") {
+            val transactionData = navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<TransactionDetailsDto>("transaction_data")
+
+            if (transactionData != null) {
+                Log.d("Navigation", "Showing transaction details from list: ${transactionData.recordId}")
+
+                TransactionScreen(
+                    transactionData = transactionData,
+                    onNavigateHome = {
+                        Log.d("Navigation", "Navigating back to traffic list")
+                        // Explicitly pop back to traffic route
+                        navController.popBackStack("traffic", inclusive = false)
+                    },
+                    onShare = {
+                        // TODO: Implement share functionality
+                        Log.d("Navigation", "Share clicked")
+                    },
+                    onPrint = {
+                        // TODO: Implement print functionality
+                        Log.d("Navigation", "Print clicked")
+                    }
+                )
+            } else {
+                Log.e("Navigation", "No transaction data found - returning to traffic")
+                LaunchedEffect(Unit) {
+                    navController.popBackStack("traffic", inclusive = false)
+                }
+            }
         }
         //Other screens
     }

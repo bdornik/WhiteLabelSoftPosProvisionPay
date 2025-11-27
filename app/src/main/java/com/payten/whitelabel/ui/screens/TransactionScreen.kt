@@ -135,97 +135,102 @@ private fun ReceiptCard(transactionData: TransactionDetailsDto) {
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
-            contentScale = ContentScale.FillWidth
+                .heightIn(min = 800.dp),
+            contentScale = ContentScale.FillBounds
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 48.dp, vertical = 64.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 40.dp, vertical = 64.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+            // Header section (amount, date/time) - centered
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(R.string.transaction_receipt_amount_label),
-                    fontSize = 14.sp,
-                    fontFamily = MyriadPro,
-                    color = Color.Gray
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.transaction_receipt_amount_label),
+                        fontSize = 14.sp,
+                        fontFamily = MyriadPro,
+                        color = Color.Gray
+                    )
 
-                Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
 
-                Text(
-                    text = stringResource(R.string.currency_rsd),
-                    fontSize = 12.sp,
-                    fontFamily = MyriadPro,
-                    color = Color.Gray
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Calculate total amount (base + tip)
-            val totalAmount = remember(transactionData.amount, transactionData.tipAmount) {
-                try {
-                    val baseAmount = transactionData.amount.toDouble()
-                    val tipAmount = if (transactionData.tipAmount != "0.0" && transactionData.tipAmount.isNotEmpty()) {
-                        transactionData.tipAmount.toDouble()
-                    } else {
-                        0.0
-                    }
-                    (baseAmount + tipAmount).toString()
-                } catch (_: Exception) {
-                    transactionData.amount
+                    Text(
+                        text = stringResource(R.string.currency_rsd),
+                        fontSize = 12.sp,
+                        fontFamily = MyriadPro,
+                        color = Color.Gray
+                    )
                 }
-            }
 
-            Text(
-                text = formatAmount(totalAmount),
-                fontSize = 32.sp,
-                fontFamily = MyriadPro,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
+                // Calculate total amount (base + tip)
+                val totalAmount = remember(transactionData.amount, transactionData.tipAmount) {
+                    try {
+                        val baseAmount = transactionData.amount.toDouble()
+                        val tipAmount = if (transactionData.tipAmount != "0.0" && transactionData.tipAmount.isNotEmpty()) {
+                            transactionData.tipAmount.toDouble()
+                        } else {
+                            0.0
+                        }
+                        (baseAmount + tipAmount).toString()
+                    } catch (_: Exception) {
+                        transactionData.amount
+                    }
+                }
 
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.calendar),
-                    contentDescription = null,
-                    tint = Color.Gray,
-                    modifier = Modifier.size(14.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = formatDate(transactionData.dateTime),
-                    fontSize = 12.sp,
+                    text = formatAmount(totalAmount),
+                    fontSize = 32.sp,
                     fontFamily = MyriadPro,
-                    color = Color.Gray
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                Icon(
-                    painter = painterResource(id = R.drawable.time),
-                    contentDescription = null,
-                    tint = Color.Gray,
-                    modifier = Modifier.size(14.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = formatTime(transactionData.dateTime),
-                    fontSize = 12.sp,
-                    fontFamily = MyriadPro,
-                    color = Color.Gray
-                )
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.calendar),
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = formatDate(transactionData.dateTime),
+                        fontSize = 12.sp,
+                        fontFamily = MyriadPro,
+                        color = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.time),
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = formatTime(transactionData.dateTime),
+                        fontSize = 12.sp,
+                        fontFamily = MyriadPro,
+                        color = Color.Gray
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -306,12 +311,18 @@ private fun ReceiptCard(transactionData: TransactionDetailsDto) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Card logo - centered
             if (cardLogo != null) {
-                Image(
-                    painter = painterResource(id = cardLogo),
-                    contentDescription = null,
-                    modifier = Modifier.height(16.dp)
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = cardLogo),
+                        contentDescription = null,
+                        modifier = Modifier.height(16.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
