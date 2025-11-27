@@ -471,7 +471,11 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             FilterScreen(
                 sharedPreferences = sharedPreferences,
                 onApplyFilter = {
-                    // TODO: Implement filtering method
+                    // Set flag to trigger filter refresh in TransactionsListScreen
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("filter_applied", true)
+                    navController.popBackStack()
                 },
                 onNavigateBack = {
                     navController.popBackStack()

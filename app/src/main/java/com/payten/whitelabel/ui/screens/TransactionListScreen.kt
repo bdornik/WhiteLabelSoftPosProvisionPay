@@ -34,7 +34,10 @@ import com.payten.whitelabel.R
 import com.payten.whitelabel.dto.TransactionDetailsDto
 import com.payten.whitelabel.dto.TransactionDto
 import com.payten.whitelabel.dto.transactions.GetTransactionsRequest
+import com.payten.whitelabel.enums.TransactionSortType
+import com.payten.whitelabel.enums.TransactionSource
 import com.payten.whitelabel.enums.TransactionStatus
+import com.payten.whitelabel.enums.TransactionStatusFilterType
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.theme.AppTheme
@@ -89,6 +92,19 @@ fun TransactionsListScreen(
     var expandedTransactionId by remember { mutableStateOf<String?>(null) }
     var showVoidConfirmDialog by remember { mutableStateOf<TransactionDto?>(null) }
 
+    // Track filter changes to re-filter when filters are updated
+    var filterTrigger by remember { mutableIntStateOf(0) }
+
+    // Apply filters and sorting to transactions
+    val filteredTransactions = remember(transactions, filterTrigger) {
+        applyFiltersAndSorting(transactions ?: emptyList(), sharedPreferences)
+    }
+
+    // Check if any filters are active (not default values)
+    val hasActiveFilters = remember(filterTrigger) {
+        hasActiveFilters(sharedPreferences)
+    }
+
     // Function to load/refresh transactions
     fun loadTransactions() {
         val userId = sharedPreferences.pull(SharedPreferencesKeys.USER_ID, "")
@@ -131,6 +147,21 @@ fun TransactionsListScreen(
         }
     }
 
+    // Listen for filter applied flag from FilterScreen
+    val filterApplied = navController?.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("filter_applied", false)
+        ?.collectAsState()
+
+    LaunchedEffect(filterApplied?.value) {
+        if (filterApplied?.value == true) {
+            // Reset the flag
+            navController.currentBackStackEntry
+                ?.savedStateHandle
+                ?.set("filter_applied", false)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -143,7 +174,8 @@ fun TransactionsListScreen(
         ) {
             TransactionsListHeader(
                 onNavigateBack = onNavigateBack,
-                onFilterClick = onFilterClick
+                onFilterClick = onFilterClick,
+                hasActiveFilters = hasActiveFilters
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -155,7 +187,7 @@ fun TransactionsListScreen(
                 },
                 modifier = Modifier.fillMaxSize()
             ) {
-                if (transactions.isNullOrEmpty()) {
+                if (filteredTransactions.isEmpty()) {
                     EmptyTransactionsList()
                 } else {
                     LazyColumn(
@@ -164,7 +196,7 @@ fun TransactionsListScreen(
                             .padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(transactions!!) { transaction ->
+                        items(filteredTransactions) { transaction ->
                             TransactionCard(
                                 transaction = transaction,
                                 isExpanded = expandedTransactionId == transaction.recordId,
@@ -400,7 +432,8 @@ private fun VoidConfirmationDialog(
 @Composable
 private fun TransactionsListHeader(
     onNavigateBack: () -> Unit,
-    onFilterClick: () -> Unit
+    onFilterClick: () -> Unit,
+    hasActiveFilters: Boolean = false
 ) {
     Row(
         modifier = Modifier
@@ -425,7 +458,7 @@ private fun TransactionsListHeader(
                 Icon(
                     painter = painterResource(id = R.drawable.filter),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = if (hasActiveFilters) Color(0xFFEB3223) else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -812,7 +845,7 @@ fun TransactionsListScreenPreview() {
                     statusCode = "a",
                     transactionDate = LocalDateTime.of(2025, 1, 21, 14, 30),
                     responseCode = "00",
-                    source = com.payten.whitelabel.enums.TransactionSource.POS,
+                    source = TransactionSource.POS,
                     screenMessage = "Approved",
                     status = TransactionStatus.Accepted,
                     authorizationCode = "046667",
@@ -834,7 +867,7 @@ fun TransactionsListScreenPreview() {
                     statusCode = "f",
                     transactionDate = LocalDateTime.of(2025, 1, 21, 13, 15),
                     responseCode = "06",
-                    source = com.payten.whitelabel.enums.TransactionSource.POS,
+                    source = TransactionSource.POS,
                     screenMessage = "Rejected",
                     status = TransactionStatus.Rejected,
                     authorizationCode = "",
@@ -856,7 +889,7 @@ fun TransactionsListScreenPreview() {
                     statusCode = "a",
                     transactionDate = LocalDateTime.of(2025, 1, 21, 12, 45),
                     responseCode = "00",
-                    source = com.payten.whitelabel.enums.TransactionSource.IPS,
+                    source = TransactionSource.IPS,
                     screenMessage = "Approved",
                     status = TransactionStatus.Accepted,
                     authorizationCode = "",
@@ -878,7 +911,7 @@ fun TransactionsListScreenPreview() {
                     statusCode = "v",
                     transactionDate = LocalDateTime.of(2025, 1, 21, 10, 20),
                     responseCode = "06",
-                    source = com.payten.whitelabel.enums.TransactionSource.POS,
+                    source = TransactionSource.POS,
                     screenMessage = "Voided",
                     status = TransactionStatus.Voided,
                     authorizationCode = "046668",
@@ -929,7 +962,7 @@ fun TransactionsListScreenSinglePreview() {
                     statusCode = "a",
                     transactionDate = LocalDateTime.of(2025, 1, 21, 15, 45),
                     responseCode = "00",
-                    source = com.payten.whitelabel.enums.TransactionSource.POS,
+                    source = TransactionSource.POS,
                     screenMessage = "Approved",
                     status = TransactionStatus.Accepted,
                     authorizationCode = "046667",
@@ -950,4 +983,130 @@ fun TransactionsListScreenSinglePreview() {
             onFilterClick = {}
         )
     }
+}
+
+/**
+ * Apply filters and sorting to transaction list based on SharedPreferences settings
+ */
+private fun applyFiltersAndSorting(
+    transactions: List<TransactionDto>,
+    sharedPreferences: KsPrefs
+): List<TransactionDto> {
+    if (transactions.isEmpty()) return emptyList()
+
+    // Read filter settings from SharedPreferences
+    val filterType = sharedPreferences.pull(
+        SharedPreferencesKeys.FILTER_TYPE,
+        TransactionSource.POS.ordinal
+    )
+    val filterStatus = sharedPreferences.pull(
+        SharedPreferencesKeys.FILTER_STATUS,
+        TransactionStatusFilterType.ALL.ordinal
+    )
+    val filterSort = sharedPreferences.pull(
+        SharedPreferencesKeys.FILTER_SORT,
+        TransactionSortType.DateDesc.ordinal
+    )
+    val dateFromStr = sharedPreferences.pull(SharedPreferencesKeys.DATE_FROM, "")
+    val dateToStr = sharedPreferences.pull(SharedPreferencesKeys.DATE_TO, "")
+
+    // Parse date filters if present - using ThreeTenBP LocalDateTime
+    val dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+    val dateFrom: LocalDateTime? = if (dateFromStr.isNotEmpty()) {
+        try {
+            LocalDateTime.parse(dateFromStr, dateTimeFormatter)
+        } catch (_: Exception) {
+            null
+        }
+    } else null
+
+    val dateTo: LocalDateTime? = if (dateToStr.isNotEmpty()) {
+        try {
+            LocalDateTime.parse(dateToStr, dateTimeFormatter)
+        } catch (_: Exception) {
+            null
+        }
+    } else null
+
+    // Apply filters
+    var filteredList = transactions
+
+    // Filter by transaction type (POS/IPS)
+    if (filterType == TransactionSource.POS.ordinal) {
+        filteredList = filteredList.filter { it.source == TransactionSource.POS }
+    } else if (filterType == TransactionSource.IPS.ordinal) {
+        filteredList = filteredList.filter { it.source == TransactionSource.IPS }
+    }
+
+    // Filter by status
+    when (filterStatus) {
+        TransactionStatusFilterType.ACCEPTED.ordinal -> {
+            filteredList = filteredList.filter { it.status == TransactionStatus.Accepted }
+        }
+        TransactionStatusFilterType.REJECTED.ordinal -> {
+            filteredList = filteredList.filter { it.status == TransactionStatus.Rejected }
+        }
+        TransactionStatusFilterType.VOID.ordinal -> {
+            filteredList = filteredList.filter { it.status == TransactionStatus.Voided }
+        }
+        // TransactionStatusFilterType.ALL - no filtering needed
+    }
+
+    // Filter by date range
+    if (dateFrom != null || dateTo != null) {
+        filteredList = filteredList.filter { transaction ->
+            transaction.transactionDate?.let { transactionDate ->
+                val afterFrom = dateFrom?.let { transactionDate.isAfter(it) || transactionDate.isEqual(it) } ?: true
+                val beforeTo = dateTo?.let { transactionDate.isBefore(it) || transactionDate.isEqual(it) } ?: true
+
+                afterFrom && beforeTo
+            } ?: true
+        }
+    }
+
+    // Apply sorting
+    val sortedList = when (filterSort) {
+        TransactionSortType.DateAsc.ordinal -> {
+            filteredList.sortedBy { it.transactionDate }
+        }
+        TransactionSortType.DateDesc.ordinal -> {
+            filteredList.sortedByDescending { it.transactionDate }
+        }
+        TransactionSortType.AmountAsc.ordinal -> {
+            filteredList.sortedBy { it.amountDouble }
+        }
+        TransactionSortType.AmountDesc.ordinal -> {
+            filteredList.sortedByDescending { it.amountDouble }
+        }
+        else -> filteredList
+    }
+
+    return sortedList
+}
+
+/**
+ * Check if any filters are currently active (not default values)
+ */
+private fun hasActiveFilters(sharedPreferences: KsPrefs): Boolean {
+    val dateFromStr = sharedPreferences.pull(SharedPreferencesKeys.DATE_FROM, "")
+    val dateToStr = sharedPreferences.pull(SharedPreferencesKeys.DATE_TO, "")
+    val filterStatus = sharedPreferences.pull(
+        SharedPreferencesKeys.FILTER_STATUS,
+        TransactionStatusFilterType.ALL.ordinal
+    )
+    val filterSort = sharedPreferences.pull(
+        SharedPreferencesKeys.FILTER_SORT,
+        TransactionSortType.DateDesc.ordinal
+    )
+    val filterType = sharedPreferences.pull(
+        SharedPreferencesKeys.FILTER_TYPE,
+        TransactionSource.POS.ordinal
+    )
+
+    // Check if any filter is not the default value
+    return dateFromStr.isNotEmpty() ||
+            dateToStr.isNotEmpty() ||
+            filterStatus != TransactionStatusFilterType.ALL.ordinal ||
+            filterSort != TransactionSortType.DateDesc.ordinal ||
+            filterType != TransactionSource.POS.ordinal
 }
