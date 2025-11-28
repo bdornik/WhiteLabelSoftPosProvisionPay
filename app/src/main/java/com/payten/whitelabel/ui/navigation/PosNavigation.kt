@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -27,6 +28,7 @@ import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.screens.AmountEntryScreen
 import com.payten.whitelabel.ui.screens.CardProcessingScreen
 import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
+import com.payten.whitelabel.ui.screens.CustomTipEntryScreen
 import com.payten.whitelabel.ui.screens.EndOfDayScreen
 import com.payten.whitelabel.ui.screens.FilterScreen
 import com.payten.whitelabel.ui.screens.FirstPage
@@ -317,11 +319,19 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             val paymentMethodStr = backStackEntry.arguments?.getString("paymentMethod") ?: "CARD"
             val paymentMethod = PaymentMethod.valueOf(paymentMethodStr)
 
+            val savedStateHandle = backStackEntry.savedStateHandle
+            val customTipResult = savedStateHandle.getLiveData<Long>("custom_tip_result").observeAsState()
+
             TipSelectionScreen(
                 amountInPare = amountInPare,
                 paymentMethod = paymentMethod,
+                externalCustomTip = customTipResult.value,
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onCustomTipClick = {
+                    // Navigate to custom tip screen.
+                    navController.navigate("custom_tip")
                 },
                 onContinueCard = { tipAmount ->
                     navController.navigate("card_tap/$amountInPare/$tipAmount")
@@ -333,6 +343,19 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.currentBackStackEntry
                         ?.savedStateHandle
                         ?.set("transaction_data", transactionData)
+                }
+            )
+        }
+        composable("custom_tip") {
+            CustomTipEntryScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onContinue = { tipAmount ->
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("custom_tip_result", tipAmount)
+                    navController.popBackStack()
                 }
             )
         }

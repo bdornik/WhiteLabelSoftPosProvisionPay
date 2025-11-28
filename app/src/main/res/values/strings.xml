@@ -438,6 +438,10 @@
     <string name="tip_no_tip">Bez napojnice</string>
     <string name="tip_confirm">POTVRDI</string>
 
+    <!-- Custom Tip Entry Screen -->
+    <string name="custom_tip_title">UNESITE NAPOJNICU</string>
+    <string name="custom_tip_confirm">POTVRDI</string>
+
     <!-- Transaction Screen -->
     <string name="transaction_back">Nazad</string>
     <string name="transaction_print">Štampaj</string>

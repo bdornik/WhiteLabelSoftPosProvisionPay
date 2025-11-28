@@ -48,7 +48,9 @@ import kotlin.jvm.java
 fun TipSelectionScreen(
     amountInPare: Long,
     paymentMethod: PaymentMethod,
+    externalCustomTip: Long? = null,
     onNavigateBack: () -> Unit = {},
+    onCustomTipClick: () -> Unit = {},
     onContinueCard: (tipAmount: Long) -> Unit = {},
     onTransactionComplete: (TransactionDetailsDto) -> Unit = {}
 ) {
@@ -59,13 +61,19 @@ fun TipSelectionScreen(
 
     val displayAmount = formatAmount(amountInPare)
 
+    LaunchedEffect(externalCustomTip) {
+        if (externalCustomTip != null) {
+            selectedTip = TipOption.Custom(externalCustomTip)
+        }
+    }
+
     // Calculate final amount with tip
     val finalAmount = remember(amountInPare, selectedTip) {
         selectedTip?.let { tip ->
             when (tip) {
                 is TipOption.Percentage -> amountInPare + (amountInPare * tip.percent / 100)
                 TipOption.NoTip -> amountInPare
-                TipOption.Custom -> amountInPare // TODO: implement custom input
+                is TipOption.Custom -> amountInPare + tip.amount
             }
         } ?: amountInPare
     }
@@ -245,11 +253,10 @@ fun TipSelectionScreen(
                 ) {
                     TipOptionCard(
                         label = stringResource(R.string.tip_custom),
-                        isSelected = selectedTip == TipOption.Custom,
+                        isSelected = selectedTip is TipOption.Custom,
                         onClick = {
                             Log.d(TAG, "Custom tip selected")
-                            selectedTip = TipOption.Custom
-                            // TODO: Show custom input dialog
+                            onCustomTipClick()
                         },
                         modifier = Modifier.weight(1f)
                     )
@@ -387,7 +394,7 @@ private fun TipOptionCard(
 sealed class TipOption {
     data class Percentage(val percent: Int) : TipOption()
     object NoTip : TipOption()
-    object Custom : TipOption()
+    data class Custom(val amount: Long) : TipOption()
 }
 
 /**
