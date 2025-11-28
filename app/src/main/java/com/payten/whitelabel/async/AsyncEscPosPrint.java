@@ -147,9 +147,10 @@ public abstract class AsyncEscPosPrint extends AsyncTask<AsyncEscPosPrinter, Int
             return;
         }
 
-
+        // Removed dialog calls to prevent MaterialButton theme crash in Compose
+        // The "Printing in progress..." dialog already provides sufficient feedback
+        /*
         Boolean isDark = context.getSharedPreferences("default-com.payten.nlb.slovenia", MODE_PRIVATE).getBoolean(SharedPreferencesKeys.Companion.getIS_DARK_MODE(), false);
-
 
         switch (result.getPrinterStatus()) {
             case AsyncEscPosPrint.FINISH_SUCCESS:
@@ -171,6 +172,8 @@ public abstract class AsyncEscPosPrint extends AsyncTask<AsyncEscPosPrinter, Int
                 Utility.showDialogInfo(context,"Data send to be converted to barcode or QR code seems to be invalid.",false,isDark);
                 break;
         }
+        */
+
         if(this.onPrintFinished != null) {
             if (result.getPrinterStatus() == AsyncEscPosPrint.FINISH_SUCCESS) {
                 this.onPrintFinished.onSuccess(result.getAsyncEscPosPrinter());

@@ -507,6 +507,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 ?.savedStateHandle
                 ?.get<TransactionDetailsDto>("transaction_data")
             val context = LocalContext.current
+            val activity = context as? Activity
 
             if (transactionData != null) {
                 Log.d("Navigation", "Showing transaction details from list: ${transactionData.recordId}")
@@ -520,11 +521,11 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     },
                     onShare = {
                         Log.d("Navigation", "Share clicked")
-                        shareTransaction(context as Activity, transactionData)
+                        activity?.let { shareTransaction(it, transactionData) }
                     },
                     onPrint = {
                         Log.d("Navigation", "Print clicked")
-                        printTransaction(context as Activity, transactionData)
+                        activity?.let { printTransaction(it, transactionData) }
                     }
                 )
             } else {
@@ -546,6 +547,7 @@ private fun printTransaction(
     activity: Activity,
     transactionData: TransactionDetailsDto
 ) {
+    Log.d("Navigation", "printTransaction called for transaction: ${transactionData.recordId}")
     try {
         // Determine card type
         val cardType = when {
@@ -635,6 +637,7 @@ private fun printTransaction(
         // Get selected printer device from preferences (if any)
         val selectedDevice: com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection? = null
 
+        Log.d("Navigation", "Print text prepared, length=${printText.length}, calling PrintUtil...")
         // Print via Bluetooth
         com.payten.whitelabel.utils.printer.PrintUtil.printBluetooth(
             activity,

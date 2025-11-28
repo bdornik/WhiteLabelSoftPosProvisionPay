@@ -2,6 +2,7 @@ package com.payten.whitelabel.ui.screens
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -35,7 +36,6 @@ import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.theme.MyriadPro
 import com.payten.whitelabel.utils.AmountUtil
-import com.payten.whitelabel.utils.Utility
 import com.payten.whitelabel.utils.printer.PrintUtil
 import com.payten.whitelabel.viewmodel.TrafficViewModel
 import org.threeten.bp.LocalDate
@@ -61,6 +61,8 @@ fun EndOfDayScreen(
     var sharedPrinted by remember { mutableStateOf(false) }
     var showExitDialog by remember { mutableStateOf(false) }
     var showEndOfDayDialog by remember { mutableStateOf(false) }
+    var showEodNotDoneDialog by remember { mutableStateOf(false) }
+    var showEodSuccessDialog by remember { mutableStateOf(false) }
     var selectedDevice by remember { mutableStateOf<BluetoothConnection?>(null) }
 
     val masterTraffic = remember { mutableStateOf(CardTrafficPrint()) }
@@ -209,42 +211,39 @@ fun EndOfDayScreen(
                     }
                 },
                 onPrintClick = {
-                    if (!endOfDayDone) {
-                        activity?.let {
-                            Utility.showDialogInfo(
-                                it,
-                                context.getString(R.string.eod_must_be_done_error),
-                                false,
-                                sharedPreferences.pull(SharedPreferencesKeys.IS_DARK_MODE, false)
-                            )
+                    try {
+                        Log.d("EndOfDayScreen", "Print button clicked, endOfDayDone=$endOfDayDone, activity=$activity")
+                        if (!endOfDayDone) {
+                            showEodNotDoneDialog = true
+                        } else {
+                            sharedPrinted = true
+                            if (activity != null) {
+                                Log.d("EndOfDayScreen", "Creating print text...")
+                                val shareText = createTextForPrint(
+                                    endOfDay.value,
+                                    masterTraffic.value,
+                                    visaTraffic.value,
+                                    flikTraffic.value,
+                                    totalTraffic.value,
+                                    tipsEnabled,
+                                    ipsExists,
+                                    context
+                                )
+                                Log.d("EndOfDayScreen", "Print text created, length=${shareText.length}")
+                                Log.d("EndOfDayScreen", "Calling PrintUtil.printBluetooth...")
+                                PrintUtil.printBluetooth(activity, selectedDevice, shareText)
+                                Log.d("EndOfDayScreen", "PrintUtil.printBluetooth called successfully")
+                            } else {
+                                Log.e("EndOfDayScreen", "Activity is null, cannot print")
+                            }
                         }
-                    } else {
-                        sharedPrinted = true
-                        activity?.let {
-                            val shareText = createTextForPrint(
-                                endOfDay.value,
-                                masterTraffic.value,
-                                visaTraffic.value,
-                                flikTraffic.value,
-                                totalTraffic.value,
-                                tipsEnabled,
-                                ipsExists,
-                                context
-                            )
-                            PrintUtil.printBluetooth(it, selectedDevice, shareText)
-                        }
+                    } catch (e: Exception) {
+                        Log.e("EndOfDayScreen", "Error in print click handler", e)
                     }
                 },
                 onShareClick = {
                     if (!endOfDayDone) {
-                        activity?.let {
-                            Utility.showDialogInfo(
-                                it,
-                                context.getString(R.string.eod_must_be_done_error),
-                                false,
-                                sharedPreferences.pull(SharedPreferencesKeys.IS_DARK_MODE, false)
-                            )
-                        }
+                        showEodNotDoneDialog = true
                     } else {
                         sharedPrinted = true
                         val shareText = createTextForShare(
@@ -306,18 +305,44 @@ fun EndOfDayScreen(
                 val newEndOfDay = getCurrentDateTime()
                 sharedPreferences.push(SharedPreferencesKeys.END_OF_DAY_DATE, newEndOfDay)
                 endOfDay.value = endOfDay.value.copy(lastEndOfDay = newEndOfDay)
-
-                activity?.let {
-                    Utility.showDialogInfo(
-                        it,
-                        context.getString(R.string.eod_success_message),
-                        true,
-                        sharedPreferences.pull(SharedPreferencesKeys.IS_DARK_MODE, false)
-                    )
-                }
+                showEodSuccessDialog = true
             },
             onDismiss = {
                 showEndOfDayDialog = false
+            }
+        )
+    }
+
+    if (showEodNotDoneDialog) {
+        AlertDialog(
+            onDismissRequest = { showEodNotDoneDialog = false },
+            title = { Text(stringResource(R.string.eod_must_be_done_error)) },
+            confirmButton = {
+                Button(
+                    onClick = { showEodNotDoneDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFEB3223)
+                    )
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
+    if (showEodSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { showEodSuccessDialog = false },
+            title = { Text(stringResource(R.string.eod_success_message)) },
+            confirmButton = {
+                Button(
+                    onClick = { showEodSuccessDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4CAF50)
+                    )
+                ) {
+                    Text("OK")
+                }
             }
         )
     }
@@ -980,7 +1005,7 @@ private fun trimForPrint(text: String): String {
         returnText = returnText.take(12) + ".:"
     } else {
         val addSpace = 12 - returnText.length
-        for (i in 0..addSpace) {
+        for (i in 0 until addSpace) {
             returnText = "$returnText "
         }
     }
@@ -1002,11 +1027,11 @@ private fun createTextForShare(
         appendLine()
         appendLine(context.getString(R.string.eod_header_title).uppercase())
         appendLine()
-        appendLine("${trimForPrint(context.getString(R.string.eod_merchant_label))}      ${endOfDay.merchantName}")
-        appendLine("${trimForPrint(context.getString(R.string.eod_tid_label))}        ${endOfDay.TID}")
-        appendLine("${trimForPrint(context.getString(R.string.eod_mid_label))}        ${endOfDay.MID}")
-        appendLine("${trimForPrint(context.getString(R.string.eod_date_label))}       ${convertDateFormatForPrint(endOfDay.lastEndOfDay.toString())}")
-        appendLine("${trimForPrint(context.getString(R.string.eod_time_label))}       ${convertTimeFormatForPrint(endOfDay.lastEndOfDay.toString())}")
+        appendLine("${trimForPrint(context.getString(R.string.eod_merchant_label))}      ${endOfDay.merchantName ?: ""}")
+        appendLine("${trimForPrint(context.getString(R.string.eod_tid_label))}        ${endOfDay.TID ?: ""}")
+        appendLine("${trimForPrint(context.getString(R.string.eod_mid_label))}        ${endOfDay.MID ?: ""}")
+        appendLine("${trimForPrint(context.getString(R.string.eod_date_label))}       ${convertDateFormatForPrint(endOfDay.lastEndOfDay ?: "")}")
+        appendLine("${trimForPrint(context.getString(R.string.eod_time_label))}       ${convertTimeFormatForPrint(endOfDay.lastEndOfDay ?: "")}")
         appendLine()
         appendLine("==============================")
         appendLine(context.getString(R.string.eod_mastercard_title).uppercase())
@@ -1068,11 +1093,11 @@ private fun createTextForPrint(
     builder.appendLine("[L]")
     builder.appendLine("[C]<u><font size='wide'>${context.getString(R.string.eod_header_title).uppercase()}</font></u>")
     builder.appendLine("[L]")
-    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_merchant_label))}[R]${endOfDay.merchantName}")
-    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_tid_label))}[R]${endOfDay.TID}")
-    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_mid_label))}[R]${endOfDay.MID}")
-    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_date_label))}[R]${convertDateFormatForPrint(endOfDay.lastEndOfDay.toString())}")
-    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_time_label))}[R]${convertTimeFormatForPrint(endOfDay.lastEndOfDay.toString())}")
+    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_merchant_label))}[R]${endOfDay.merchantName ?: ""}")
+    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_tid_label))}[R]${endOfDay.TID ?: ""}")
+    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_mid_label))}[R]${endOfDay.MID ?: ""}")
+    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_date_label))}[R]${convertDateFormatForPrint(endOfDay.lastEndOfDay ?: "")}")
+    builder.appendLine("[L]${trimForPrint(context.getString(R.string.eod_time_label))}[R]${convertTimeFormatForPrint(endOfDay.lastEndOfDay ?: "")}")
     builder.appendLine()
     builder.appendLine("[C]================================")
 
