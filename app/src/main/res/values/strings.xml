@@ -513,4 +513,47 @@
     <!-- Card PIN Entry -->
     <string name="card_pin_entry_enter_pin">Unesite PIN kartice</string>
     <string name="card_pin_entry_cancel">Otkaži</string>
+
+    <!-- End of Day Screen -->
+    <string name="eod_screen_title">PRESEK DANA</string>
+    <string name="eod_header_title">Presek dana</string>
+    <string name="eod_merchant_card_title">Informacije o trgovcu</string>
+
+    <!-- EOD Labels -->
+    <string name="eod_merchant_label">Trgovac</string>
+    <string name="eod_tid_label">TID</string>
+    <string name="eod_mid_label">MID</string>
+    <string name="eod_date_label">Datum</string>
+    <string name="eod_time_label">Vreme</string>
+    <string name="eod_last_eod_label">Poslednji presek dana</string>
+
+    <!-- Card Types -->
+    <string name="eod_mastercard_title">Mastercard</string>
+    <string name="eod_visa_title">Visa</string>
+    <string name="eod_ips_title">IPS</string>
+
+    <!-- Traffic Labels -->
+    <string name="eod_approved_label">ODOBRENO</string>
+    <string name="eod_voided_label">STORNIRANO</string>
+    <string name="eod_tip_label">NAPOJNICA</string>
+    <string name="eod_total_label">UKUPNO</string>
+    <string name="eod_grand_total_label">UKUPNO</string>
+
+    <!-- Dialogs -->
+    <string name="eod_confirm_dialog_title">Presek dana</string>
+    <string name="eod_confirm_dialog_message">Da li želite da izvršite presek dana?</string>
+    <string name="eod_exit_dialog_title_not_done">Niste izvršili presek dana</string>
+    <string name="eod_exit_dialog_title_done">Napuštanje ekrana</string>
+    <string name="eod_exit_dialog_message">Da li ste sigurni da želite da napustite ovaj ekran?</string>
+
+    <!-- Messages -->
+    <string name="eod_success_message">Presek dana je uspešno izvršen!</string>
+    <string name="eod_must_be_done_error">Morate prvo da izvršite presek dana</string>
+    <string name="eod_share_title">Podeli presek dana</string>
+
+    <!-- Buttons -->
+    <string name="eod_button_yes">DA</string>
+    <string name="eod_button_no">NE</string>
+    <string name="eod_button_confirm">POTVRDI</string>
+    <string name="eod_button_cancel">OTKAŽI</string>
 </resources>

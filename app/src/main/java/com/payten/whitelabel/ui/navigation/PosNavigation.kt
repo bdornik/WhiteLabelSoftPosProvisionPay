@@ -27,6 +27,7 @@ import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.screens.AmountEntryScreen
 import com.payten.whitelabel.ui.screens.CardProcessingScreen
 import com.payten.whitelabel.ui.screens.ChangePinVerificationScreen
+import com.payten.whitelabel.ui.screens.EndOfDayScreen
 import com.payten.whitelabel.ui.screens.FilterScreen
 import com.payten.whitelabel.ui.screens.FirstPage
 import com.payten.whitelabel.ui.screens.LandingScreen
@@ -205,7 +206,6 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.navigate("settings")
                 },
                 onEndOfDayClick = {
-                    //TODO: Implement EndOfDayScreen
                     navController.navigate("end_of_day")
                 },
                 onSignOutClick = {
@@ -213,6 +213,14 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.navigate("pin_login") {
                         popUpTo(0) { inclusive = true }
                     }
+                }
+            )
+        }
+        composable("end_of_day"){
+            EndOfDayScreen(
+                sharedPreferences = sharedPreferences,
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -390,6 +398,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 ?.savedStateHandle
                 ?.get<TransactionDetailsDto>("transaction_data")
             val context = LocalContext.current
+            val activity = context as? Activity
 
             if (transactionData != null) {
                 Log.d("Navigation", "Showing transaction result for: ${transactionData.response}")
@@ -403,11 +412,11 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     },
                     onShare = {
                         Log.d("Navigation", "Share clicked")
-                        shareTransaction(context as Activity, transactionData)
+                        activity?.let { shareTransaction(it, transactionData) }
                     },
                     onPrint = {
                         Log.d("Navigation", "Print clicked")
-                        printTransaction(context as Activity, transactionData)
+                        activity?.let { printTransaction(it, transactionData) }
                     }
                 )
             } else {

@@ -524,4 +524,47 @@
     <!-- Card PIN Entry -->
     <string name="card_pin_entry_enter_pin">Enter card PIN</string>
     <string name="card_pin_entry_cancel">Cancel</string>
+
+    <!-- End of Day Screen -->
+    <string name="eod_screen_title">END OF DAY</string>
+    <string name="eod_header_title">End of Day</string>
+    <string name="eod_merchant_card_title">Merchant Information</string>
+
+    <!-- EOD Labels -->
+    <string name="eod_merchant_label">Merchant</string>
+    <string name="eod_tid_label">TID</string>
+    <string name="eod_mid_label">MID</string>
+    <string name="eod_date_label">Date</string>
+    <string name="eod_time_label">Time</string>
+    <string name="eod_last_eod_label">Last End of Day</string>
+
+    <!-- Card Types -->
+    <string name="eod_mastercard_title">Mastercard</string>
+    <string name="eod_visa_title">Visa</string>
+    <string name="eod_ips_title">IPS</string>
+
+    <!-- Traffic Labels -->
+    <string name="eod_approved_label">APPROVED</string>
+    <string name="eod_voided_label">VOIDED</string>
+    <string name="eod_tip_label">TIP</string>
+    <string name="eod_total_label">TOTAL</string>
+    <string name="eod_grand_total_label">GRAND TOTAL</string>
+
+    <!-- Dialogs -->
+    <string name="eod_confirm_dialog_title">End of Day</string>
+    <string name="eod_confirm_dialog_message">Do you want to perform end of day?</string>
+    <string name="eod_exit_dialog_title_not_done">End of day not performed</string>
+    <string name="eod_exit_dialog_title_done">Leaving screen</string>
+    <string name="eod_exit_dialog_message">Are you sure you want to leave this screen?</string>
+
+    <!-- Messages -->
+    <string name="eod_success_message">End of day completed successfully!</string>
+    <string name="eod_must_be_done_error">You must perform end of day first</string>
+    <string name="eod_share_title">Share end of day</string>
+
+    <!-- Buttons -->
+    <string name="eod_button_yes">YES</string>
+    <string name="eod_button_no">NO</string>
+    <string name="eod_button_confirm">CONFIRM</string>
+    <string name="eod_button_cancel">CANCEL</string>
 </resources>
