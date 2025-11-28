@@ -54,6 +54,32 @@ import androidx.annotation.RequiresApi
 import kotlin.getValue
 import androidx.core.graphics.toColorInt
 
+/**
+ * HeadlessPaymentActivity.kt
+ *
+ * This Activity is responsible for executing card payment transactions in a headless mode,
+ * meaning it remains invisible to the user while interacting directly with the SoftPOS SDK.
+ *
+ * It serves as the primary bridge between the application's Compose UI flow (which initiates a payment)
+ * and the underlying payment processing logic provided by the Simant SoftPOS SDK.
+ *
+ * The activity handles the entire transaction lifecycle, including:
+ * 1. Initialization: Setting up SDK listeners, reading transaction parameters.
+ * 2. Transaction Execution: Initiating the `doTransaction` call to the SDK.
+ * 3. CVM Handling (PIN Entry): Providing the custom UI configuration (`getDialogConfiguration`)
+ *    for PIN entry when required by the card scheme, and implementing custom PIN visual feedback.
+ * 4. Result Management: Capturing transaction outcomes (Success, Declined, Cancelled, Ended)
+ *    and returning the result (`TransactionDetailsDto`) back to the calling screen.
+ * 5. System Monitoring: Registering a `BroadcastReceiver` to monitor NFC status changes.
+ *
+ * This Activity implements multiple SDK listener interfaces (TransactionResultListener,
+ * LoyaltyActionListener, DisplayInterface, CVMSListener, MTMSListener) to manage asynchronous
+ * communication during the payment process.
+ *
+ * @property model PosViewModel for logging errors and general application logic.
+ * @property sharedPreferences KsPrefs for accessing persistent configuration data.
+ * @property TAG Logger tag for debugging purposes.
+ */
 @AndroidEntryPoint
 class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, LoyaltyActionListener,
     DisplayInterface, CVMSListener, MTMSListener {

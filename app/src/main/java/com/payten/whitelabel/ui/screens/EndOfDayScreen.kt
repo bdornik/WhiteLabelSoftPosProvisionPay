@@ -48,6 +48,25 @@ import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * EndOfDayScreen.kt
+ *
+ * This Composable screen provides the functionality for displaying and managing the End of Day (EOD) process.
+ *
+ * It fetches transaction data (Card and IPS) from the server for the current EOD period,
+ * calculates traffic statistics (sales, voids, tips) for Mastercard, Visa, and IPS, and displays
+ * them in a receipt-like format.
+ *
+ * The screen allows the user to:
+ * 1. View the aggregated financial traffic data.
+ * 2. Execute the End of Day process (which updates the last EOD date in local storage).
+ * 3. Print the EOD slip via Bluetooth.
+ * 4. Share the EOD summary text via system sharing options.
+ *
+ * @param sharedPreferences KsPrefs instance for accessing local configuration.
+ * @param onNavigateBack Callback executed when the back button is clicked.
+ * @param trafficViewModel ViewModel responsible for fetching transaction data from the server.
+ */
 @Composable
 fun EndOfDayScreen(
     sharedPreferences: KsPrefs,
