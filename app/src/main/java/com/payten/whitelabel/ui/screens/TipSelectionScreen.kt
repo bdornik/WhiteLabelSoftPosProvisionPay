@@ -1,11 +1,6 @@
 package com.payten.whitelabel.ui.screens
 
-import android.app.Activity
-import android.content.Intent
-import android.os.Build
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,14 +19,12 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalContext
 import com.payten.whitelabel.R
-import com.payten.whitelabel.activities.IpsActivity
 import com.payten.whitelabel.dto.TransactionDetailsDto
+import com.payten.whitelabel.ui.components.AmountDisplayCard
 import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
-import kotlin.jvm.java
 
 /**
  * Tip selection screen.
@@ -42,7 +34,9 @@ import kotlin.jvm.java
  * @param amountInPare Transaction amount in minor units (pare)
  * @param paymentMethod Selected payment method
  * @param onNavigateBack Callback when back button is clicked
- * @param onTransactionComplete Callback with transaction data when hardware activity completes
+ * @param onContinueCard Callback for card payment with tip amount
+ * @param onContinueIps Callback for IPS payment with total amount (includes tip)
+ * @param onTransactionComplete Callback with transaction data when hardware activity completes (legacy)
  */
 @Composable
 fun TipSelectionScreen(
@@ -52,10 +46,10 @@ fun TipSelectionScreen(
     onNavigateBack: () -> Unit = {},
     onCustomTipClick: () -> Unit = {},
     onContinueCard: (tipAmount: Long) -> Unit = {},
+    onContinueIps: (totalAmount: Long) -> Unit = {},
     onTransactionComplete: (TransactionDetailsDto) -> Unit = {}
 ) {
     val TAG = "TipSelectionScreen"
-    val context = LocalContext.current
 
     var selectedTip by remember { mutableStateOf<TipOption?>(null) }
 
@@ -80,26 +74,6 @@ fun TipSelectionScreen(
 
     val isButtonEnabled = selectedTip != null
 
-    val ipsTransactionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        Log.d(TAG, "IPS transaction returned: ${result.resultCode}")
-
-        if (result.resultCode == Activity.RESULT_OK) {
-            val transactionData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                result.data?.getSerializableExtra("transaction_data", TransactionDetailsDto::class.java)
-            } else {
-                @Suppress("DEPRECATION")
-                result.data?.getSerializableExtra("transaction_data") as? TransactionDetailsDto
-            }
-
-            if (transactionData != null) {
-                Log.d(TAG, "IPS transaction completed: ${transactionData.response}")
-                onTransactionComplete(transactionData)
-            }
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -119,63 +93,7 @@ fun TipSelectionScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(
-                            elevation = 4.dp,
-                            shape = RoundedCornerShape(16.dp),
-                            clip = false
-                        )
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(R.string.payment_method_amount_label),
-                        fontSize = 14.sp,
-                        fontFamily = MyriadPro,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = displayAmount,
-                        fontSize = 44.sp,
-                        fontFamily = MyriadPro,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = stringResource(R.string.currency_rsd),
-                        fontSize = 16.sp,
-                        fontFamily = MyriadPro,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+            AmountDisplayCard(displayAmount)
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -280,17 +198,14 @@ fun TipSelectionScreen(
                     selectedTip?.let { _ ->
                         val tipAmount = finalAmount - amountInPare
 
-                        Log.d(TAG, "Confirm clicked")
+                        Log.d(TAG, "Confirm clicked - method: $paymentMethod, amount: $amountInPare, tip: $tipAmount, total: $finalAmount")
 
                         when (paymentMethod) {
                             PaymentMethod.CARD -> {
                                 onContinueCard(tipAmount)
                             }
                             PaymentMethod.IPS -> {
-                                val intent = Intent(context, IpsActivity::class.java).apply {
-                                    putExtra("Amount", finalAmount.toString())
-                                }
-                                ipsTransactionLauncher.launch(intent)
+                                onContinueIps(finalAmount)
                             }
                         }
                     }

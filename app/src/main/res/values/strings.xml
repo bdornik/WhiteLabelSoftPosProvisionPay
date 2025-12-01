@@ -560,4 +560,9 @@
     <string name="eod_button_no">NE</string>
     <string name="eod_button_confirm">POTVRDI</string>
     <string name="eod_button_cancel">OTKAŽI</string>
+
+    <!-- IPS QR Screen -->
+    <string name="ips_amount_label">Iznos transakcije</string>
+    <string name="ips_qr_scan_label">SKENIRAJTE QR KOD</string>
+    <string name="ips_cancel_button">PREKINI TRANSAKCIJU</string>
 </resources>

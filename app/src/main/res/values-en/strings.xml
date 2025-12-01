@@ -449,6 +449,10 @@
     <string name="tip_no_tip">No tip</string>
     <string name="tip_confirm">CONFIRM</string>
 
+    <!-- Custom Tip Entry Screen -->
+    <string name="custom_tip_title">ENTER THE TIP</string>
+    <string name="custom_tip_confirm">CONFIRM</string>
+
     <!-- Transaction Screen -->
     <string name="transaction_back">Back</string>
     <string name="transaction_print">Print</string>
@@ -567,4 +571,9 @@
     <string name="eod_button_no">NO</string>
     <string name="eod_button_confirm">CONFIRM</string>
     <string name="eod_button_cancel">CANCEL</string>
+
+    <!-- IPS QR Screen -->
+    <string name="ips_amount_label">Transaction amount</string>
+    <string name="ips_qr_scan_label">SCAN QR CODE</string>
+    <string name="ips_cancel_button">CANCEL TRANSACTION</string>
 </resources>

@@ -2,7 +2,6 @@ package com.payten.whitelabel.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.payten.whitelabel.R
+import com.payten.whitelabel.ui.components.AmountDisplayCard
 import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
@@ -166,67 +166,6 @@ private fun CardProcessingHeader(
         Spacer(modifier = Modifier.width(40.dp))
     }
 }
-
-/**
- * Amount display card with currency.
- */
-@Composable
-private fun AmountDisplayCard(
-    amount: String
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                shape = RoundedCornerShape(12.dp)
-            ),
-        color = Color.White,
-        shape = RoundedCornerShape(16.dp),
-        shadowElevation = 4.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(R.string.card_processing_amount_label),
-                fontSize = 14.sp,
-                fontFamily = MyriadPro,
-                fontWeight = FontWeight.Normal,
-                color = Color.Gray,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = amount,
-                fontSize = 40.sp,
-                fontFamily = MyriadPro,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(R.string.currency_rsd),
-                fontSize = 16.sp,
-                fontFamily = MyriadPro,
-                fontWeight = FontWeight.Normal,
-                color = Color.Gray,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
 /**
  * LED status indicators (4 circles) with animation.
  */

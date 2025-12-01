@@ -32,6 +32,7 @@ import com.payten.whitelabel.ui.screens.CustomTipEntryScreen
 import com.payten.whitelabel.ui.screens.EndOfDayScreen
 import com.payten.whitelabel.ui.screens.FilterScreen
 import com.payten.whitelabel.ui.screens.FirstPage
+import com.payten.whitelabel.ui.screens.IpsQRScreen
 import com.payten.whitelabel.ui.screens.LandingScreen
 import com.payten.whitelabel.ui.screens.MenuScreen
 import com.payten.whitelabel.ui.screens.PaymentMethod
@@ -336,6 +337,9 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 onContinueCard = { tipAmount ->
                     navController.navigate("card_tap/$amountInPare/$tipAmount")
                 },
+                onContinueIps = { totalAmount ->
+                    navController.navigate("ips_qr/$totalAmount")
+                },
                 onTransactionComplete = { transactionData ->
                     navController.navigate("transaction_result") {
                         popUpTo("landing") { inclusive = false }
@@ -356,6 +360,56 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                         ?.savedStateHandle
                         ?.set("custom_tip_result", tipAmount)
                     navController.popBackStack()
+                }
+            )
+        }
+        composable(
+            "ips_qr/{totalAmount}",
+            listOf(navArgument("totalAmount") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val totalAmount = backStackEntry.arguments?.getLong("totalAmount") ?: 0L
+
+            IpsQRScreen(
+                amount = totalAmount.toString(),
+                sharedPreferences = sharedPreferences,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onTransactionComplete = { isSuccess, statusCode, message, e2eRef ->
+                    // Create transaction data
+                    val transactionData = TransactionDetailsDto(
+                        aid = "",
+                        applicationLabel = "",
+                        authorizationCode = message,
+                        bankName = "",
+                        cardNumber = "",
+                        dateTime = org.threeten.bp.LocalDateTime.now().toString(),
+                        merchantId = sharedPreferences.pull(SharedPreferencesKeys.IPS_SERVICE_MERCHANT_ID, ""),
+                        merchantName = sharedPreferences.pull(SharedPreferencesKeys.MERCHANT_NAME, ""),
+                        message = message,
+                        operationName = "Prodaja",
+                        response = statusCode,
+                        rrn = e2eRef,
+                        code = "",
+                        status = if (isSuccess) "A" else "F",
+                        terminalId = sharedPreferences.pull(SharedPreferencesKeys.IPS_SERVICE_TERMINAL_ID, ""),
+                        amount = (totalAmount / 100.0).toString(),
+                        isIps = true,
+                        sdkStatus = null,
+                        billStatus = null,
+                        color = -1,
+                        recordId = "",
+                        listName = "",
+                        tipAmount = "0.0"
+                    )
+
+                    // Save to landing and navigate to result
+                    navController.getBackStackEntry("landing")
+                        .savedStateHandle["transaction_data"] = transactionData
+
+                    navController.navigate("transaction_result") {
+                        popUpTo("landing") { inclusive = false }
+                    }
                 }
             )
         }
