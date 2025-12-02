@@ -498,10 +498,17 @@
     <string name="void_confirmation_message">Are you sure you want to void this transaction?</string>
     <string name="void_confirm_button">YES, VOID</string>
     <string name="void_cancel_button">Cancel</string>
-    <string name="void_success_title">Transaction Voided</string>
-    <string name="void_success_message">Transaction has been successfully voided</string>
-    <string name="void_failed_title">Void Failed</string>
-    <string name="void_processing">Voiding transaction...</string>
+
+    <string name="void_processing_message">Voiding in progress…</string>
+    <string name="void_processing_subtitle">Please wait</string>
+
+    <string name="void_success_title">Transaction voided</string>
+    <string name="void_success_message">Transaction successfully voided</string>
+    <string name="void_error_title">Void failed</string>
+    <string name="void_cancelled_title">Void cancelled</string>
+    <string name="void_cancelled_message">Transaction void was cancelled</string>
+    <string name="void_failed_title">Void failed</string>
+    <string name="void_processing">Voiding in progress…</string>
 
     <string name="filter_title">FILTER</string>
     <string name="filter_clear_all">Clear all filters</string>

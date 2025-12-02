@@ -489,7 +489,7 @@
     <string name="void_cancel_button">Otkaži</string>
 
     <!-- Void Processing Screen -->
-    <string name="void_processing_message">Storniranje u toku...</string>
+    <string name="void_processing_message">Storniranje u toku…</string>
     <string name="void_processing_subtitle">Molimo sačekajte</string>
 
     <!-- Void Result Dialogs -->
@@ -499,7 +499,7 @@
     <string name="void_cancelled_title">Storniranje otkazano</string>
     <string name="void_cancelled_message">Storniranje transakcije je otkazano</string>
     <string name="void_failed_title">Storniranje neuspešno</string>
-    <string name="void_processing">Storniranje u toku...</string>
+    <string name="void_processing">Storniranje u toku…</string>
 
     <string name="filter_title">FILTER</string>
     <string name="filter_clear_all">Izbriši sve filtere</string>
