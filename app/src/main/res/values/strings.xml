@@ -469,6 +469,10 @@
     <string name="card_processing_tap_card_label">PRISLONITE KARTICU</string>
     <string name="card_processing_cancel">PREKINI TRANSAKCIJU</string>
 
+    <!-- Payment Processing Screen -->
+    <string name="payment_processing_message">Plaćanje u toku…</string>
+    <string name="payment_processing_subtitle">Molimo sačekajte</string>
+
     <string name="transactions_title">PROMET</string>
     <string name="transactions_filter">Filter</string>
     <string name="transactions_report">Izveštaj</string>

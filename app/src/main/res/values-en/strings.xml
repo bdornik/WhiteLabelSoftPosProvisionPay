@@ -480,6 +480,10 @@
     <string name="card_processing_tap_card_label">TAP YOUR CARD</string>
     <string name="card_processing_cancel">CANCEL TRANSACTION</string>
 
+    <!-- Payment Processing Screen -->
+    <string name="payment_processing_message">Payment in progress…</string>
+    <string name="payment_processing_subtitle">Please wait</string>
+
     <string name="transactions_title">TRAFFIC</string>
     <string name="transactions_filter">Filter</string>
     <string name="transactions_report">Report</string>
