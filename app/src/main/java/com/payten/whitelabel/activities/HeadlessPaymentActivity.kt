@@ -54,6 +54,11 @@ import androidx.annotation.RequiresApi
 import kotlin.getValue
 import androidx.core.graphics.toColorInt
 import com.payten.whitelabel.ui.states.PaymentUiBridge
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.payten.whitelabel.ui.screens.PaymentProcessingScreen
+import com.payten.whitelabel.ui.theme.AppTheme
 
 /**
  * HeadlessPaymentActivity.kt
@@ -121,8 +126,17 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         logger.info { "onCreate HeadlessPaymentActivity" }
 
         PaymentUiBridge.reset()
-        // Make window invisible
-        //setTheme(android.R.style.Theme_Translucent_NoTitleBar)
+
+        // Set up Compose UI for showing processing screen
+        setContent {
+            AppTheme {
+                val showProcessing by PaymentUiBridge.showProcessingScreen.collectAsStateWithLifecycle()
+
+                if (showProcessing) {
+                    PaymentProcessingScreen()
+                }
+            }
+        }
 
         val model2: PosViewModel by viewModels()
         model = model2
@@ -429,6 +443,8 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     override fun onCVMEEntered(p0: Int) {
         logger.info { "Pin entered: $p0" }
         shouldIgnoreDecline = false
+        // Show processing screen again after PIN entry
+        PaymentUiBridge.setProcessingScreen(true)
         CVMTransactionApi.doTransactionPCPOC(this, MainApplication.getInstance().paymentData.transactionType)
     }
 
@@ -456,6 +472,8 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     @SuppressLint("DefaultLocale")
     override fun getDialogConfiguration(): CVMEDlgFragmentConfigurator {
         Log.d(TAG, "getDialogConfiguration() called - SDK requesting PIN dialog setup")
+        // Hide processing screen so PIN dialog can show
+        PaymentUiBridge.setProcessingScreen(false)
         val config = CVMEDlgFragmentConfigurator()
 
         // Keypad button IDs
@@ -686,6 +704,12 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             playAudioIndication(true)
             PaymentUiBridge.updateLedState(0x04, true)
             PaymentUiBridge.updateLedState(0x0F, true)
+            // Delay showing processing screen to let LED indicators animate
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (!isFinishing && !isDestroyed) {
+                    PaymentUiBridge.setProcessingScreen(true)
+                }
+            }, 1000)
         }
     }
 

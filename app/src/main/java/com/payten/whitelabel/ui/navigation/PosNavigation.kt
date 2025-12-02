@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
@@ -48,6 +49,7 @@ import com.payten.whitelabel.ui.screens.SplashScreen
 import com.payten.whitelabel.ui.screens.TipSelectionScreen
 import com.payten.whitelabel.ui.screens.TransactionScreen
 import com.payten.whitelabel.ui.screens.TransactionsListScreen
+import com.payten.whitelabel.ui.states.PaymentUiBridge
 import com.payten.whitelabel.utils.AmountUtil.Companion.formatAmount
 
 /**
@@ -460,12 +462,20 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 transactionLauncher.launch(intent)
             }
 
+            // Reset processing state when navigating away from this screen
+            DisposableEffect(Unit) {
+                onDispose {
+                    PaymentUiBridge.reset()
+                }
+            }
+
             CardProcessingScreen(
                 amountInPare = amountInPare,
                 tipAmount = tipAmount,
                 onNavigateBack = {
                     // Cancel transaction and go back
                     Log.d("Navigation", "Card processing cancelled by user")
+                    PaymentUiBridge.reset()
                     navController.popBackStack()
                 }
             )

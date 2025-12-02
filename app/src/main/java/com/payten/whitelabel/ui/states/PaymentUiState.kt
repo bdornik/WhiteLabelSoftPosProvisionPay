@@ -14,11 +14,15 @@ object PaymentUiBridge {
     private val _ledState = MutableStateFlow(LedState())
     val ledState = _ledState.asStateFlow()
 
+    private val _showProcessingScreen = MutableStateFlow(false)
+    val showProcessingScreen = _showProcessingScreen.asStateFlow()
+
     private var pLedOn = 0x00
 
     fun reset() {
         pLedOn = 0x00
         _ledState.value = LedState() // All false
+        _showProcessingScreen.value = false
     }
 
     fun updateLedState(ledOn: Int, isLedON: Boolean) {
@@ -34,5 +38,9 @@ object PaymentUiBridge {
             led3 = (pLedOn and 0x04) == 0x04,
             led4 = (pLedOn and 0x08) == 0x08
         )
+    }
+
+    fun setProcessingScreen(show: Boolean) {
+        _showProcessingScreen.value = show
     }
 }

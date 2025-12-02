@@ -41,7 +41,13 @@ fun CardProcessingScreen(
     onNavigateBack: () -> Unit = {}
 ) {
     val ledState by PaymentUiBridge.ledState.collectAsState()
+    val showProcessing by PaymentUiBridge.showProcessingScreen.collectAsState()
     val displayAmount = formatAmount(amountInPare + tipAmount)
+    
+    if (showProcessing) {
+        PaymentProcessingScreen()
+        return
+    }
 
     Box(
         modifier = Modifier
