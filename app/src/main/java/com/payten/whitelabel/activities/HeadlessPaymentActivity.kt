@@ -53,6 +53,7 @@ import android.graphics.Color
 import androidx.annotation.RequiresApi
 import kotlin.getValue
 import androidx.core.graphics.toColorInt
+import com.payten.whitelabel.ui.states.PaymentUiBridge
 
 /**
  * HeadlessPaymentActivity.kt
@@ -119,6 +120,7 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
         logger.info { "onCreate HeadlessPaymentActivity" }
 
+        PaymentUiBridge.reset()
         // Make window invisible
         //setTheme(android.R.style.Theme_Translucent_NoTitleBar)
 
@@ -268,17 +270,19 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     override fun onTransactionProcessing() {
         logger.info { "Transaction onTransactionProcessing" }
         playAudioIndication(true)
+        PaymentUiBridge.updateLedState(0x02, true)
     }
 
     override fun onTransactionSuccessful() {
         logger.info { "Transaction onTransactionSuccessful" }
         playAudioIndication(true)
+        PaymentUiBridge.updateLedState(0x0F, true)
     }
 
     override fun onTransactionDeclined() {
         logger.info { "Transaction onTransactionDeclined" }
         playAudioIndication(false)
-
+        PaymentUiBridge.updateLedState(0x0F, false)
         if (shouldIgnoreDecline) {
             resetTransaction()
             return
@@ -397,11 +401,17 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             }
 
             if (p0?.transactionResponseData?.responseCode.equals("00", true)) {
+                PaymentUiBridge.updateLedState(0x0F, true)
                 returnResult(RESULT_OK, "Success", transactionData)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    returnResult(RESULT_OK, "Success", transactionData)
+                    finish()
+                }, 1500)
+                return
             } else {
                 returnResult(RESULT_CANCELED, "Transaction failed", transactionData)
+                finish()
             }
-            finish()
         }
 
         if (p0?.transactionResponseData?.statusCode.equals("D", true)) {
@@ -674,15 +684,19 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         logger.info { "Display message $p0" }
         if (p0?.uirdStatus == UserInterfaceData.UIRDStatus.UIRD_STATUS_CARD_READ_SUCCESSFULLY) {
             playAudioIndication(true)
+            PaymentUiBridge.updateLedState(0x04, true)
+            PaymentUiBridge.updateLedState(0x0F, true)
         }
     }
 
     override fun onTransactionIdle() {
         logger.info { "onTransactionIdle" }
+        PaymentUiBridge.updateLedState(0x01, true)
     }
 
     override fun onTransactionReadyToRead() {
         logger.info { "onTransactionReadyToRead" }
+        PaymentUiBridge.updateLedState(0x01, true)
     }
 
     private fun playAudioIndication(isSuccessTone: Boolean) {

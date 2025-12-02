@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.sp
 import com.payten.whitelabel.R
 import com.payten.whitelabel.ui.components.AmountDisplayCard
 import com.payten.whitelabel.ui.components.BackButton
+import com.payten.whitelabel.ui.states.LedState
+import com.payten.whitelabel.ui.states.PaymentUiBridge
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
 
@@ -38,6 +40,7 @@ fun CardProcessingScreen(
     tipAmount: Long = 0L,
     onNavigateBack: () -> Unit = {}
 ) {
+    val ledState by PaymentUiBridge.ledState.collectAsState()
     val displayAmount = formatAmount(amountInPare + tipAmount)
 
     Box(
@@ -91,7 +94,7 @@ fun CardProcessingScreen(
                 )
             }
 
-            ProcessingIndicator()
+            ProcessingIndicator(ledState)
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
@@ -170,36 +173,29 @@ private fun CardProcessingHeader(
  * LED status indicators (4 circles) with animation.
  */
 @Composable
-private fun ProcessingIndicator() {
-    var currentLed by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            kotlinx.coroutines.delay(500)
-            currentLed = (currentLed + 1) % 4
-        }
-    }
+private fun ProcessingIndicator(state: LedState) {
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(24.dp)
     ) {
-        repeat(4) { index ->
-            Box(
-                modifier = Modifier
-                    .size(12.dp)
-                    .background(
-                        color = if (index == currentLed) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            Color.LightGray
-                        },
-                        shape = CircleShape
-                    )
-            )
-        }
+        LedDot(isActive = state.led1)
+        LedDot(isActive = state.led2)
+        LedDot(isActive = state.led3)
+        LedDot(isActive = state.led4)
     }
+}
+@Composable
+fun LedDot(isActive: Boolean) {
+    Box(
+        modifier = Modifier
+            .size(12.dp)
+            .background(
+                color = if (isActive) MaterialTheme.colorScheme.primary else Color.LightGray,
+                shape = CircleShape
+            )
+    )
 }
 
 /**
