@@ -357,7 +357,7 @@
     <string name="pin_login_error_attempts">Attempts remaining: %d</string>
     <string name="pin_login_app_is_blocked">App is blocked</string>
     <string name="pin_login_enter_your_pin">Enter PIN</string>
-    <string name="pin_login_incorrect_with_attempts">Incorrect PIN. Remaining attempts: %d</string>
+    <string name="pin_login_incorrect_with_attempts">Incorrect PIN. Remaining attempts: </string>
     <string name="pin_login_app_blocked_contact_support">App is blocked. Contact support.</string>
     <string name="pin_login_verifying">Verifying…</string>
 

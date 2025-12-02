@@ -49,7 +49,6 @@ fun PinLoginScreen(
 ) {
     var pin by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
     var attemptsRemaining by remember {
         mutableIntStateOf(sharedPreferences.pull(SharedPreferencesKeys.PIN_COUNT, 3))
     }
@@ -99,22 +98,16 @@ fun PinLoginScreen(
                 attemptsRemaining--
                 sharedPreferences.push(SharedPreferencesKeys.PIN_COUNT, attemptsRemaining)
 
+                showError = true
+
                 if (attemptsRemaining == 0) {
                     sharedPreferences.push(SharedPreferencesKeys.APP_BLOCKED, true)
-                    errorMessage = appBlockedErrorMessage
+                    errorDialogMessage = appBlockedErrorMessage
                     showErrorDialog = true
                 } else {
-                    errorMessage = wrongPINErrorMessage + attemptsRemaining
-                    showError = true
-                    delay(2000)
-                    pin = ""
-                    showError = false
+                    errorDialogMessage = "$wrongPINErrorMessage $attemptsRemaining"
+                    showErrorDialog = true
                 }
-
-                showError = true
-                delay(2000)
-                pin = ""
-                showError = false
             }
         }
     }
@@ -160,16 +153,6 @@ fun PinLoginScreen(
                     fontWeight = FontWeight.Bold,
                     color = if (showError) MaterialTheme.colorScheme.error else Color.Black
                 )
-
-                if (showError) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = errorMessage,
-                        fontSize = 14.sp,
-                        fontFamily = MyriadPro,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -236,13 +219,15 @@ fun PinLoginScreen(
                 CustomDialog(
                     isSuccess = false,
                     title = errorDialogMessage,
-                    buttonText =
-                        if (attemptsRemaining == 0) stringResource(R.string.dialog_button_ok_default)
-                        else stringResource(R.string.dialog_button_back_default),
+                    buttonText = stringResource(R.string.dialog_button_ok_default),
                     onDismiss = {
                         showErrorDialog = false
+
                         if (attemptsRemaining == 0) {
                             onLoginFailed()
+                        } else {
+                            pin = ""
+                            showError = false
                         }
                     }
                 )

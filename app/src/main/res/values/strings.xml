@@ -346,7 +346,7 @@
     <string name="pin_login_error_attempts">Preostalo pokušaja: %d</string>
     <string name="pin_login_app_is_blocked">Aplikacija je blokirana</string>
     <string name="pin_login_enter_your_pin">Unesite PIN</string>
-    <string name="pin_login_incorrect_with_attempts">Netačan PIN. Preostali pokušaji: %d</string>
+    <string name="pin_login_incorrect_with_attempts">Netačan PIN. Preostali pokušaji: </string>
     <string name="pin_login_app_blocked_contact_support">Aplikacija je blokirana. Kontaktirajte podršku.</string>
     <string name="pin_login_verifying">Proveravanje…</string>
 
