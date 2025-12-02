@@ -199,4 +199,16 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <!-- Splash Screen Theme (Android 12+) -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Pitch black background -->
+        <item name="windowSplashScreenBackground">@android:color/black</item>
+        <!-- No icon -->
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <!-- Zero animation duration -->
+        <item name="windowSplashScreenAnimationDuration">0</item>
+        <!-- Transition to app theme immediately -->
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
+    </style>
+
 </resources>

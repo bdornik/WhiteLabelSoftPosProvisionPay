@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
 
 
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var sharedPreferences: KsPrefs
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
 
         val languageIndex = sharedPreferences.pull(SharedPreferencesKeys.LANGUAGE, 2)

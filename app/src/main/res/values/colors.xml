@@ -42,5 +42,7 @@
     <color name="transparent">#00C0C0C0</color>
     <color name="green_background">#A4E7F9E5</color>
 
+    <!-- Splash Screen Colors -->
+    <color name="splash_background">@color/globalBlack</color>
 
 </resources>
