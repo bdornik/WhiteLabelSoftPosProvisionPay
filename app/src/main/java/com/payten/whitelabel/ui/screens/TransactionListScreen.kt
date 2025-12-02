@@ -1,6 +1,10 @@
 package com.payten.whitelabel.ui.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -14,6 +18,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.cioccarellia.ksprefs.KsPrefs
 import com.payten.whitelabel.R
-import com.payten.whitelabel.dto.TransactionDetailsDto
+import com.payten.whitelabel.activities.HeadlessVoidActivity
 import com.payten.whitelabel.dto.TransactionDto
 import com.payten.whitelabel.dto.transactions.GetTransactionsRequest
 import com.payten.whitelabel.enums.TransactionSortType
@@ -37,8 +42,6 @@ import com.payten.whitelabel.ui.components.BackButton
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
 import com.payten.whitelabel.viewmodel.TrafficViewModel
-import com.payten.whitelabel.viewmodel.VoidTransactionState
-import com.payten.whitelabel.viewmodel.VoidTransactionViewModel
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -57,9 +60,9 @@ fun TransactionsListScreen(
     navController: NavController? = null,
     onNavigateBack: () -> Unit = {},
     onTransactionDetailsClick: (TransactionDto) -> Unit = {},
-    onFilterClick: () -> Unit = {},
-    onNavigateToVoidProcessing: (TransactionDetailsDto) -> Unit = {}
+    onFilterClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val trafficViewModel: TrafficViewModel = if (navController != null) {
         hiltViewModel(
             viewModelStoreOwner = navController.getBackStackEntry(navController.graph.id)
@@ -68,41 +71,13 @@ fun TransactionsListScreen(
         hiltViewModel()
     }
 
-    val voidViewModel: VoidTransactionViewModel = if (navController != null) {
-        hiltViewModel(
-            viewModelStoreOwner = navController.getBackStackEntry(navController.graph.id)
-        )
-    } else {
-        hiltViewModel()
-    }
     val transactions by trafficViewModel.transactionResultsSuccess.observeAsState(emptyList())
     val isLoading by trafficViewModel.isLoading.observeAsState(false)
-    val voidState by voidViewModel.voidState.observeAsState(VoidTransactionState.Idle)
 
     var showVoidConfirmDialog by remember { mutableStateOf<TransactionDto?>(null) }
+    var showVoidResultDialog by remember { mutableStateOf<VoidResult?>(null) }
 
-    // Track filter changes
-    var filterTrigger by remember { mutableIntStateOf(0) }
-
-    // Apply filters
-    val filteredTransactions = remember(transactions, filterTrigger) {
-        applyFiltersAndSorting(transactions ?: emptyList(), sharedPreferences)
-    }
-
-    // CRITICAL FIX: Determine the absolute latest voidable transaction ID from the FULL list.
-    // We ignore filters here. If the latest transaction is hidden by a filter,
-    // no other transaction should inherit the "Void" button.
-    val latestVoidableRecordId = remember(transactions) {
-        transactions
-            ?.filter { it.status == TransactionStatus.Accepted } // Only Accepted transactions can be voided
-            ?.maxByOrNull { it.transactionDate ?: LocalDateTime.MIN } // Find the most recent one
-            ?.recordId
-    }
-
-    val hasActiveFilters = remember(filterTrigger) {
-        hasActiveFilters(sharedPreferences)
-    }
-
+    // Function to load transactions
     fun loadTransactions() {
         val userId = sharedPreferences.pull(SharedPreferencesKeys.USER_ID, "")
         val terminalId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_TERMINAL_ID, "")
@@ -120,10 +95,46 @@ fun TransactionsListScreen(
         )
     }
 
-    LaunchedEffect(voidState) {
-        if (voidState is VoidTransactionState.Success) {
-            loadTransactions()
+    // Activity launcher for void transaction
+    val voidLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val success = result.data?.getBooleanExtra("success", false) ?: false
+            val errorMessage = result.data?.getStringExtra("error_message")
+
+            if (success) {
+                showVoidResultDialog = VoidResult.Success
+                // Refresh transaction list
+                loadTransactions()
+            } else {
+                showVoidResultDialog = VoidResult.Error(errorMessage ?: "Unknown error")
+            }
+        } else if (result.resultCode == Activity.RESULT_CANCELED) {
+            showVoidResultDialog = VoidResult.Cancelled
         }
+    }
+
+    // Track filter changes
+    var filterTrigger by remember { mutableIntStateOf(0) }
+
+    // Apply filters
+    val filteredTransactions = remember(transactions, filterTrigger) {
+        applyFiltersAndSorting(transactions ?: emptyList(), sharedPreferences)
+    }
+
+    // Determine the absolute latest voidable transaction ID from the FULL list.
+    // We ignore filters here. If the latest transaction is hidden by a filter,
+    // no other transaction should inherit the "Void" button.
+    val latestVoidableRecordId = remember(transactions) {
+        transactions
+            ?.filter { it.status == TransactionStatus.Accepted } // Only Accepted transactions can be voided
+            ?.maxByOrNull { it.transactionDate ?: LocalDateTime.MIN } // Find the most recent one
+            ?.recordId
+    }
+
+    val hasActiveFilters = remember(filterTrigger) {
+        hasActiveFilters(sharedPreferences)
     }
 
     LaunchedEffect(Unit) {
@@ -213,35 +224,23 @@ fun TransactionsListScreen(
             VoidConfirmationDialog(
                 transaction = transaction,
                 onConfirm = {
-                    val transactionData = TransactionDetailsDto(
-                        aid = transaction.applicationId,
-                        applicationLabel = transaction.applicationLabel ?: "",
-                        authorizationCode = transaction.recordId,
-                        bankName = "",
-                        cardNumber = transaction.maskedPAN ?: "",
-                        dateTime = transaction.transactionDate.toString(),
-                        merchantId = transaction.merchantId ?: "",
-                        merchantName = sharedPreferences.pull(SharedPreferencesKeys.MERCHANT_NAME, ""),
-                        message = transaction.screenMessage ?: "",
-                        operationName = transaction.operationName ?: "Prodaja",
-                        response = transaction.responseCode ?: "",
-                        rrn = transaction.creaditTransferIdentificator ?: "",
-                        code = transaction.recordId,
-                        status = transaction.statusCode ?: "",
-                        terminalId = sharedPreferences.pull(SharedPreferencesKeys.POS_SERVICE_TERMINAL_ID, ""),
-                        amount = transaction.amount,
-                        isIps = transaction.isIps ?: false,
-                        sdkStatus = transaction.status,
-                        billStatus = null,
-                        color = -1,
-                        recordId = transaction.recordId,
-                        listName = "",
-                        tipAmount = transaction.tipAmount
-                    )
-                    onNavigateToVoidProcessing(transactionData)
+                    // Launch HeadlessVoidActivity
+                    val intent = Intent(context, HeadlessVoidActivity::class.java).apply {
+                        putExtra("recordId", transaction.recordId)
+                        putExtra("cardNumber", transaction.maskedPAN ?: "")
+                        putExtra("amount", transaction.amount.toDouble())
+                    }
+                    voidLauncher.launch(intent)
                     showVoidConfirmDialog = null
                 },
                 onDismiss = { showVoidConfirmDialog = null }
+            )
+        }
+
+        showVoidResultDialog?.let { result ->
+            VoidResultDialog(
+                result = result,
+                onDismiss = { showVoidResultDialog = null }
             )
         }
     }
@@ -643,4 +642,83 @@ private fun hasActiveFilters(sharedPreferences: KsPrefs): Boolean {
             sharedPreferences.pull(SharedPreferencesKeys.FILTER_STATUS, TransactionStatusFilterType.ALL.ordinal) != TransactionStatusFilterType.ALL.ordinal ||
             sharedPreferences.pull(SharedPreferencesKeys.FILTER_SORT, TransactionSortType.DateDesc.ordinal) != TransactionSortType.DateDesc.ordinal ||
             sharedPreferences.pull(SharedPreferencesKeys.FILTER_TYPE, TransactionSource.POS.ordinal) != TransactionSource.POS.ordinal
+}
+
+/**
+ * Sealed class representing void transaction results
+ */
+sealed class VoidResult {
+    object Success : VoidResult()
+    object Cancelled : VoidResult()
+    data class Error(val message: String) : VoidResult()
+}
+
+/**
+ * Dialog showing void transaction result
+ */
+@Composable
+private fun VoidResultDialog(
+    result: VoidResult,
+    onDismiss: () -> Unit
+) {
+    val (title, message, icon, iconTint) = when (result) {
+        is VoidResult.Success -> Quadruple(
+            stringResource(R.string.void_success_title),
+            stringResource(R.string.void_success_message),
+            R.drawable.check,
+            Color(0xFF4CAF50)
+        )
+        is VoidResult.Cancelled -> Quadruple(
+            stringResource(R.string.void_cancelled_title),
+            stringResource(R.string.void_cancelled_message),
+            R.drawable.icon_warning,
+            Color(0xFFFFA000)
+        )
+        is VoidResult.Error -> Quadruple(
+            stringResource(R.string.void_error_title),
+            result.message,
+            R.drawable.icon_x,
+            Color(0xFFEB3223)
+        )
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                tint = iconTint,
+                modifier = Modifier.size(48.dp)
+            )
+        },
+        title = {
+            Text(
+                text = title,
+                textAlign = TextAlign.Center,
+                fontFamily = MyriadPro,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = message,
+                textAlign = TextAlign.Center,
+                fontFamily = MyriadPro
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.dialog_button_ok),
+                    fontFamily = MyriadPro
+                )
+            }
+        }
+    )
 }

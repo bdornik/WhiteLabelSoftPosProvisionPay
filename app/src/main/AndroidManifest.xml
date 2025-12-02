@@ -70,6 +70,12 @@
             android:theme="@style/Theme.App.Transparent"
             android:noHistory="true"
             android:excludeFromRecents="true" />
+        <activity
+            android:name=".activities.HeadlessVoidActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.App.Transparent"
+            android:noHistory="true"
+            android:excludeFromRecents="true" />
         <meta-data
             android:name="android.nfc.action.TECH_DISCOVERED"
             android:resource="@xml/nfc_tech_filter" />

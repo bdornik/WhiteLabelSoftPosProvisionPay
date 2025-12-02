@@ -487,8 +487,17 @@
     <string name="void_confirmation_message">Da li ste sigurni da želite da stornirate ovu transakciju?</string>
     <string name="void_confirm_button">DA, STORNIRAJ</string>
     <string name="void_cancel_button">Otkaži</string>
+
+    <!-- Void Processing Screen -->
+    <string name="void_processing_message">Storniranje u toku...</string>
+    <string name="void_processing_subtitle">Molimo sačekajte</string>
+
+    <!-- Void Result Dialogs -->
     <string name="void_success_title">Transakcija stornirana</string>
     <string name="void_success_message">Transakcija je uspešno stornirana</string>
+    <string name="void_error_title">Storniranje neuspešno</string>
+    <string name="void_cancelled_title">Storniranje otkazano</string>
+    <string name="void_cancelled_message">Storniranje transakcije je otkazano</string>
     <string name="void_failed_title">Storniranje neuspešno</string>
     <string name="void_processing">Storniranje u toku...</string>
 
