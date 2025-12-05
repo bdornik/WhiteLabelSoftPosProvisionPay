@@ -17,12 +17,16 @@ object PaymentUiBridge {
     private val _showProcessingScreen = MutableStateFlow(false)
     val showProcessingScreen = _showProcessingScreen.asStateFlow()
 
+    private val _showAnimationScreen = MutableStateFlow<String?>(null)
+    val showAnimationScreen = _showAnimationScreen.asStateFlow()
+
     private var pLedOn = 0x00
 
     fun reset() {
         pLedOn = 0x00
         _ledState.value = LedState() // All false
         _showProcessingScreen.value = false
+        _showAnimationScreen.value = null
     }
 
     fun updateLedState(ledOn: Int, isLedON: Boolean) {
@@ -42,5 +46,9 @@ object PaymentUiBridge {
 
     fun setProcessingScreen(show: Boolean) {
         _showProcessingScreen.value = show
+    }
+
+    fun setAnimationScreen(cardType: String?) {
+        _showAnimationScreen.value = cardType
     }
 }

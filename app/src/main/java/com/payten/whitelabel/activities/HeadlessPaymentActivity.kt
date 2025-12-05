@@ -50,6 +50,7 @@ import com.payten.whitelabel.ui.states.PaymentUiBridge
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.payten.whitelabel.ui.screens.AnimationScreen
 import com.payten.whitelabel.ui.screens.PaymentProcessingScreen
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.utils.RealSoftPosProvider
@@ -107,11 +108,26 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
         PaymentUiBridge.reset()
 
+        // Set Compose content for overlays
         setContent {
             AppTheme {
                 val showProcessing by PaymentUiBridge.showProcessingScreen.collectAsStateWithLifecycle()
-                if (showProcessing) {
-                    PaymentProcessingScreen()
+                val showAnimation by PaymentUiBridge.showAnimationScreen.collectAsStateWithLifecycle()
+
+                when {
+                    showAnimation != null -> {
+                        AnimationScreen(
+                            cardType = showAnimation!!,
+                            onAnimationComplete = {
+                                val transactionData = intent.getSerializableExtra("pending_transaction_data") as? TransactionDetailsDto
+                                returnResult(RESULT_OK, "Success", transactionData)
+                                finish()
+                            }
+                        )
+                    }
+                    showProcessing -> {
+                        PaymentProcessingScreen()
+                    }
                 }
             }
         }
@@ -352,11 +368,24 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
             if (p0?.transactionResponseData?.responseCode.equals("00", true)) {
                 PaymentUiBridge.updateLedState(0x0F, true)
-                returnResult(RESULT_OK, "Success", transactionData)
-                Handler(Looper.getMainLooper()).postDelayed({
+
+                // Store transaction data in intent for AnimationScreen callback
+                intent.putExtra("pending_transaction_data", transactionData)
+
+                // Show animation based on card type
+                val cardLabel = p0?.transactionResponseData?.applicationLabel
+                if (cardLabel?.contains("visa", true) == true || cardLabel?.contains("card", true) == true) {
+                    Log.d(TAG, "Starting animation for card: $cardLabel")
+                    PaymentUiBridge.setProcessingScreen(false)
+                    PaymentUiBridge.setAnimationScreen(cardLabel)
+                } else {
+                    // No animation for other card types
+                    Log.d(TAG, "No animation for card: $cardLabel")
                     returnResult(RESULT_OK, "Success", transactionData)
-                    finish()
-                }, 1500)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        finish()
+                    }, 1500)
+                }
                 return
             } else {
                 returnResult(RESULT_CANCELED, "Transaction failed", transactionData)
