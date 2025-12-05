@@ -52,12 +52,12 @@ fun CardProcessingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .systemBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CardProcessingHeader(
