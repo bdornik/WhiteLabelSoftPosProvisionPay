@@ -97,6 +97,12 @@ android {
     packagingOptions{
         doNotStrip "*/**/*.so"
     }
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
+    }
 }
 
 repositories {
@@ -183,7 +189,9 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.0"
 
-
+    testImplementation "com.google.dagger:hilt-android-testing:2.48"
+    kaptTest "com.google.dagger:hilt-compiler:2.48"
+    testAnnotationProcessor "com.google.dagger:hilt-compiler:2.48"
 
     // Paging
     implementation 'androidx.paging:paging-runtime-ktx:3.1.0-alpha03'
@@ -293,6 +301,8 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("io.reactivex.rxjava3:rxjava:3.1.8")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation "org.robolectric:robolectric:4.11.1"
+    testImplementation "io.mockk:mockk:1.13.8"
 
     // Compose UI Testing
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.4")

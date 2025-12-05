@@ -22,20 +22,13 @@ import com.icmp10.mtms.codes.opTransact.TransactResult
 import com.payten.whitelabel.dto.TransactionDetailsDto
 import com.payten.whitelabel.enums.ErrorDescription
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
-import com.payten.whitelabel.utils.AmountUtil
 import com.payten.whitelabel.viewmodel.PosViewModel
 import com.sacbpp.core.bytes.ByteArray
-import com.simant.MainApplication
-import com.simant.sample.SimantApplication
-import com.simant.softpos.api.CVMTransactionApi
-import com.simant.softpos.api.TransactionApi
-import com.simcore.api.SoftPOSSDK
 import com.simcore.api.interfaces.DisplayInterface
 import com.simcore.api.interfaces.LoyaltyActionListener
 import com.simcore.api.interfaces.PaymentData
 import com.simcore.api.interfaces.TransactionResultListener
 import com.simcore.api.objects.UserInterfaceData
-import com.simcore.api.providers.CardCommunicationProvider
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KotlinLogging
 import org.json.JSONObject
@@ -59,32 +52,15 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.payten.whitelabel.ui.screens.PaymentProcessingScreen
 import com.payten.whitelabel.ui.theme.AppTheme
+import com.payten.whitelabel.utils.RealSoftPosProvider
+import com.payten.whitelabel.utils.SoftPosProvider
+import androidx.annotation.VisibleForTesting
 
 /**
  * HeadlessPaymentActivity.kt
  *
- * This Activity is responsible for executing card payment transactions in a headless mode,
- * meaning it remains invisible to the user while interacting directly with the SoftPOS SDK.
- *
- * It serves as the primary bridge between the application's Compose UI flow (which initiates a payment)
- * and the underlying payment processing logic provided by the Simant SoftPOS SDK.
- *
- * The activity handles the entire transaction lifecycle, including:
- * 1. Initialization: Setting up SDK listeners, reading transaction parameters.
- * 2. Transaction Execution: Initiating the `doTransaction` call to the SDK.
- * 3. CVM Handling (PIN Entry): Providing the custom UI configuration (`getDialogConfiguration`)
- *    for PIN entry when required by the card scheme, and implementing custom PIN visual feedback.
- * 4. Result Management: Capturing transaction outcomes (Success, Declined, Cancelled, Ended)
- *    and returning the result (`TransactionDetailsDto`) back to the calling screen.
- * 5. System Monitoring: Registering a `BroadcastReceiver` to monitor NFC status changes.
- *
- * This Activity implements multiple SDK listener interfaces (TransactionResultListener,
- * LoyaltyActionListener, DisplayInterface, CVMSListener, MTMSListener) to manage asynchronous
- * communication during the payment process.
- *
- * @property model PosViewModel for logging errors and general application logic.
- * @property sharedPreferences KsPrefs for accessing persistent configuration data.
- * @property TAG Logger tag for debugging purposes.
+ * This Activity is responsible for executing card payment transactions.
+ * Refactored to use SoftPosProvider (Bridge Pattern) to enable Unit Testing.
  */
 @AndroidEntryPoint
 class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, LoyaltyActionListener,
@@ -104,6 +80,10 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
     private var lbin: ByteArray? = null
     private var lHash: ByteArray? = null
+
+    // Bridge Pattern: Default to Real implementation, but open for testing injection
+    @VisibleForTesting
+    var softPosProvider: SoftPosProvider = RealSoftPosProvider()
 
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -127,11 +107,9 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
         PaymentUiBridge.reset()
 
-        // Set up Compose UI for showing processing screen
         setContent {
             AppTheme {
                 val showProcessing by PaymentUiBridge.showProcessingScreen.collectAsStateWithLifecycle()
-
                 if (showProcessing) {
                     PaymentProcessingScreen()
                 }
@@ -140,13 +118,6 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
         val model2: PosViewModel by viewModels()
         model = model2
-
-        try {
-            SoftPOSSDK.getInstance().transactionInterface.cancelTransaction()
-            MainApplication.getInstance().paymentData.transactionType = PaymentData.TransactionType.GOODS.internalType
-        } catch (e: Exception) {
-            logException(e.message)
-        }
 
         val amount = intent.getStringExtra("Amount")
         if (amount == null) {
@@ -164,45 +135,23 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             intent.getStringExtra("uniqueId").toString()
         )
 
-        val sdkStatus = SimantApplication.getSDKStatus()
-        logger.info { "SDK Status: $sdkStatus" }
+        // Initialize SDK via provider
+        // This handles: Cancel previous, Set Amount, Set TransactionType, Check SDK Status
+        val sdkReady = softPosProvider.initializeSdk(amount, tip, paymentAdditionalData)
 
-        if (sdkStatus == 0) {
-            MainApplication.getInstance().mtmsListener.setListener(this)
-            MainApplication.getInstance().cvmsListener.setListener(this)
-            MainApplication.getInstance().transactionOutcomeObserver.transactionResultListener = this
-            MainApplication.getInstance().loyaltyObserver.loyaltyActionListener = this
-            MainApplication.getInstance().configurationInterface.setDisplayInterface(this)
+        if (sdkReady) {
+            // Register listeners via provider
+            softPosProvider.registerListeners(this)
 
             val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
             this.registerReceiver(mReceiver, filter)
 
-            if (SoftPOSSDK.getCardCommunicationProvider().interfaceType == CardCommunicationProvider.InterfaceType.INTERNAL_NFC) {
-                if (!SoftPOSSDK.getCardCommunicationProvider().isEnabled) {
-                    logger.error { "NFC Not enabled" }
-                    returnResult(RESULT_CANCELED, "NFC not enabled")
-                    finish()
-                    return
-                } else {
-                    MainApplication.getInstance().setRealProviders()
-                }
-            }
-
-            if (MainApplication.getInstance().cardCommunicationProvider != null) {
-                if (MainApplication.getInstance().cardCommunicationProvider.interfaceType == CardCommunicationProvider.InterfaceType.INTERNAL_NFC) {
-                    MainApplication.getInstance().cardCommunicationProvider.connectReader(this)
-                }
-                if (MainApplication.getInstance().cardCommunicationProvider.interfaceType == CardCommunicationProvider.InterfaceType.STATIC) {
-                    MainApplication.getInstance().cardCommunicationProvider.connectReader(this)
-                }
-            }
-
-            MainApplication.getInstance().setPaymentAmount(AmountUtil.setAmount(amount))
-
-            if (!paymentAdditionalData.isEmpty()) {
-                MainApplication.getInstance().paymentData.merchantAdditionalData = paymentAdditionalData
-            } else {
-                MainApplication.getInstance().paymentData.merchantAdditionalData = "None"
+            // Check NFC via provider
+            if (!softPosProvider.checkNfcEnabled()) {
+                logger.error { "NFC Not enabled" }
+                returnResult(RESULT_CANCELED, "NFC not enabled")
+                finish()
+                return
             }
         } else {
             logException("SDK not ready")
@@ -217,56 +166,43 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
         this.registerReceiver(mReceiver, filter)
 
-        if (SoftPOSSDK.getCardCommunicationProvider().interfaceType == CardCommunicationProvider.InterfaceType.INTERNAL_NFC) {
-            if (!SoftPOSSDK.getCardCommunicationProvider().isEnabled) {
-                logger.error { "NFC Not enabled" }
-                returnResult(RESULT_CANCELED, "NFC not enabled")
-                finish()
-                return
-            } else {
-                MainApplication.getInstance().setRealProviders()
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    if (!isFinishing) {
-                        resetTransaction()
-                    }
-                }, 1000)
-            }
+        // Check NFC via provider
+        if (softPosProvider.checkNfcEnabled()) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (!isFinishing) {
+                    resetTransaction()
+                }
+            }, 1000)
+        } else {
+            logger.error { "NFC Not enabled" }
+            returnResult(RESULT_CANCELED, "NFC not enabled")
+            finish()
         }
     }
 
     override fun onPause() {
         super.onPause()
 
-        try {
-            SoftPOSSDK.getInstance().transactionInterface.cancelTransaction()
-        } catch (e: Exception) {
-            logger.error { "Cannot cancel transaction: $e" }
-        }
+        // Cancel via provider
+        softPosProvider.cancelTransaction()
 
         unregisterReceiver(mReceiver)
-        MainApplication.getInstance().mtmsListener.setListener(this)
-        MainApplication.getInstance().cvmsListener.setListener(this)
-        MainApplication.getInstance().transactionOutcomeObserver.transactionResultListener = this
-        MainApplication.getInstance().loyaltyObserver.loyaltyActionListener = this
-        MainApplication.getInstance().configurationInterface.setDisplayInterface(this)
+
+        //  Re-register listeners (Original logic maintained this)
+        softPosProvider.registerListeners(this)
     }
+
     private fun resetTransaction() {
         runOnUiThread {
             try {
                 logger.info { "resetTransaction: calling doTransaction..." }
                 isFailedTransaction = false
 
-                // Safety check
-                val paymentData = MainApplication.getInstance().paymentData
-                if (paymentData == null) {
-                    logger.error { "PaymentData is null" }
-                    return@runOnUiThread
-                }
+                // Start transaction via provider
+                // The provider implementation handles fetching PaymentData internally
+                softPosProvider.startTransaction(this@HeadlessPaymentActivity)
 
-                TransactionApi.doTransaction(this@HeadlessPaymentActivity, paymentData)
             } catch (e: Exception) {
-                // Log the error instead of letting the app crash
                 logger.error { "CRASH PREVENTED in resetTransaction: ${e.message}" }
                 e.printStackTrace()
             }
@@ -443,16 +379,18 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     override fun onCVMEEntered(p0: Int) {
         logger.info { "Pin entered: $p0" }
         shouldIgnoreDecline = false
-        // Show processing screen again after PIN entry
         PaymentUiBridge.setProcessingScreen(true)
-        CVMTransactionApi.doTransactionPCPOC(this, MainApplication.getInstance().paymentData.transactionType)
+
+        // BRIDGE PATTERN: Use provider for CVM transaction
+        softPosProvider.startPinEntry(this, PaymentData.TransactionType.GOODS.internalType.toInt())
     }
 
     override fun onCVMETimeout() {
-        SoftPOSSDK.setAutoMode(false)
-        SoftPOSSDK.setCancelled(true)
-        SoftPOSSDK.resetReaderOutcome()
-        SoftPOSSDK.getInstance().transactionInterface.cancelTransaction()
+        // BRIDGE PATTERN: Cleanup via provider
+        softPosProvider.setAutoMode(false)
+        softPosProvider.setCancelled(true)
+        softPosProvider.resetReaderOutcome()
+        softPosProvider.cancelTransaction()
 
         returnResult(RESULT_CANCELED, "PIN timeout")
         finish()
@@ -460,10 +398,11 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
     override fun onCVMECancelled() {
         logger.info { "onCVMECancelled" }
-        SoftPOSSDK.setAutoMode(false)
-        SoftPOSSDK.setCancelled(true)
-        SoftPOSSDK.resetReaderOutcome()
-        SoftPOSSDK.getInstance().transactionInterface.cancelTransaction()
+        // BRIDGE PATTERN: Cleanup via provider
+        softPosProvider.setAutoMode(false)
+        softPosProvider.setCancelled(true)
+        softPosProvider.resetReaderOutcome()
+        softPosProvider.cancelTransaction()
 
         returnResult(RESULT_CANCELED, "PIN cancelled")
         finish()
@@ -472,7 +411,6 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     @SuppressLint("DefaultLocale")
     override fun getDialogConfiguration(): CVMEDlgFragmentConfigurator {
         Log.d(TAG, "getDialogConfiguration() called - SDK requesting PIN dialog setup")
-        // Hide processing screen so PIN dialog can show
         PaymentUiBridge.setProcessingScreen(false)
         val config = CVMEDlgFragmentConfigurator()
 
@@ -509,9 +447,9 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         config.okContainerId = R.id.keypad_ok_container
 
         // Text views
-        config.wildcardTextViewId = R.id.pinText // Hidden - PIN entry managed by SDK
-        config.infoTextViewId = R.id.infoText // Amount display
-        config.countDownTextViewId = R.id.countDownText // Timer display
+        config.wildcardTextViewId = R.id.pinText
+        config.infoTextViewId = R.id.infoText
+        config.countDownTextViewId = R.id.countDownText
 
         // Layout configuration
         config.layoutResourceID = R.layout.fragment_pin_entry
@@ -520,17 +458,12 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         config.activity = this@HeadlessPaymentActivity
         config.autoRandomOrder = false
         config.maxPINLength = 4
-
-        // Display formatted amount (hide it by setting empty string)
         config.infoText = ""
-
-        // Timer configuration
         config.countDownTextFormat = "Preostalo sekundi %s"
         config.countDownTimeInSeconds = 30
         config.isResetTimerOnClear = true
         config.restartTimerOnKeyInSeconds = 5
 
-        // Key configuration - SDK uses this to render the buttons
         val keyConfig = CVMEElementKeyConfig()
         keyConfig.textColor = "#000000".toColorInt()
         keyConfig.backgroundColor = Color.TRANSPARENT
@@ -545,7 +478,6 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         keyConfig.randomAngle = randomAngle
         config.keyConfig = keyConfig
 
-        // Clear button config (backspace) - tiny so it won't render over our icon
         val clearConfig = CVMEElementConfig()
         clearConfig.text = ""
         clearConfig.textColor = "#000000".toColorInt()
@@ -556,7 +488,6 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         clearConfig.font = Typeface.DEFAULT
         config.clearConfig = clearConfig
 
-        // Cancel button config - tiny so it won't render over our TextView
         val cancelConfig = CVMEElementConfig()
         cancelConfig.text = ""
         cancelConfig.textColor = "#E53935".toColorInt()
@@ -567,7 +498,6 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         cancelConfig.font = Typeface.DEFAULT
         config.cancelConfig = cancelConfig
 
-        // OK button config (hidden in layout)
         val okConfig = CVMEElementConfig()
         okConfig.text = ""
         okConfig.textColor = "#000000".toColorInt()
@@ -578,22 +508,12 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         okConfig.font = Typeface.DEFAULT
         config.okConfig = okConfig
 
-        // Set up PIN indicator updates after dialog is created
         setupPinIndicatorUpdates()
-
-        Log.d(TAG, "Dialog configuration complete, returning to SDK")
         return config
     }
 
-    /**
-     * Sets up a mechanism to update the visual PIN indicators as the user types.
-     * The SDK manages the PIN internally and updates the wildcardTextView with "*" characters.
-     * We observe this TextView to update our custom PIN indicator circles.
-     */
     @Suppress("DEPRECATION")
     private fun setupPinIndicatorUpdates() {
-        // Post delayed to allow SDK to create and show the dialog
-        // Try multiple times with increasing delays
         var attemptCount = 0
         val maxAttempts = 5
 
@@ -602,81 +522,45 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             Handler(Looper.getMainLooper()).postDelayed({
                 try {
                     attemptCount++
-                    Log.d(TAG, "Attempting to find SDK dialog fragment (attempt $attemptCount/$maxAttempts)...")
-
-                    // SDK uses old android.app.FragmentManager, not AndroidX
                     val fragmentManager = fragmentManager
                     val fragments = fragmentManager?.fragments
-
-                    Log.d(TAG, "FragmentManager: $fragmentManager")
-                    Log.d(TAG, "Fragments list: $fragments")
-                    Log.d(TAG, "Found ${fragments?.size ?: 0} fragments")
-
                     var found = false
 
-                    // Find all fragments and locate the PIN entry dialog
                     fragments?.forEach { fragment ->
-                        Log.d(TAG, "Checking fragment: ${fragment?.javaClass?.simpleName}")
                         fragment?.view?.let { dialogView ->
-                            Log.d(TAG, "Fragment has view, searching for PIN views...")
-                            // Find the PIN text view and indicator views
                             val pinTextView = dialogView.findViewById<TextView>(R.id.pinText)
                             val indicator1 = dialogView.findViewById<View>(R.id.pin_indicator_1)
                             val indicator2 = dialogView.findViewById<View>(R.id.pin_indicator_2)
                             val indicator3 = dialogView.findViewById<View>(R.id.pin_indicator_3)
                             val indicator4 = dialogView.findViewById<View>(R.id.pin_indicator_4)
 
-                            Log.d(TAG, "pinTextView: $pinTextView, indicator1: $indicator1")
-
                             if (pinTextView != null && indicator1 != null) {
-                                Log.d(TAG, "✓ Setting up PIN indicator text watcher")
                                 found = true
-
-                                // Add TextWatcher to observe PIN length
                                 pinTextView.addTextChangedListener(object : TextWatcher {
                                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
                                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                                         val pinLength = s?.length ?: 0
-                                        Log.d(TAG, "PIN length changed: $pinLength")
-
-                                        // Update indicators based on PIN length
                                         runOnUiThread {
-                                            indicator1.setBackgroundResource(
-                                                if (pinLength >= 1) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty
-                                            )
-                                            indicator2?.setBackgroundResource(
-                                                if (pinLength >= 2) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty
-                                            )
-                                            indicator3?.setBackgroundResource(
-                                                if (pinLength >= 3) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty
-                                            )
-                                            indicator4?.setBackgroundResource(
-                                                if (pinLength >= 4) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty
-                                            )
+                                            indicator1.setBackgroundResource(if (pinLength >= 1) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty)
+                                            indicator2?.setBackgroundResource(if (pinLength >= 2) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty)
+                                            indicator3?.setBackgroundResource(if (pinLength >= 3) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty)
+                                            indicator4?.setBackgroundResource(if (pinLength >= 4) R.drawable.pin_indicator_filled else R.drawable.pin_indicator_empty)
                                         }
                                     }
-
                                     override fun afterTextChanged(s: Editable?) {}
                                 })
                             }
                         }
                     }
 
-                    // If not found and haven't reached max attempts, try again
                     if (!found && attemptCount < maxAttempts) {
-                        Log.d(TAG, "PIN views not found, retrying...")
                         trySetup()
-                    } else if (!found) {
-                        Log.w(TAG, "Could not find PIN views after $maxAttempts attempts")
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error setting up PIN indicators", e)
                     e.printStackTrace()
                 }
-            }, 300L * attemptCount) // Increasing delay: 300ms, 600ms, 900ms, etc.
+            }, 300L * attemptCount)
         }
-
         trySetup()
     }
 
@@ -704,7 +588,6 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             playAudioIndication(true)
             PaymentUiBridge.updateLedState(0x04, true)
             PaymentUiBridge.updateLedState(0x0F, true)
-            // Delay showing processing screen to let LED indicators animate
             Handler(Looper.getMainLooper()).postDelayed({
                 if (!isFinishing && !isDestroyed) {
                     PaymentUiBridge.setProcessingScreen(true)
