@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.payten.whitelabel.ui.theme.MyriadPro
@@ -32,7 +34,8 @@ fun CustomTextField(
     label: String,
     placeholder: String,
     value: String = "",
-    onValueChange: (String) -> Unit = {}
+    onValueChange: (String) -> Unit = {},
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     var text by remember { mutableStateOf(value) }
 
@@ -65,6 +68,7 @@ fun CustomTextField(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             ),
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             decorationBox = { innerTextField ->
                 Box {
                     if (text.isEmpty()) {
