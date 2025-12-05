@@ -30,7 +30,7 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
     //val transactionResultsSuccess =  MutableLiveData<GetTransactionsResult>()
 
     val transactionResultsSuccess =  MutableLiveData<List<TransactionDto>?>()
-    val isLoading = MutableLiveData<Boolean>(false)
+    val isLoading = MutableLiveData(false)
 
     val ipsTransactionResultsSuccess =  MutableLiveData<GetIpsTransactionResponse>()
 
@@ -96,8 +96,22 @@ class TrafficViewModel @Inject constructor(private val apiService: SupercaseApiS
     private fun prepackTransactions(data: List<GetTransactionResponseData>): List<TransactionDto> {
 
         val resposne :ArrayList<TransactionDto> = arrayListOf()
+
+        // Build a set of recordIds that are referenced as mainRecordId by void transactions
+        // These are the original transactions that have been voided and should be filtered out
+        val voidedRecordIds = data
+            .filter { it.statusCode.equals("v", true) && it.mainRecordId != 0 }
+            .map { it.mainRecordId }
+            .toSet()
+
         for (transaction in data){
             logger.info { "Transaction data: $transaction" }
+
+            // Skip this transaction if it's been voided (its recordId appears in the voidedRecordIds set)
+            if (transaction.recordId in voidedRecordIds) {
+                logger.info { "Skipping original transaction ${transaction.recordId} - it has been voided" }
+                continue
+            }
 
             // Map statusCode and responseCode to TransactionStatus
             val status = when {
