@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import at.favre.lib.crypto.bcrypt.BCrypt
 import com.cioccarellia.ksprefs.KsPrefs
 import com.fatboyindustrial.gsonjavatime.Converters
 import com.google.gson.GsonBuilder
@@ -53,7 +54,7 @@ class SplashActivity : AppCompatActivity() {
             return
         }
 
-        val languageIndex = sharedPreferences.pull(SharedPreferencesKeys.Companion.LANGUAGE, 2)
+        val languageIndex = sharedPreferences.pull(SharedPreferencesKeys.LANGUAGE, 2)
         val localeTag = when (languageIndex) {
             0 -> "sl"
             1 -> "en"
@@ -113,8 +114,9 @@ class SplashActivity : AppCompatActivity() {
             }
 
             // Verify PIN
-            val savedPin = sharedPreferences.pull(SharedPreferencesKeys.Companion.PIN, "")
-            if (dto.request.pin != savedPin) {
+            val savedPin = sharedPreferences.pull(SharedPreferencesKeys.PIN, "")
+            val pinVerifyResult = BCrypt.verifyer().verify(dto.request.pin.toCharArray(), savedPin)
+            if (!pinVerifyResult.verified) {
                 Toast.makeText(this, "Invalid PIN", Toast.LENGTH_LONG).show()
                 finish()
                 return true
@@ -128,7 +130,7 @@ class SplashActivity : AppCompatActivity() {
             when {
                 dto.request.transactionType?.equals("IPS", ignoreCase = true) == true -> {
                     // IPS payment
-                    val ipsExists = sharedPreferences.pull(SharedPreferencesKeys.Companion.IPS_EXISTS, false)
+                    val ipsExists = sharedPreferences.pull(SharedPreferencesKeys.IPS_EXISTS, false)
                     if (ipsExists) {
                         logger.info { "Launching IpsActivity for app-to-app IPS" }
                         val ipsIntent = Intent(this, HeadlessIpsActivity::class.java).apply {

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.graphics.Typeface
 import android.media.AudioManager
 import android.media.ToneGenerator
@@ -12,16 +13,35 @@ import android.nfc.NfcAdapter
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.View
+import android.widget.TextView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
+import androidx.annotation.VisibleForTesting
+import androidx.compose.runtime.*
+import androidx.core.graphics.toColorInt
 import com.cioccarellia.ksprefs.KsPrefs
 import com.icmp10.cvms.api.*
 import com.icmp10.cvms.codes.opCvms.CvmsResult
 import com.icmp10.mtms.api.MTMSListener
 import com.icmp10.mtms.codes.opGetTransaction.GetTransactionResult
 import com.icmp10.mtms.codes.opTransact.TransactResult
+import com.payten.whitelabel.R
 import com.payten.whitelabel.dto.TransactionDetailsDto
 import com.payten.whitelabel.enums.ErrorDescription
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
+import com.payten.whitelabel.ui.screens.AnimationScreen
+import com.payten.whitelabel.ui.screens.CardProcessingScreen
+import com.payten.whitelabel.ui.screens.PaymentProcessingScreen
+import com.payten.whitelabel.ui.theme.AppTheme
+import com.payten.whitelabel.utils.RealSoftPosProvider
+import com.payten.whitelabel.utils.SoftPosProvider
 import com.payten.whitelabel.viewmodel.PosViewModel
 import com.sacbpp.core.bytes.ByteArray
 import com.simcore.api.interfaces.DisplayInterface
@@ -33,38 +53,22 @@ import dagger.hilt.android.AndroidEntryPoint
 import mu.KotlinLogging
 import org.json.JSONObject
 import javax.inject.Inject
-import com.payten.whitelabel.R
-import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
-import android.view.View
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import android.app.DialogFragment
-import android.graphics.Color
-import androidx.annotation.RequiresApi
-import kotlin.getValue
-import androidx.core.graphics.toColorInt
-import com.payten.whitelabel.ui.states.PaymentUiBridge
-import androidx.activity.compose.setContent
-import androidx.compose.runtime.*
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.payten.whitelabel.ui.screens.AnimationScreen
-import com.payten.whitelabel.ui.screens.PaymentProcessingScreen
-import com.payten.whitelabel.ui.theme.AppTheme
-import com.payten.whitelabel.utils.RealSoftPosProvider
-import com.payten.whitelabel.utils.SoftPosProvider
-import androidx.annotation.VisibleForTesting
 
 /**
  * HeadlessPaymentActivity.kt
  *
- * This Activity is responsible for executing card payment transactions.
- * Refactored to use SoftPosProvider (Bridge Pattern) to enable Unit Testing.
+ * This Activity handles the payment transaction flow with card tap:
+ * 1. Shows CardProcessingScreen - user taps card for payment
+ * 2. Reads card via SDK transaction processing
+ * 3. Shows PaymentProcessingScreen - white screen with red loading indicator (during PIN entry & online processing)
+ * 4. Shows AnimationScreen - Visa/Mastercard animation on success
+ * 5. Returns result to calling screen
+ *
+ * This follows the same pattern as HeadlessVoidActivity but uses Compose UI.
  */
 @AndroidEntryPoint
-class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, LoyaltyActionListener,
+class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, LoyaltyActionListener,
     DisplayInterface, CVMSListener, MTMSListener {
 
     private val logger = KotlinLogging.logger {}
@@ -79,9 +83,15 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     private var tip = ""
     private var paymentAdditionalData = ""
     private var providedPackageName = ""
+    private var amountInPare: Long = 0L
+    private var tipAmountInPare: Long = 0L
 
     private var lbin: ByteArray? = null
     private var lHash: ByteArray? = null
+
+    // UI state
+    private val _paymentState = mutableStateOf<PaymentState>(PaymentState.WaitingForCard)
+    private val paymentState: State<PaymentState> = _paymentState
 
     // Bridge Pattern: Default to Real implementation, but open for testing injection
     @VisibleForTesting
@@ -92,11 +102,10 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             val action = intent.action
             if (action == NfcAdapter.ACTION_ADAPTER_STATE_CHANGED) {
                 val state = intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE, NfcAdapter.STATE_OFF)
-                when (state) {
-                    NfcAdapter.STATE_OFF -> {
-                        returnResult(RESULT_CANCELED, "NFC is disabled")
-                        finish()
-                    }
+                if (state == NfcAdapter.STATE_OFF) {
+                    logger.error { "NFC turned off during payment" }
+                    returnResult(RESULT_CANCELED, "NFC is disabled")
+                    finish()
                 }
             }
         }
@@ -107,35 +116,10 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
         logger.info { "onCreate HeadlessPaymentActivity" }
 
-        PaymentUiBridge.reset()
-
-        // Set Compose content for overlays
-        setContent {
-            AppTheme {
-                val showProcessing by PaymentUiBridge.showProcessingScreen.collectAsStateWithLifecycle()
-                val showAnimation by PaymentUiBridge.showAnimationScreen.collectAsStateWithLifecycle()
-
-                when {
-                    showAnimation != null -> {
-                        AnimationScreen(
-                            cardType = showAnimation!!,
-                            onAnimationComplete = {
-                                val transactionData = intent.getSerializableExtra("pending_transaction_data") as? TransactionDetailsDto
-                                returnResult(RESULT_OK, "Success", transactionData)
-                                finish()
-                            }
-                        )
-                    }
-                    showProcessing -> {
-                        PaymentProcessingScreen()
-                    }
-                }
-            }
-        }
-
         val model2: PosViewModel by viewModels()
         model = model2
 
+        // Check if this is app-to-app flow
         if (intent.hasExtra("providedPackageName")) {
             providedPackageName = intent.getStringExtra("providedPackageName") ?: ""
             logger.info { "HeadlessPaymentActivity started via app-to-app from: $providedPackageName" }
@@ -157,8 +141,26 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             intent.getStringExtra("uniqueId").toString()
         )
 
+        // Calculate amounts in pare
+        amountInPare = try {
+            amount.toLongOrNull() ?: 0L
+        } catch (e: Exception) {
+            logger.error(e) { "Error parsing amount" }
+            0L
+        }
+
+        tipAmountInPare = try {
+            if (tip.isNotEmpty() && tip != "null") {
+                tip.toLong()
+            } else {
+                0L
+            }
+        } catch (e: Exception) {
+            logger.error(e) { "Error parsing tip" }
+            0L
+        }
+
         // Initialize SDK via provider
-        // This handles: Cancel previous, Set Amount, Set TransactionType, Check SDK Status
         val sdkReady = softPosProvider.initializeSdk(amount, tip, paymentAdditionalData)
 
         if (sdkReady) {
@@ -179,6 +181,40 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             logException("SDK not ready")
             returnResult(RESULT_CANCELED, "SDK not ready")
             finish()
+            return
+        }
+
+        setContent {
+            AppTheme {
+                val state by paymentState
+
+                when (state) {
+                    is PaymentState.WaitingForCard -> {
+                        CardProcessingScreen(
+                            amountInPare = amountInPare,
+                            tipAmount = tipAmountInPare,
+                            onNavigateBack = {
+                                logger.info { "Payment cancelled by user" }
+                                setResult(RESULT_CANCELED)
+                                finish()
+                            }
+                        )
+                    }
+                    is PaymentState.Processing -> {
+                        PaymentProcessingScreen()
+                    }
+                    is PaymentState.ShowAnimation -> {
+                        val animationState = state as PaymentState.ShowAnimation
+                        AnimationScreen(
+                            cardType = animationState.cardType,
+                            onAnimationComplete = {
+                                returnResult(RESULT_OK, "Success", animationState.transactionData)
+                                finish()
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -186,7 +222,7 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         super.onResume()
 
         val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
-        this.registerReceiver(mReceiver, filter)
+        registerReceiver(mReceiver, filter)
 
         // Check NFC via provider
         if (softPosProvider.checkNfcEnabled()) {
@@ -208,7 +244,11 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         // Cancel via provider
         softPosProvider.cancelTransaction()
 
-        unregisterReceiver(mReceiver)
+        try {
+            unregisterReceiver(mReceiver)
+        } catch (_: Exception) {
+            // Already unregistered
+        }
 
         //  Re-register listeners (Original logic maintained this)
         softPosProvider.registerListeners(this)
@@ -221,7 +261,6 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
                 isFailedTransaction = false
 
                 // Start transaction via provider
-                // The provider implementation handles fetching PaymentData internally
                 softPosProvider.startTransaction(this@HeadlessPaymentActivity)
 
             } catch (e: Exception) {
@@ -277,19 +316,19 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     override fun onTransactionProcessing() {
         logger.info { "Transaction onTransactionProcessing" }
         playAudioIndication(true)
-        PaymentUiBridge.updateLedState(0x02, true)
+        updateLedState(0x02, true)
     }
 
     override fun onTransactionSuccessful() {
         logger.info { "Transaction onTransactionSuccessful" }
         playAudioIndication(true)
-        PaymentUiBridge.updateLedState(0x0F, true)
+        updateLedState(0x0F, true)
     }
 
     override fun onTransactionDeclined() {
         logger.info { "Transaction onTransactionDeclined" }
         playAudioIndication(false)
-        PaymentUiBridge.updateLedState(0x0F, false)
+        updateLedState(0x0F, false)
         if (shouldIgnoreDecline) {
             resetTransaction()
             return
@@ -408,17 +447,15 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             }
 
             if (p0?.transactionResponseData?.responseCode.equals("00", true)) {
-                PaymentUiBridge.updateLedState(0x0F, true)
-
-                // Store transaction data in intent for AnimationScreen callback
-                intent.putExtra("pending_transaction_data", transactionData)
+                updateLedState(0x0F, true)
 
                 // Show animation based on card type
                 val cardLabel = p0?.transactionResponseData?.applicationLabel
                 if (cardLabel?.contains("visa", true) == true || cardLabel?.contains("card", true) == true) {
                     Log.d(TAG, "Starting animation for card: $cardLabel")
-                    PaymentUiBridge.setProcessingScreen(false)
-                    PaymentUiBridge.setAnimationScreen(cardLabel)
+                    runOnUiThread {
+                        _paymentState.value = PaymentState.ShowAnimation(cardLabel, transactionData!!)
+                    }
                 } else {
                     // No animation for other card types
                     Log.d(TAG, "No animation for card: $cardLabel")
@@ -449,7 +486,9 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     override fun onCVMEEntered(p0: Int) {
         logger.info { "Pin entered: $p0" }
         shouldIgnoreDecline = false
-        PaymentUiBridge.setProcessingScreen(true)
+        runOnUiThread {
+            _paymentState.value = PaymentState.Processing
+        }
 
         // BRIDGE PATTERN: Use provider for CVM transaction
         softPosProvider.startPinEntry(this, PaymentData.TransactionType.GOODS.internalType.toInt())
@@ -481,7 +520,9 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     @SuppressLint("DefaultLocale")
     override fun getDialogConfiguration(): CVMEDlgFragmentConfigurator {
         Log.d(TAG, "getDialogConfiguration() called - SDK requesting PIN dialog setup")
-        PaymentUiBridge.setProcessingScreen(false)
+        runOnUiThread {
+            _paymentState.value = PaymentState.WaitingForCard
+        }
         val config = CVMEDlgFragmentConfigurator()
 
         // Keypad button IDs
@@ -656,11 +697,13 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
         logger.info { "Display message $p0" }
         if (p0?.uirdStatus == UserInterfaceData.UIRDStatus.UIRD_STATUS_CARD_READ_SUCCESSFULLY) {
             playAudioIndication(true)
-            PaymentUiBridge.updateLedState(0x04, true)
-            PaymentUiBridge.updateLedState(0x0F, true)
+            updateLedState(0x04, true)
+            updateLedState(0x0F, true)
             Handler(Looper.getMainLooper()).postDelayed({
                 if (!isFinishing && !isDestroyed) {
-                    PaymentUiBridge.setProcessingScreen(true)
+                    runOnUiThread {
+                        _paymentState.value = PaymentState.Processing
+                    }
                 }
             }, 1000)
         }
@@ -668,12 +711,19 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
     override fun onTransactionIdle() {
         logger.info { "onTransactionIdle" }
-        PaymentUiBridge.updateLedState(0x01, true)
+        updateLedState(0x01, true)
     }
 
     override fun onTransactionReadyToRead() {
         logger.info { "onTransactionReadyToRead" }
-        PaymentUiBridge.updateLedState(0x01, true)
+        updateLedState(0x01, true)
+    }
+
+    private fun updateLedState(ledMask: Int, isSuccess: Boolean) {
+        // Update LED state through the PaymentUiBridge for CardProcessingScreen
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(ledMask, isSuccess)
+        }
     }
 
     private fun playAudioIndication(isSuccessTone: Boolean) {
@@ -687,7 +737,7 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
                 Handler().postDelayed({ mToneGenerator.release() }, 601)
             }
         } catch (e: Exception) {
-            logger.info { "RING RING: $e.message" }
+            logger.info { "RING RING: ${e.message}" }
         }
     }
 
@@ -727,4 +777,13 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
             )
         )
     }
+}
+
+/**
+ * Sealed class representing payment transaction states
+ */
+sealed class PaymentState {
+    object WaitingForCard : PaymentState()
+    object Processing : PaymentState()
+    data class ShowAnimation(val cardType: String, val transactionData: TransactionDetailsDto) : PaymentState()
 }
