@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.payten.whitelabel.activities.HeadlessIpsActivity
 
 
 /**
@@ -130,8 +131,22 @@ class MainActivity : AppCompatActivity() {
 
             when {
                 dto.request.transactionType?.equals("IPS", ignoreCase = true) == true -> {
-                    Toast.makeText(this, "IPS not yet supported in new flow", Toast.LENGTH_LONG).show()
-                    finish()
+                    // IPS payment
+                    val ipsExists = sharedPreferences.pull(SharedPreferencesKeys.IPS_EXISTS, false)
+                    if (ipsExists) {
+                        logger.info { "Launching IpsActivity for app-to-app IPS" }
+                        val ipsIntent = Intent(this, HeadlessIpsActivity::class.java).apply {
+                            putExtra("Amount", amount)
+                            putExtra("providedPackageName", packageName)
+                            putExtra("uniqueId", uniqueId)
+                            addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+                        }
+                        startActivity(ipsIntent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "IPS ne postoji na terminalu", Toast.LENGTH_LONG).show()
+                        finish()
+                    }
                 }
                 dto.request.transactionClass?.equals("void", ignoreCase = true) == true -> {
                     // Void transaction
