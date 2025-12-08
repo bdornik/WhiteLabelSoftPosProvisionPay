@@ -571,7 +571,7 @@ class PinActivity : BaseActivity() {
                         if (sharedPreferences.pull(SharedPreferencesKeys.PIN_COUNT, 3) == 0) {
                             sharedPreferences.push(SharedPreferencesKeys.IS_BLACKLISTED, true)
 
-                            val intent = Intent(applicationContext, SplashActivity::class.java)
+                            val intent = Intent(applicationContext, OldSplashActivity::class.java)
                             intent.flags =
                                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
@@ -599,7 +599,7 @@ class PinActivity : BaseActivity() {
                         if (sharedPreferences.pull(SharedPreferencesKeys.PIN_COUNT, 3) == 0) {
                             sharedPreferences.push(SharedPreferencesKeys.IS_BLACKLISTED, true)
 
-                            val intent = Intent(applicationContext, SplashActivity::class.java)
+                            val intent = Intent(applicationContext, OldSplashActivity::class.java)
                             intent.flags =
                                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)

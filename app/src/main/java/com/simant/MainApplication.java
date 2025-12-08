@@ -23,7 +23,7 @@ import com.icmp10.icmp.api.ParameterProvider;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.payten.whitelabel.R;
 import com.payten.whitelabel.activities.MainActivity;
-import com.payten.whitelabel.activities.SplashActivity;
+import com.payten.whitelabel.activities.OldSplashActivity;
 import com.payten.whitelabel.config.SupercaseConfig;
 import com.sacbpp.api.SAMPAActivation;
 import com.sacbpp.api.SAMPAKeyStore;
@@ -286,7 +286,7 @@ public class MainApplication extends SimantApplication implements Configuration.
         setSDKStatus(-1);
         if (useSOFTPOSSDK() == true) {
             moduleConfigurator = new ModuleConfigurator(this);
-            setSAMTAApplication(this, SplashActivity.class, MainActivity.class);
+            setSAMTAApplication(this, OldSplashActivity.class, MainActivity.class);
 
             setSDKStatus(moduleConfigurator.configureModules(getApplicationContext()));
             boolean iv = moduleConfigurator.isVerified() & moduleConfigurator.isValidated();

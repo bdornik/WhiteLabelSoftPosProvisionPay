@@ -54,7 +54,7 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
         <activity
-            android:name="com.payten.whitelabel.ui.MainActivity"
+            android:name="com.payten.whitelabel.activities.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.App.Starting">
@@ -104,21 +104,21 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity-->
-            android:name=".activities.ProvisionActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme3"/>
-        <activity
-            android:name="com.payten.whitelabel.activities.SplashActivity"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme3">
+<!--            android:name=".activities.ProvisionActivity"-->
+<!--            android:exported="false"-->
+<!--            android:theme="@style/AppTheme3"/>-->
+<!--        <activity-->
+<!--            android:name="com.payten.whitelabel.activities.SplashActivity"-->
+<!--            android:exported="false"-->
+<!--            android:launchMode="singleTask"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:theme="@style/AppTheme3">-->
            <!-- <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
-        </activity>
+<!--        </activity>-->
         <activity
             android:name="com.payten.whitelabel.activities.IntroActivity"
             android:exported="false"
