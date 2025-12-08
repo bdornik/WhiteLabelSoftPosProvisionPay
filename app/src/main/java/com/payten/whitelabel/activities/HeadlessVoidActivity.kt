@@ -66,6 +66,7 @@ class HeadlessVoidActivity : ComponentActivity(), TransactionResultListener, Loy
     private var originalAmount: Double = 0.0
     private var transactionFirstResponse: TransactResult? = null
     private var shouldIgnoreDecline = true
+    private var providedPackageName: String = "" // For app-to-app flow
 
     private var lbin: ByteArray? = null
     private var lHash: ByteArray? = null
@@ -93,12 +94,24 @@ class HeadlessVoidActivity : ComponentActivity(), TransactionResultListener, Loy
         // Reset PaymentUiBridge state
         com.payten.whitelabel.ui.states.PaymentUiBridge.reset()
 
-        // Get transaction data from intent
-        originalRecordId = intent.getStringExtra("recordId") ?: ""
-        originalCardNumber = intent.getStringExtra("cardNumber") ?: ""
-        originalAmount = intent.getDoubleExtra("amount", 0.0)
+        // Check if this is app-to-app flow or internal flow
+        if (intent.hasExtra("providedPackageName")) {
+            // App-to-app flow
+            providedPackageName = intent.getStringExtra("providedPackageName") ?: ""
+            originalRecordId = intent.getStringExtra("authorizationCode") ?: ""
+            val amountString = intent.getStringExtra("Amount") ?: "0"
+            originalAmount = amountString.toDoubleOrNull() ?: 0.0
+            originalCardNumber = "" // Not available in app-to-app
 
-        logger.info { "HeadlessVoidActivity started for recordId: $originalRecordId, amount: $originalAmount" }
+            logger.info { "HeadlessVoidActivity started via app-to-app from: $providedPackageName, authCode: $originalRecordId, amount: $originalAmount" }
+        } else {
+            // Internal flow
+            originalRecordId = intent.getStringExtra("recordId") ?: ""
+            originalCardNumber = intent.getStringExtra("cardNumber") ?: ""
+            originalAmount = intent.getDoubleExtra("amount", 0.0)
+
+            logger.info { "HeadlessVoidActivity started internally for recordId: $originalRecordId, amount: $originalAmount" }
+        }
 
         try {
             // Set transaction type to VOID (don't cancel here - it interferes with other transactions)
@@ -484,11 +497,46 @@ class HeadlessVoidActivity : ComponentActivity(), TransactionResultListener, Loy
         // Clean up SDK state BEFORE finishing to prevent race conditions
         cleanupSDKState()
 
-        val resultIntent = Intent().apply {
-            putExtra("transaction_data", transactionData)
-            putExtra("success", true)
+        // Check if this is app-to-app flow
+        if (providedPackageName.isNotEmpty()) {
+            // App-to-app flow - return response in app-to-app format
+            val gson = com.fatboyindustrial.gsonjavatime.Converters.registerLocalDateTime(
+                com.google.gson.GsonBuilder()
+            ).create()
+
+            val status = transactionData.response ?: "05"
+            val message = transactionData.message ?: "Void neuspesan"
+            val dataResponse = gson.toJson(transactionData)
+
+            val obj = com.payten.whitelabel.dto.AppToAppResponseDto(
+                com.payten.whitelabel.dto.AppToAppSingleResponseDto(
+                    com.payten.whitelabel.dto.AppToAppSingleResponseStatusDto(
+                        status,
+                        message,
+                        dataResponse
+                    ),
+                    transactionData.recordId ?: ""
+                )
+            )
+
+            logger.info { "Sending app-to-app response to $providedPackageName: $obj" }
+
+            val intent = packageManager.getLaunchIntentForPackage(providedPackageName)
+            if (intent != null) {
+                intent.putExtra("RESPONSE_JSON_STRING", gson.toJson(obj))
+                setResult(RESULT_OK, intent)
+            } else {
+                logger.error { "Package $providedPackageName not found" }
+                setResult(RESULT_CANCELED)
+            }
+        } else {
+            // Internal flow
+            val resultIntent = Intent().apply {
+                putExtra("transaction_data", transactionData)
+                putExtra("success", true)
+            }
+            setResult(RESULT_OK, resultIntent)
         }
-        setResult(RESULT_OK, resultIntent)
         finish()
     }
 

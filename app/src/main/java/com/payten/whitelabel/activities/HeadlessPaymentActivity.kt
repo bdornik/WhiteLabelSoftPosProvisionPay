@@ -78,6 +78,7 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     private var shouldIgnoreDecline = true
     private var tip = ""
     private var paymentAdditionalData = ""
+    private var providedPackageName = ""
 
     private var lbin: ByteArray? = null
     private var lHash: ByteArray? = null
@@ -134,6 +135,11 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
 
         val model2: PosViewModel by viewModels()
         model = model2
+
+        if (intent.hasExtra("providedPackageName")) {
+            providedPackageName = intent.getStringExtra("providedPackageName") ?: ""
+            logger.info { "HeadlessPaymentActivity started via app-to-app from: $providedPackageName" }
+        }
 
         val amount = intent.getStringExtra("Amount")
         if (amount == null) {
@@ -226,10 +232,45 @@ class HeadlessPaymentActivity : AppCompatActivity(), TransactionResultListener, 
     }
 
     private fun returnResult(resultCode: Int, message: String? = null, transactionData: TransactionDetailsDto? = null) {
-        val resultIntent = Intent()
-        message?.let { resultIntent.putExtra("message", it) }
-        transactionData?.let { resultIntent.putExtra("transaction_data", it) }
-        setResult(resultCode, resultIntent)
+        // Check if this is app-to-app flow
+        if (providedPackageName.isNotEmpty() && transactionData != null) {
+            // App-to-app flow - return response in app-to-app format
+            val gson = com.fatboyindustrial.gsonjavatime.Converters.registerLocalDateTime(
+                com.google.gson.GsonBuilder()
+            ).create()
+
+            val status = transactionData.response ?: if (resultCode == RESULT_OK) "00" else "05"
+            val responseMessage = transactionData.message ?: message ?: "Transaction processed"
+            val dataResponse = gson.toJson(transactionData)
+
+            val obj = com.payten.whitelabel.dto.AppToAppResponseDto(
+                com.payten.whitelabel.dto.AppToAppSingleResponseDto(
+                    com.payten.whitelabel.dto.AppToAppSingleResponseStatusDto(
+                        status,
+                        responseMessage,
+                        dataResponse
+                    ),
+                    transactionData.recordId ?: ""
+                )
+            )
+
+            logger.info { "Sending app-to-app response to $providedPackageName: $obj" }
+
+            val intent = packageManager.getLaunchIntentForPackage(providedPackageName)
+            if (intent != null) {
+                intent.putExtra("RESPONSE_JSON_STRING", gson.toJson(obj))
+                setResult(RESULT_OK, intent)
+            } else {
+                logger.error { "Package $providedPackageName not found" }
+                setResult(RESULT_CANCELED)
+            }
+        } else {
+            // Internal flow - normal result
+            val resultIntent = Intent()
+            message?.let { resultIntent.putExtra("message", it) }
+            transactionData?.let { resultIntent.putExtra("transaction_data", it) }
+            setResult(resultCode, resultIntent)
+        }
     }
 
     // TransactionResultListener implementations
