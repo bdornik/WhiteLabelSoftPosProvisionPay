@@ -90,6 +90,9 @@ class HeadlessVoidActivity : ComponentActivity(), TransactionResultListener, Loy
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Reset PaymentUiBridge state
+        com.payten.whitelabel.ui.states.PaymentUiBridge.reset()
+
         // Get transaction data from intent
         originalRecordId = intent.getStringExtra("recordId") ?: ""
         originalCardNumber = intent.getStringExtra("cardNumber") ?: ""
@@ -233,24 +236,39 @@ class HeadlessVoidActivity : ComponentActivity(), TransactionResultListener, Loy
     // TransactionResultListener implementations
     override fun onTransactionIdle() {
         logger.info { "Transaction idle" }
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x01, true)
+        }
     }
 
     override fun onTransactionReadyToRead() {
         logger.info { "Transaction ready to read" }
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x01, true)
+        }
     }
 
     override fun onTransactionProcessing() {
         logger.info { "Void transaction processing" }
-        _voidState.value = VoidState.Processing
+        // Don't switch to Processing screen yet - let LEDs show
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x02, true)
+        }
     }
 
     override fun onTransactionSuccessful() {
         logger.info { "Void transaction successful - waiting for online response" }
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x0F, false)
+        }
         // Don't finish yet - wait for onOnlineResponse
     }
 
     override fun onTransactionDeclined() {
         logger.info { "Void transaction declined" }
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x0F, false)
+        }
 
         if (shouldIgnoreDecline) {
             // Retry transaction
@@ -270,32 +288,48 @@ class HeadlessVoidActivity : ComponentActivity(), TransactionResultListener, Loy
 
     override fun onTransactionEnded(message: String?) {
         logger.info { "Void transaction ended: $message" }
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x0F, false)
 
-        if (message?.contains("TRY_AGAIN") == true) {
-            shouldIgnoreDecline = true
-        } else {
-            returnError(message ?: "Transaction ended")
+            if (message?.contains("TRY_AGAIN") == true) {
+                shouldIgnoreDecline = true
+            } else {
+                returnError(message ?: "Transaction ended")
+            }
         }
     }
 
     override fun onTransactionCancelled() {
         logger.info { "Void transaction cancelled" }
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x0F, false)
 
-        // Clean up SDK state BEFORE finishing to prevent race conditions
-        cleanupSDKState()
+            // Clean up SDK state BEFORE finishing to prevent race conditions
+            cleanupSDKState()
 
-        setResult(RESULT_CANCELED)
-        finish()
+            setResult(RESULT_CANCELED)
+            finish()
+        }
     }
 
     override fun onTransactionNotStarted(message: String?) {
         logger.error { "Void transaction not started: $message" }
-        returnError(message ?: "Transaction not started")
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x0F, false)
+            returnError(message ?: "Transaction not started")
+        }
     }
 
     override fun onTransactionOnline() {
         logger.info { "Transaction going online" }
-        _voidState.value = VoidState.Processing
+        runOnUiThread {
+            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x0F, true)
+
+            // Wait a bit for user to see all LEDs light up, then switch to processing screen
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                _voidState.value = VoidState.Processing
+            }, 1000) // 1 second delay to show all LEDs
+        }
     }
 
     override fun onOnlineRequest(): ByteArray? {
@@ -344,8 +378,10 @@ class HeadlessVoidActivity : ComponentActivity(), TransactionResultListener, Loy
         logger.info { "onOnlineResponse (GetTransactionResult): ${p0?.transactionResponseData}" }
 
         if (transactionFirstResponse?.mtmsStatusCode == MTMSStatusCode.SUCCESS && transactionFirstResponse != null) {
-            // Void was successful
-            _voidState.value = VoidState.Success
+            runOnUiThread {
+                // Void was successful
+                _voidState.value = VoidState.Success
+            }
 
             val voidedTransaction = TransactionDetailsDto(
                 aid = "",
@@ -437,7 +473,10 @@ class HeadlessVoidActivity : ComponentActivity(), TransactionResultListener, Loy
 
         if (p0?.uirdStatus == UserInterfaceData.UIRDStatus.UIRD_STATUS_CARD_READ_SUCCESSFULLY) {
             logger.info { "Card read successfully" }
-            _voidState.value = VoidState.Processing
+            // Don't switch to Processing screen yet - let LEDs show
+            runOnUiThread {
+                com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(0x04, true)
+            }
         }
     }
 
