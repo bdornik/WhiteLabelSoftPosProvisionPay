@@ -375,8 +375,7 @@ class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, 
 
     override fun onTransactionOnline() {
         logger.info { "Transaction onTransactionOnline" }
-        val mToneGenerator = ToneGenerator(AudioManager.STREAM_SYSTEM, 50)
-        mToneGenerator.startTone(ToneGenerator.TONE_SUP_ERROR, 500)
+        updateLedState(0x0F, true)
     }
 
     override fun onOnlineRequest(): ByteArray? {
@@ -730,11 +729,11 @@ class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, 
         try {
             val mToneGenerator = ToneGenerator(AudioManager.STREAM_SYSTEM, 50)
             if (isSuccessTone) {
-                mToneGenerator.startTone(ToneGenerator.TONE_SUP_ERROR, 500)
-                Handler().postDelayed({ mToneGenerator.release() }, 501)
-            } else {
                 mToneGenerator.startTone(ToneGenerator.TONE_PROP_ACK, 600)
                 Handler().postDelayed({ mToneGenerator.release() }, 601)
+            } else {
+                mToneGenerator.startTone(ToneGenerator.TONE_SUP_ERROR, 500)
+                Handler().postDelayed({ mToneGenerator.release() }, 501)
             }
         } catch (e: Exception) {
             logger.info { "RING RING: ${e.message}" }
