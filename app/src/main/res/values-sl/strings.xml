@@ -250,6 +250,8 @@
 
     <string name="reactivation_message">Prosimo, da ponovno izvedete aktivacijo vašega OTP Smart POS terminala. \nPritisnite gumb »Aktiviraj« in sledite postopku.</string>
     <string name="reactivation_button">Aktiviraj</string>
+    <string name="reactivation_in_progress">Reaktivacija v teku</string>
+    <string name="please_wait">Prosimo počakajte...</string>
 
     <string name="back_button">Nazaj</string>
     <string name="printer">Tiskalnik</string>

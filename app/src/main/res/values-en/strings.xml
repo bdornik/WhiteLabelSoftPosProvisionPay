@@ -258,6 +258,8 @@
 
     <string name="reactivation_message">You need to do new activation for OTP Smart POS terminal. \nPlease, tap »Activate« and proceed with the flow.</string>
     <string name="reactivation_button">Activate</string>
+    <string name="reactivation_in_progress">Reactivation in progress</string>
+    <string name="please_wait">Please wait...</string>
 
     <string name="back_button">Cancel transaction</string>
     <string name="printer">Printer</string>

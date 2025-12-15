@@ -42,6 +42,7 @@ import com.payten.whitelabel.ui.screens.PdfViewerScreen
 import com.payten.whitelabel.ui.screens.PinLoginScreen
 import com.payten.whitelabel.ui.screens.PinSetupScreen
 import com.payten.whitelabel.ui.screens.ProfileScreen
+import com.payten.whitelabel.ui.screens.ReactivationScreen
 import com.payten.whitelabel.ui.screens.RegistrationPage
 import com.payten.whitelabel.ui.screens.SettingsScreen
 import com.payten.whitelabel.ui.screens.SmsVerificationScreen
@@ -170,8 +171,29 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                     navController.navigate("amount_entry")
                 },
                 onNavigateToMenu = {
-                    // Navigates to the Menu screen from the top-right buton on the landing page.
+                    // Navigates to the Menu screen from the top-right button on the landing page.
                     navController.navigate("menu")
+                },
+                onRequireReactivation = {
+                    // Terminal requires reactivation - navigate to reactivation screen
+                    // Clear back stack
+                    Log.d("Navigation", "Navigating to reactivation screen")
+                    navController.navigate("reactivation") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable("reactivation") {
+            ReactivationScreen(
+                sharedPreferences = sharedPreferences,
+                onReactivationComplete = {
+                    // Navigate to PIN login
+                    // Clear back stack
+                    Log.d("Navigation", "Reactivation complete - navigating to pin_login")
+                    navController.navigate("pin_login") {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }

@@ -1,11 +1,13 @@
 package com.payten.whitelabel.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -22,24 +24,47 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.payten.whitelabel.R
+import com.payten.whitelabel.ui.components.CustomDialog
 import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
-import com.payten.whitelabel.R
+import com.payten.whitelabel.viewmodel.LandingViewModel
+
+private const val TAG = "LandingScreen"
 
 /**
  * Landing screen after successful login.
  *
  * Shows welcome message and button to start a new transaction.
  * Includes menu icon for navigation to user menu.
- *
- * @param onNavigateToTransaction Callback when the button is clicked.
- * @param onNavigateToMenu Callback when menu icon is clicked.
+ * Checks for terminal reactivation requirement.
  */
 @Composable
 fun LandingScreen(
     onNavigateToTransaction: () -> Unit = {},
-    onNavigateToMenu: () -> Unit = {}
+    onNavigateToMenu: () -> Unit = {},
+    onRequireReactivation: () -> Unit = {},
+    viewModel: LandingViewModel = hiltViewModel()
 ) {
+    val reactivationNeeded by viewModel.reactivation.observeAsState()
+    var showReactivationDialog by remember { mutableStateOf(false) }
+
+    Log.d(TAG, "LandingScreen composed, reactivationNeeded=$reactivationNeeded")
+
+    LaunchedEffect(Unit) {
+        Log.d(TAG, "Calling getTerminalStatus()")
+        viewModel.getTerminalStatus()
+    }
+
+    LaunchedEffect(reactivationNeeded) {
+        Log.d(TAG, "reactivationNeeded changed to: $reactivationNeeded")
+        if (reactivationNeeded == true) {
+            Log.d(TAG, "Showing reactivation dialog")
+            showReactivationDialog = true
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -78,6 +103,20 @@ fun LandingScreen(
             TransactionButton(onClick = onNavigateToTransaction)
 
             Spacer(modifier = Modifier.height(40.dp))
+        }
+
+        // Reactivation dialog (matches old LandingActivity showDialog for REACTIVATION)
+        if (showReactivationDialog) {
+            CustomDialog(
+                isSuccess = true,
+                title = stringResource(R.string.reactivation_message),
+                buttonText = stringResource(R.string.reactivation_button),
+                onDismiss = {
+                    Log.d(TAG, "Reactivation dialog dismissed - starting reactivation flow")
+                    showReactivationDialog = false
+                    onRequireReactivation()
+                }
+            )
         }
     }
 }
