@@ -256,7 +256,7 @@
     <string name="logs_successfully_send">Logs have been sent successfully</string>
     <string name="logs_unsuccessfully_send">Logs have not been sent</string>
 
-    <string name="reactivation_message">You need to do new activation for OTP Smart POS terminal. \nPlease, tap »Activate« and proceed with the flow.</string>
+    <string name="reactivation_message">You need to do new activation for Payten Smart POS terminal. \nPlease, tap »Activate« and proceed with the flow.</string>
     <string name="reactivation_button">Activate</string>
     <string name="reactivation_in_progress">Reactivation in progress</string>
     <string name="please_wait">Please wait...</string>

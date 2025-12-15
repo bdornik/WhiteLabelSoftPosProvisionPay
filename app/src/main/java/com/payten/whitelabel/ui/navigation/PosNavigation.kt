@@ -188,10 +188,10 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             ReactivationScreen(
                 sharedPreferences = sharedPreferences,
                 onReactivationComplete = {
-                    // Navigate to PIN login
+                    // Navigate to PIN setup to set new PIN
                     // Clear back stack
-                    Log.d("Navigation", "Reactivation complete - navigating to pin_login")
-                    navController.navigate("pin_login") {
+                    Log.d("Navigation", "Reactivation complete - navigating to pin_setup")
+                    navController.navigate("pin_setup") {
                         popUpTo(0) { inclusive = true }
                     }
                 }

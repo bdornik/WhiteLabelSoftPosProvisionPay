@@ -247,7 +247,7 @@
     <string name="logs_successfully_send">Logs so bili uspešno poslani</string>
     <string name="logs_unsuccessfully_send">Logs niso bili poslani</string>
 
-    <string name="reactivation_message">Prosimo, da ponovno izvedete aktivacijo vašega OTP Smart POS terminala. \nPritisnite gumb »Aktiviraj« in sledite postopku.</string>
+    <string name="reactivation_message">Molimo izvršite ponovnu aktivaciju vašeg Payten Smart POS terminala. \nPritisnite dugme »Aktiviraj« i pratite postupak.</string>
     <string name="reactivation_button">Aktiviraj</string>
     <string name="reactivation_in_progress">Reaktivacija u toku</string>
     <string name="please_wait">Molimo sačekajte…</string>

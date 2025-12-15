@@ -115,7 +115,6 @@ fun ReactivationScreen(
             Log.d(TAG, "GetHostKeys success - moving to step 5")
             currentStep = 5
 
-            // Update parameters (matches ReactivationActivity line 91)
             val application = context.applicationContext as? MainApplication
             application?.updateParameters()
 
@@ -133,7 +132,7 @@ fun ReactivationScreen(
         if (sdkSuccess == true) {
             Log.d(TAG, "SDK registration success - reactivation complete")
 
-            // Set IS_LOGGED_IN and navigate to PIN login (matches ReactivationActivity lines 126-131)
+            // Set IS_LOGGED_IN and navigate to PIN setup
             sharedPreferences.push(SharedPreferencesKeys.IS_LOGGED_IN, true)
             sharedPreferences.push(SharedPreferencesKeys.PIN_COUNT, 3)
 
@@ -172,27 +171,16 @@ fun ReactivationScreen(
             Spacer(modifier = Modifier.height(48.dp))
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(horizontal = 16.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 for (ledNumber in 1..5) {
                     val isActive = ledNumber <= currentStep
                     Surface(
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier.size(40.dp),
                         shape = CircleShape,
                         color = if (isActive) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.3f)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = ledNumber.toString(),
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isActive) Color.White else Color.Gray
-                            )
-                        }
-                    }
+                    ) {}
                 }
             }
 
