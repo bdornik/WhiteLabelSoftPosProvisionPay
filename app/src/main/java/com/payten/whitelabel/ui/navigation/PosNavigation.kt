@@ -9,9 +9,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -448,9 +451,13 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
             val tipAmount = backStackEntry.arguments?.getLong("tipAmount") ?: 0L
             val context = LocalContext.current
 
+            var hideScreen by remember { mutableStateOf(false) }
+
             val transactionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) { result ->
+                hideScreen = true
+
                 if (result.resultCode == Activity.RESULT_OK) {
                     val transactionData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         result.data?.getSerializableExtra("transaction_data", TransactionDetailsDto::class.java)
@@ -474,7 +481,7 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 }
             }
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(amountInPare, tipAmount) {
                 val totalAmount = amountInPare + tipAmount
                 val intent = Intent(context, HeadlessPaymentActivity::class.java).apply {
                     putExtra("Amount", amountInPare.toString())
@@ -484,16 +491,10 @@ fun PosNavigation(sharedPreferences: KsPrefs) {
                 transactionLauncher.launch(intent)
             }
 
-            // Reset processing state when navigating away from this screen
-            DisposableEffect(Unit) {
-                onDispose {
-                    PaymentUiBridge.reset()
-                }
-            }
-
             CardProcessingScreen(
                 amountInPare = amountInPare,
                 tipAmount = tipAmount,
+                hideScreen = hideScreen,
                 onNavigateBack = {
                     // Cancel transaction and go back
                     Log.d("Navigation", "Card processing cancelled by user")

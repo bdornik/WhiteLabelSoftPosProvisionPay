@@ -38,12 +38,18 @@ import com.payten.whitelabel.ui.theme.MyriadPro
 fun CardProcessingScreen(
     amountInPare: Long,
     tipAmount: Long = 0L,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    hideScreen: Boolean = false
 ) {
     val ledState by PaymentUiBridge.ledState.collectAsState()
     val showProcessing by PaymentUiBridge.showProcessingScreen.collectAsState()
+    val isActivityComplete by PaymentUiBridge.isActivityComplete.collectAsState()
     val displayAmount = formatAmount(amountInPare + tipAmount)
-    
+
+    if (hideScreen || isActivityComplete) {
+        return
+    }
+
     if (showProcessing) {
         PaymentProcessingScreen()
         return

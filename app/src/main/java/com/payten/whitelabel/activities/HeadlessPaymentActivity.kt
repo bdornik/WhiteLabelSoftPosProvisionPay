@@ -54,6 +54,7 @@ import mu.KotlinLogging
 import org.json.JSONObject
 import javax.inject.Inject
 import android.app.DialogFragment
+import com.payten.whitelabel.ui.states.PaymentUiBridge
 
 /**
  * HeadlessPaymentActivity.kt
@@ -115,6 +116,9 @@ class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, 
         super.onCreate(savedInstanceState)
 
         logger.info { "onCreate HeadlessPaymentActivity" }
+
+        // Reset payment UI state for new payment transaction
+        PaymentUiBridge.reset()
 
         val model2: PosViewModel by viewModels()
         model = model2
@@ -452,6 +456,7 @@ class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, 
                 val cardLabel = p0?.transactionResponseData?.applicationLabel
                 if (cardLabel?.contains("visa", true) == true || cardLabel?.contains("card", true) == true) {
                     Log.d(TAG, "Starting animation for card: $cardLabel")
+                    PaymentUiBridge.setAnimationStarted()
                     runOnUiThread {
                         _paymentState.value = PaymentState.ShowAnimation(cardLabel, transactionData!!)
                     }
@@ -459,9 +464,7 @@ class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, 
                     // No animation for other card types
                     Log.d(TAG, "No animation for card: $cardLabel")
                     returnResult(RESULT_OK, "Success", transactionData)
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        finish()
-                    }, 1500)
+                    finish()
                 }
                 return
             } else {
@@ -519,9 +522,6 @@ class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, 
     @SuppressLint("DefaultLocale")
     override fun getDialogConfiguration(): CVMEDlgFragmentConfigurator {
         Log.d(TAG, "getDialogConfiguration() called - SDK requesting PIN dialog setup")
-        runOnUiThread {
-            _paymentState.value = PaymentState.WaitingForCard
-        }
         val config = CVMEDlgFragmentConfigurator()
 
         // Keypad button IDs
@@ -721,7 +721,7 @@ class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, 
     private fun updateLedState(ledMask: Int, isSuccess: Boolean) {
         // Update LED state through the PaymentUiBridge for CardProcessingScreen
         runOnUiThread {
-            com.payten.whitelabel.ui.states.PaymentUiBridge.updateLedState(ledMask, isSuccess)
+            PaymentUiBridge.updateLedState(ledMask, isSuccess)
         }
     }
 

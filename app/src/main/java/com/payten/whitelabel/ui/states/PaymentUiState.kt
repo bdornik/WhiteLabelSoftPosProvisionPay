@@ -20,6 +20,9 @@ object PaymentUiBridge {
     private val _showAnimationScreen = MutableStateFlow<String?>(null)
     val showAnimationScreen = _showAnimationScreen.asStateFlow()
 
+    private val _isActivityComplete = MutableStateFlow(false)
+    val isActivityComplete = _isActivityComplete.asStateFlow()
+
     private var pLedOn = 0x00
 
     fun reset() {
@@ -27,6 +30,15 @@ object PaymentUiBridge {
         _ledState.value = LedState() // All false
         _showProcessingScreen.value = false
         _showAnimationScreen.value = null
+        _isActivityComplete.value = false
+    }
+
+    fun setActivityComplete(complete: Boolean) {
+        _isActivityComplete.value = complete
+    }
+
+    fun setAnimationStarted() {
+        _isActivityComplete.value = true
     }
 
     fun updateLedState(ledOn: Int, isLedON: Boolean) {
