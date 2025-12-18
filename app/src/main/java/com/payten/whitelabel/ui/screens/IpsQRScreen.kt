@@ -42,6 +42,52 @@ import androidx.core.graphics.createBitmap
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * IPS QR code payment screen.
+ *
+ * Generates and displays a QR code for IPS mobile payment transactions. The customer
+ * scans this QR code with their mobile banking app to complete payment.
+ *
+ * ## Payment Flow:
+ * 1. Generate QR code containing merchant account, amount, and transaction reference
+ * 2. Display QR code to customer
+ * 3. Customer scans with mobile banking app
+ * 4. Poll backend API (every 2 seconds) to check transaction status
+ * 5. On completion/timeout, navigate to transaction result screen
+ *
+ * ## QR Code Data Structure:
+ * The QR code encodes payment information per IPS specification:
+ * - Merchant IPS account (IBAN format)
+ * - Transaction amount
+ * - Payment purpose/description
+ * - End-to-end reference for transaction tracking
+ * - Merchant identification
+ *
+ * ## Status Polling:
+ * - Polls `checkCTSStatus()` API every 2 seconds
+ * - Timeout after 300 seconds (5 minutes)
+ * - Handles success ("A"), failure ("F"), or timeout states
+ *
+ * ## UI Components:
+ * - Back button for cancellation
+ * - Amount display card
+ * - Generated QR code image (300x300dp)
+ * - Instruction text for customer
+ *
+ * @param amount Transaction amount in pare (minor units) as string
+ * @param sharedPreferences Encrypted preferences for merchant credentials (IPS account, terminal ID, etc.)
+ * @param onNavigateBack Callback when user cancels (back button) - returns to tip selection
+ * @param onTransactionComplete Callback with transaction result:
+ *                              - isSuccess: true if status="A" (approved)
+ *                              - statusCode: IPS status code ("A"=approved, "F"=failed, etc.)
+ *                              - message: Human-readable status message
+ *                              - e2eRef: End-to-end reference for transaction tracking
+ * @param viewModel IPSShowQRViewModel (Hilt injected) - handles QR generation and status polling
+ *
+ * @see IPSShowQRViewModel for QR generation and polling logic
+ * @see IpsUtil for IPS-specific utilities
+ * @see QRDto for QR code data structure
+ */
 @Composable
 fun IpsQRScreen(
     amount: String,

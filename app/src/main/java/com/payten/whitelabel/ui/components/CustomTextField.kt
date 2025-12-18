@@ -24,11 +24,28 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.payten.whitelabel.ui.theme.MyriadPro
+
 /**
- * Custom text field for the RegistrationPage.
+ * Custom styled text input field with label and placeholder.
  *
- * Might get reused later.
- * */
+ * Features:
+ * - Rounded corner design (12dp radius)
+ * - Light gray background with subtle border
+ * - Label text above the input field
+ * - Placeholder text inside the field
+ * - Configurable keyboard type (text, number, email, etc.)
+ * - Uses MyriadPro font family for consistent branding
+ *
+ * Currently used in:
+ * - RegistrationPage (for merchant name, address, contact info)
+ * - May be reused in other forms
+ *
+ * @param label Text displayed above the input field
+ * @param placeholder Hint text shown when field is empty
+ * @param value Initial value of the text field
+ * @param onValueChange Callback invoked when text changes, receives new value as parameter
+ * @param keyboardType Type of keyboard to display (Text, Number, Email, Phone, etc.)
+ */
 @Composable
 fun CustomTextField(
     label: String,

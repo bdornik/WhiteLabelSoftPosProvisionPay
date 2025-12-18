@@ -34,11 +34,80 @@ import com.payten.whitelabel.viewmodel.LandingViewModel
 private const val TAG = "LandingScreen"
 
 /**
- * Landing screen after successful login.
+ * Main landing/dashboard screen displayed after successful login.
  *
- * Shows welcome message and button to start a new transaction.
- * Includes menu icon for navigation to user menu.
- * Checks for terminal reactivation requirement.
+ * This is the primary screen users see after PIN authentication. It serves as the
+ * central hub for initiating transactions and accessing app features.
+ *
+ * ## Screen Components:
+ *
+ * ### Visual Elements:
+ * - Gradient background with Payten branding
+ * - Payten logo with shadow effect
+ * - Welcome message with merchant name
+ * - Large "New Transaction" button (primary action)
+ * - Menu icon in top-right corner
+ *
+ * ### Terminal Status Monitoring:
+ * - Automatically checks terminal status on screen entry via `getTerminalStatus()` API
+ * - Monitors for reactivation requirements from backend
+ * - Displays dialog if terminal needs reactivation (status="A" or advice="FORCE_REACTIVATION")
+ * - Blocks transactions until reactivation is completed
+ *
+ * ## Lifecycle Behavior:
+ *
+ * ### On Screen Entry (LaunchedEffect):
+ * 1. Calls `viewModel.getTerminalStatus()` to check terminal health
+ * 2. Observes `reactivationNeeded` LiveData from ViewModel
+ * 3. Shows reactivation dialog if backend requires terminal reactivation
+ *
+ * ### Reactivation Dialog:
+ * - **Title**: "Terminal Reactivation Required"
+ * - **Message**: Explains why reactivation is needed
+ * - **Action**: "Activate" button navigating to ReactivationScreen
+ * - **No Dismiss**: Dialog cannot be dismissed - user must complete reactivation
+ *
+ * ## Navigation Routes:
+ *
+ * ### From Landing Screen:
+ * - **New Transaction** → `amount_entry` - Start payment flow
+ * - **Menu** → `menu` - Access settings, transactions, end-of-day, sign out
+ * - **Reactivation Required** → `reactivation` - Terminal reactivation flow
+ *
+ * ### To Landing Screen (from navigation graph):
+ * - After PIN login (returning user)
+ * - After registration + PIN setup (new user)
+ * - After completing reactivation
+ * - After transaction completion (on back navigation)
+ *
+ * ## State Management:
+ *
+ * ### ViewModel (LandingViewModel):
+ * - `getTerminalStatus()` - Fetches terminal health from backend API
+ * - `reactivation: LiveData<Boolean>` - Observed for reactivation requirement
+ *
+ * ### Local State:
+ * - `showReactivationDialog` - Controls reactivation dialog visibility
+ *
+ * ## UI Layout:
+ * ```
+ * [Gradient Background]
+ *   [Menu Icon - Top Right]
+ *   [Centered Content]
+ *     - Payten Logo
+ *     - Welcome Message ("Welcome, {merchantName}!")
+ *     - "New Transaction" Button
+ * ```
+ *
+ * @param onNavigateToTransaction Callback when "New Transaction" clicked - navigates to amount_entry
+ * @param onNavigateToMenu Callback when menu icon clicked - navigates to menu screen
+ * @param onRequireReactivation Callback when reactivation required - navigates to reactivation screen
+ * @param viewModel LandingViewModel (Hilt injected) - handles terminal status checks
+ *
+ * @see LandingViewModel for terminal status logic
+ * @see ReactivationScreen for reactivation flow
+ * @see AmountEntryScreen for transaction flow entry
+ * @see MenuScreen for menu navigation
  */
 @Composable
 fun LandingScreen(

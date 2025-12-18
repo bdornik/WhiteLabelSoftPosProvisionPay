@@ -16,10 +16,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 /**
- * PIN indicators showing filled/unfilled circles.
+ * Visual PIN entry indicator displaying 4 circular dots.
  *
- * @param pinLength Current PIN length (0-4).
- * @param isError Whether to show error state (red circles).
+ * Shows user progress when entering a 4-digit PIN code through visual feedback:
+ * - Empty circles (gray border) for digits not yet entered
+ * - Filled circles (themed primary color) for entered digits
+ * - Red filled circles in error state (wrong PIN)
+ *
+ * The component displays exactly 4 circles in a horizontal row with 16dp spacing,
+ * filling them from left to right as the user enters each digit.
+ *
+ * Used in:
+ * - PinSetupScreen (creating new PIN)
+ * - PinLoginScreen (entering PIN to login)
+ * - ChangePinVerificationScreen (verifying old PIN)
+ *
+ * @param pinLength Current number of PIN digits entered (0-4). Determines how many
+ *                  circles appear filled.
+ * @param isError Whether to show error state with red circles instead of primary color.
+ *                Used when PIN validation fails to provide visual feedback.
  */
 @Composable
 fun PinIndicators(

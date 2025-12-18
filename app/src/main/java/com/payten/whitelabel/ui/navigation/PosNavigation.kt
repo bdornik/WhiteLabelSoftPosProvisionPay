@@ -57,16 +57,99 @@ import com.payten.whitelabel.ui.states.PaymentUiBridge
 import com.payten.whitelabel.utils.AmountUtil.Companion.formatAmount
 
 /**
- * Main navigation component for the Payten POS application.
+ * Main navigation component for the Payten WhiteLabel SoftPOS application.
  *
- * Manages the navigation graph and screen transitions via Navigation Compose.
+ * This composable defines the entire navigation graph using Jetpack Navigation Compose,
+ * managing all screen transitions, parameter passing, and activity result handling throughout
+ * the application lifecycle.
  *
- * Current implementation handles the following flows:
- * -Splash->FirstPage->Register->PinSetup->Landing->Menu
- * -Splash->PinLogin-------------------------^
+ * ## Navigation Architecture:
  *
- * To be expanded further.
- * */
+ * ### Initial Flow (First Launch):
+ * ```
+ * splash → first → registration → pin_setup → landing
+ * ```
+ *
+ * ### Returning User Flow:
+ * ```
+ * splash → pin_login → landing
+ * ```
+ *
+ * ### Payment Transaction Flow:
+ * ```
+ * landing → amount_entry → payment_method → tip_selection →
+ *   → [CARD] → card_tap (launches HeadlessPaymentActivity) → transaction_result
+ *   → [IPS] → ips_qr → transaction_result
+ * ```
+ *
+ * ### Settings & Management:
+ * ```
+ * landing → menu → settings → profile / change_pin / pdf_terms
+ * landing → menu → traffic → transaction_details_from_list
+ * landing → menu → end_of_day
+ * ```
+ *
+ * ### Reactivation Flow (Terminal Status Check):
+ * ```
+ * landing → reactivation (if terminal requires reactivation) → pin_setup → landing
+ * ```
+ *
+ * ## Special Navigation Patterns:
+ *
+ * ### Activity Result Handling (HeadlessPaymentActivity):
+ * The `card_tap` route launches HeadlessPaymentActivity as a separate activity and handles
+ * its result using ActivityResultContracts. The activity result contains transaction data
+ * which is then passed to `transaction_result` screen via savedStateHandle.
+ *
+ * ### State Management with PaymentUiBridge:
+ * - CardProcessingScreen displayed in navigation while HeadlessPaymentActivity runs on top
+ * - PaymentUiBridge synchronizes UI state between the two activities
+ * - `hideScreen` local state prevents CardProcessingScreen flash during transitions
+ *
+ * ### Shared State via SavedStateHandle:
+ * - Transaction data passed between screens using NavController's savedStateHandle
+ * - Custom tip amount returned from custom_tip screen via previousBackStackEntry
+ * - Filter state communicated back from filter screen
+ *
+ * ## Key Routes:
+ *
+ * - **splash** - Initial loading screen, determines first/returning user flow
+ * - **first** - Welcome screen with login/register options
+ * - **registration** - Merchant registration with SDK initialization
+ * - **pin_setup** - 4-digit PIN creation/modification
+ * - **pin_login** - PIN entry for returning users
+ * - **landing** - Main dashboard with terminal status, quick payment, menu
+ * - **amount_entry** - Numeric keypad for payment amount input
+ * - **payment_method** - Card vs IPS payment selection
+ * - **tip_selection** - Tip percentage or custom tip selection
+ * - **card_tap** - NFC card reading (launches HeadlessPaymentActivity)
+ * - **ips_qr** - QR code display for IPS mobile payments
+ * - **transaction_result** - Transaction confirmation/receipt
+ * - **menu** - Settings, transactions, end-of-day, sign out
+ * - **traffic** - Transaction history list with filtering
+ * - **filter** - Date range and status filtering for transactions
+ * - **reactivation** - Terminal reactivation when required by backend
+ *
+ * ## Navigation Parameters:
+ *
+ * Routes that accept parameters use path parameters and navArgument definitions:
+ * - `payment_method/{amountInPare}` - Amount in minor units (pare/cents)
+ * - `tip_selection/{amountInPare}/{paymentMethod}` - Amount + payment method enum
+ * - `card_tap/{amountInPare}/{tipAmount}` - Both amounts for HeadlessPaymentActivity
+ * - `ips_qr/{totalAmount}` - Combined amount + tip for QR generation
+ *
+ * ## Helper Functions:
+ *
+ * - **shareTransaction()** - Formats transaction as text and opens Android share sheet
+ * - **printTransaction()** - Sends formatted receipt to Bluetooth printer
+ *
+ * @param sharedPreferences KsPrefs instance for accessing encrypted SharedPreferences
+ *                          throughout navigation (terminal ID, merchant info, user state)
+ *
+ * @see HeadlessPaymentActivity for payment processing implementation
+ * @see PaymentUiBridge for state synchronization between activities
+ * @see TransactionDetailsDto for transaction data structure
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PosNavigation(sharedPreferences: KsPrefs) {

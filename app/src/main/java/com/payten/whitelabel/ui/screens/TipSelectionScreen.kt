@@ -27,16 +27,56 @@ import com.payten.whitelabel.ui.theme.AppTheme
 import com.payten.whitelabel.ui.theme.MyriadPro
 
 /**
- * Tip selection screen.
+ * Tip selection screen for payment transactions.
  *
- * User selects tip percentage or no tip.
+ * Allows users to add a tip to the base transaction amount by selecting from preset
+ * percentage options, entering a custom amount, or choosing no tip. The screen adapts
+ * its behavior based on the selected payment method (Card vs IPS).
  *
- * @param amountInPare Transaction amount in minor units (pare)
- * @param paymentMethod Selected payment method
- * @param onNavigateBack Callback when back button is clicked
- * @param onContinueCard Callback for card payment with tip amount
- * @param onContinueIps Callback for IPS payment with total amount (includes tip)
- * @param onTransactionComplete Callback with transaction data when hardware activity completes (legacy)
+ * ## Tip Options:
+ * - **No Tip** - Proceed with base amount only
+ * - **10%** - Add 10% of base amount as tip
+ * - **15%** - Add 15% of base amount as tip
+ * - **20%** - Add 20% of base amount as tip
+ * - **Custom** - Navigate to custom tip entry screen for manual amount input
+ *
+ * ## Payment Method Handling:
+ * - **Card Payment**: Passes separate `tipAmount` parameter to card_tap route
+ * - **IPS Payment**: Calculates and passes `totalAmount` (base + tip) to ips_qr route
+ *
+ * ## UI Layout:
+ * - Header with back button and "Tip Selection" title
+ * - Amount display card showing base transaction amount
+ * - Grid of tip option buttons (2 columns)
+ * - Total amount preview showing base
+ * - Continue button (enabled only when tip option selected)
+ *
+ * ## State Management:
+ * - Observes `externalCustomTip` from custom tip entry screen via SavedStateHandle
+ * - Auto-selects "Custom" option when custom tip value received
+ * - Maintains selected tip state across recompositions
+ *
+ * ## Navigation Flow:
+ * ```
+ * payment_method → tip_selection → [custom_tip] → card_tap / ips_qr
+ * ```
+ *
+ * @param amountInPare Base transaction amount in minor units (pare/cents)
+ * @param paymentMethod Selected payment method (CARD or IPS) from previous screen
+ * @param externalCustomTip Custom tip amount from CustomTipEntryScreen via SavedStateHandle,
+ *                          null if not set or user returned without entering custom tip
+ * @param onNavigateBack Callback when back button clicked - returns to payment method screen
+ * @param onCustomTipClick Callback when "Custom" tip button clicked - navigates to custom_tip screen
+ * @param onContinueCard Callback for CARD payment - receives tip amount in pare,
+ *                       navigates to card_tap route with base amount + tip
+ * @param onContinueIps Callback for IPS payment - receives total amount (base + tip) in pare,
+ *                      navigates to ips_qr route with combined amount
+ * @param onTransactionComplete Legacy callback for direct hardware activity results (currently unused)
+ *
+ * @see PaymentMethod for payment method enumeration
+ * @see CustomTipEntryScreen for custom tip amount entry
+ * @see CardProcessingScreen for card payment continuation
+ * @see IpsQRScreen for IPS payment continuation
  */
 @Composable
 fun TipSelectionScreen(

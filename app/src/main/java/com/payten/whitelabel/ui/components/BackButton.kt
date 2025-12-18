@@ -15,9 +15,27 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
+
 /**
- * Unnecessarily complicated back button.
- * */
+ * Custom back button component rendered using Canvas with a circular arc and arrow.
+ *
+ * Draws a back navigation button featuring:
+ * - Partial circular arc (300° sweep from 30° start angle)
+ * - Left-pointing triangle arrow in the center
+ * - 40dp size with 2dp stroke width
+ * - No ripple effect on click
+ *
+ * This custom implementation provides a unique visual design compared to standard
+ * Material back buttons, though it is functionally equivalent.
+ *
+ * @param modifier Modifier to apply to the Canvas
+ * @param circleColor Color of the circular arc stroke (defaults to theme onBackground)
+ * @param triangleColor Color of the arrow triangle fill (defaults to theme onBackground)
+ * @param onClick Callback invoked when the button is clicked
+ *
+ * ## Note:
+ * The original comment "Unnecessarily complicated back button" remains accurate :)
+ */
 @Preview
 @Composable
 fun BackButton(

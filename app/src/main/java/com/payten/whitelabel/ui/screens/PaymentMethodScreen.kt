@@ -32,11 +32,57 @@ import com.payten.whitelabel.ui.theme.MyriadPro
 /**
  * Payment method selection screen.
  *
- * User selects payment method (Card or IPS).
+ * Presents the user with two payment options after amount entry:
+ * - **Card Payment** (NFC contactless) - For physical card tap transactions
+ * - **IPS Payment** (QR code) - For mobile banking QR code payments
  *
- * @param amountInPare Transaction amount in minor units (pare)
- * @param onNavigateBack Callback when back button is clicked
- * @param onContinue Callback with selected payment method when user clicks continue
+ * Each payment method is displayed as a large, selectable card with an icon,
+ * title, and description. Only one method can be selected at a time.
+ *
+ * ## Payment Method Options:
+ *
+ * ### CARD (NFC Contactless):
+ * - Uses Host Card Emulation (HCE) via payment SDK
+ * - Customer taps physical card on device
+ * - Supports Visa and Mastercard, for now
+ * - Proceeds to tip selection, then card tap screen
+ * - May require PIN entry for certain transactions
+ *
+ * ### IPS (Instant Payment System):
+ * - Generates QR code for mobile banking apps
+ * - Customer scans QR with their banking app
+ * - Real-time payment via Serbian IPS infrastructure
+ * - Proceeds to tip selection, then QR display screen
+ * - No physical card required
+ *
+ * ## UI Layout:
+ * - Header with back button and "Payment Method" title
+ * - Amount display card showing transaction amount
+ * - Two large selection cards in vertical layout:
+ *   * Card payment option with card icon
+ *   * IPS payment option with QR/mobile icon
+ * - Continue button (enabled only after selection)
+ *
+ * ## Selection Behavior:
+ * - Cards use radio button style - only one can be selected
+ * - Selected card highlights with checkmark indicator
+ * - Continue button grays out until a method is selected
+ *
+ * ## Navigation Flow:
+ * ```
+ * amount_entry → payment_method → tip_selection → [card_tap or ips_qr]
+ * ```
+ *
+ * @param amountInPare Transaction amount in minor units (pare/cents). Displayed
+ *                     in the amount card and passed to next screen.
+ * @param onNavigateBack Callback when back button clicked - returns to amount entry screen
+ * @param onContinue Callback when continue button clicked - receives selected PaymentMethod
+ *                   (either PaymentMethod.CARD or PaymentMethod.IPS), navigates to
+ *                   tip_selection route with amount and method parameters
+ *
+ * @see PaymentMethod enumeration for CARD and IPS options
+ * @see TipSelectionScreen for next step in payment flow
+ * @see AmountEntryScreen for previous step in payment flow
  */
 @Composable
 fun PaymentMethodScreen(

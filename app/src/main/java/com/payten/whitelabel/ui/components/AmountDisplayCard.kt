@@ -22,6 +22,24 @@ import androidx.compose.ui.unit.sp
 import com.payten.whitelabel.R
 import com.payten.whitelabel.ui.theme.MyriadPro
 
+/**
+ * Displays a transaction amount in a prominent card-style UI component.
+ *
+ * This composable presents the payment amount in a visually distinctive card with:
+ * - Elevated white surface with rounded corners
+ * - Large, bold amount text (40sp)
+ * - "Amount" label above
+ * - "RSD" currency indicator below
+ *
+ * Used across payment flow screens:
+ * - CardProcessingScreen (during card tap)
+ * - TipSelectionScreen (showing total)
+ * - IpsQRScreen (showing total)
+ * - PaymentMethodScreen (showing total)
+ *
+ * @param amount Formatted amount string (e.g., "2.340,00") - must be pre-formatted with
+ *               thousand separators (.) and decimal comma (,) in Serbian format
+ */
 @Composable
 fun AmountDisplayCard(
     amount: String
