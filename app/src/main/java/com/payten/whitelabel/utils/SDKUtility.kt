@@ -1,7 +1,6 @@
 package com.payten.whitelabel.utils
 
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Typeface
 import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
@@ -12,11 +11,130 @@ import com.sacbpp.api.SACBTPLogRecord
 import com.sacbpp.api.SACBTPModuleConfigurator
 import com.simant.MainApplication
 import com.simcore.api.SoftPOSSDK
+import java.util.Locale
 
+/**
+ * Utility class for payment SDK integration, diagnostics, and security monitoring.
+ *
+ * This class provides comprehensive utilities for interfacing with the SoftPOS payment SDK,
+ * including security status checks, transaction record retrieval, logging capabilities, and
+ * runtime environment validation. It serves as the primary bridge between the app and the
+ * proprietary payment SDK modules.
+ *
+ * ## SDK Security Monitoring:
+ *
+ * The payment SDK includes sophisticated security mechanisms to detect compromised devices:
+ *
+ * ### Device Security Checks:
+ * - **Root Detection** (`checkRootedDevice()`) - Detects if device has root access
+ * - **Debugging Detection** (`checkDebuggingDevice()`) - Identifies attached debuggers
+ * - **Emulator Detection** (`checkEmulatorDevice()`) - Detects virtual devices
+ * - **Hook Detection** (`checkHookDevice()`) - Identifies runtime hooks/instrumentation
+ *
+ * Each check returns `true` if the security threat is detected. The SDK may refuse to
+ * process payments on compromised devices depending on configuration.
+ *
+ * ### SDK Validation Status:
+ * - **Release Mode** (`checkSDKReleaseMode()`) - Production vs development SDK build
+ * - **Verified** (`checkSDKVerified()`) - SDK binary integrity verified
+ * - **Validated** (`checkSDKValidated()`) - SDK configuration validated
+ * - **SDK Status** (`checkSDKStatus()`) - Overall SDK readiness (must be 0)
+ *
+ * ## Logging and Diagnostics:
+ *
+ * ### Module Logs:
+ * The SDK maintains detailed internal logs across multiple modules:
+ * - `getModulesLogs()` - Returns all SDK module logs as concatenated string
+ * - `getModulesLogsMessage()` - Returns logs as List<Message> for backend transmission
+ *
+ * Each log record (`SACBTPLogRecord`) contains:
+ * - Type, timestamp, user identifier
+ * - Result code, originator, affected component
+ * - MPA ID, message text, attestation data
+ *
+ * ### Transaction Records:
+ * - `getTR()` - Retrieves transaction record from SDK module configurator
+ * - Used in error logging to capture transaction context
+ * - **Note**: Current implementation has inverted null check (bug)
+ *
+ * ### Security Status Report:
+ * `logSecurityStatus(context)` generates comprehensive diagnostic report including:
+ *
+ * #### JNI Status:
+ * - JNI interface health (critical - app terminates if failed)
+ *
+ * #### Security Flags (R/D/E/H):
+ * - **R**: Root detection (True/False + positive/negative counts)
+ * - **D**: Debug detection (True/False + positive/negative counts)
+ * - **E**: Emulator detection (True/False + positive/negative counts)
+ * - **H**: Hook detection (True/False)
+ *
+ * #### SDK Information:
+ * - SDK mode (Production/Development)
+ * - SDK verified/validated status
+ * - SDK version and expiry date
+ * - SDK readiness status
+ * - RNS ID (Remote Notification Service)
+ *
+ * #### Device Information:
+ * - App version code and name
+ * - Android OS version
+ * - Network connectivity status
+ * - NFC support and enabled status
+ *
+ * #### Library Versions:
+ * - `getLibraryVersions()` - Returns array of SDK library versions
+ * - Includes simcore-lib, visa-sensory-branding, sonic-sdk versions
+ *
+ * ## Usage in Error Logging:
+ *
+ * ViewModels use SDKUtility when creating error logs for backend transmission:
+ * ```kotlin
+ * val errorLog = ErrorLog(
+ *     // ... other fields ...
+ *     status = SDKUtility.logSecurityStatus(context),
+ *     tr = SDKUtility.getTR(),
+ *     logs = SDKUtility.getModulesLogsMessage()
+ * )
+ * ```
+ *
+ * This ensures error reports include complete SDK diagnostic state for debugging.
+ *
+ * ## SDK Information Dialog:
+ *
+ * `showSDKInfo(context)` displays an AlertDialog with the security status report,
+ * useful for:
+ * - Developer diagnostics during testing
+ * - Support troubleshooting
+ * - Security audit verification
+ *
+ * ## Critical Dependencies:
+ *
+ * This utility interfaces with proprietary SDK classes:
+ * - `SACBTPModuleConfigurator` - SDK module configuration and status
+ * - `SACBTPApplication` - SDK application instance
+ * - `SoftPOSSDK` - Core SoftPOS SDK interface
+ * - `MainApplication` - App-level SDK accessor
+ *
+ * ## Security Considerations:
+ *
+ * The SDK security checks are critical for PCI compliance:
+ * - Rooted devices may be rejected for payment processing
+ * - Debugging/emulator detection prevents development-time exploitation
+ * - Hook detection prevents runtime code injection attacks
+ * - JNI integrity ensures native code hasn't been tampered with
+ *
+ * Consult payment SDK documentation for security requirements and certification.
+ *
+ * @see RegistrationViewModel for SDK initialization usage
+ * @see PosViewModel for error logging usage
+ * @see HeadlessPaymentActivity for payment processing usage
+ * @see ErrorLog for error logging DTO structure
+ */
 class SDKUtility {
     companion object {
         fun getModulesLogs(): String {
-            var logs = SACBTPModuleConfigurator.getInstance().getModulesLogs()
+            val logs = SACBTPModuleConfigurator.getInstance().modulesLogs
             var allLogs = ""
 
             logs.forEach { log ->
@@ -28,11 +146,11 @@ class SDKUtility {
         }
 
         fun getModulesLogsMessage(): List<Message> {
-            var logs = SACBTPModuleConfigurator.getInstance().getModulesLogs()
+            val logs = SACBTPModuleConfigurator.getInstance().modulesLogs
             val returnLogs = ArrayList<Message>()
 
             logs.forEach { log ->
-                var logUnit = Message()
+                val logUnit = Message()
                 logUnit.message = logToString(log)
                 returnLogs.add(logUnit)
             }
@@ -53,43 +171,38 @@ class SDKUtility {
         }
 
         fun getTR(): String? {
-            val value = SACBTPModuleConfigurator.getInstance().getTR()
-            if (value !=null)
-                return "null"
+            val value = SACBTPModuleConfigurator.getInstance().tr
+            return if (value !=null)
+                "null"
             else
-                return value
+                value
         }
 
         fun checkSDKReleaseMode(): Boolean {
-            return SACBTPModuleConfigurator.getInstance().isReleaseMode()
+            return SACBTPModuleConfigurator.getInstance().isReleaseMode
         }
 
         fun checkSDKVerified(): Boolean {
-            return SACBTPModuleConfigurator.getInstance().isVerified()
+            return SACBTPModuleConfigurator.getInstance().isVerified
         }
 
         fun checkSDKValidated(): Boolean {
-            return SACBTPModuleConfigurator.getInstance().isValidated()
+            return SACBTPModuleConfigurator.getInstance().isValidated
         }
 
         fun getLibraryVersions(): Array<String> {
-            return SoftPOSSDK.getInstance().getLibraryVersions()
+            return SoftPOSSDK.getInstance().libraryVersions
         }
 
         fun checkSDKStatus(): Boolean {
-            if (MainApplication.getSDKStatus() != 0) {
-                return false
-            }
-            return true
+            return MainApplication.getSDKStatus() == 0
         }
 
         fun checkRootedDevice(): Boolean {
             var i = 0
             val rb = SACBTPModuleConfigurator.getInstance().modulesStatus
             i++ //JNI
-            if (rb[i] == 1)//rootDetected
-                return true
-            return false
+            return rb[i] == 1//rootDetected
         }
 
         fun checkDebuggingDevice(): Boolean {
@@ -99,9 +212,7 @@ class SDKUtility {
             i++ //rootDetected
             i++ //rootCountPositive
             i++ //rootCountNegative
-            if (rb[i] == 1) //debugDetected
-                return true
-            return false
+            return rb[i] == 1 //debugDetected
         }
 
         fun checkEmulatorDevice(): Boolean {
@@ -114,9 +225,7 @@ class SDKUtility {
             i++ //debugDetected
             i++ //debugCountPositive
             i++ //debugCountNegative
-            if (rb[i] == 1) //emulatorDetected
-                return true
-            return false
+            return rb[i] == 1 //emulatorDetected
         }
 
         fun checkHookDevice(): Boolean {
@@ -132,9 +241,7 @@ class SDKUtility {
             i++ //emulatorDetected
             i++ //emulatorCountPositive
             i++ //emulatorCountNegative
-            if (rb[i] == 1) //hookDetected
-                return true
-            return false
+            return rb[i] == 1 //hookDetected
         }
 
         fun showSDKInfo(context: Context) {
@@ -143,11 +250,11 @@ class SDKUtility {
             val textview = TextView(context)
             textview.setTypeface(Typeface.MONOSPACE, Typeface.NORMAL)
             textview.movementMethod = ScrollingMovementMethod.getInstance()
-            textview.text = SDKUtility.logSecurityStatus(context)
+            textview.text = logSecurityStatus(context)
             alertDialogBuilder.setView(textview)
             alertDialogBuilder.setNegativeButton(
-                "Cancel",
-                DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+                "Cancel"
+            ) { dialog, _ -> dialog.cancel() }
             val alert = alertDialogBuilder.create()
             alert.show()
         }
@@ -171,8 +278,8 @@ class SDKUtility {
             sb.append("\n")
             sb.append(
                 "JNI " + (if (rb[i++] == 0) "OK" else "[TERMINATED:0x" + Integer.toHexString(
-                    rb[0]
-                ).toUpperCase() + "]") + "\n"
+                                rb[0]
+                            ).uppercase(Locale.ROOT) + "]") + "\n"
             )
             sb.append("R : " + (if (rb[i++] == 1) "[T]" else "[F]") + " P [" + rb[i++] + "] N [" + rb[i++] + "]\n")
             sb.append("D : " + (if (rb[i++] == 1) "[T]" else "[F]") + " P [" + rb[i++] + "] N [" + rb[i++] + "]\n")
@@ -194,7 +301,7 @@ class SDKUtility {
             sb.append("SDK Version    :" + SACBTPApplication.getiSDKVersion() + "\n")
             sb.append("APP Version    : $versionCode\n")
             sb.append("APP Version Name    : $versionName\n")
-            sb.append("SDK Is Ready    :" + MainApplication.getInstance().getConfigurationInterface().isReady() + "\n")//false
+            sb.append("SDK Is Ready    :" + MainApplication.getInstance().configurationInterface.isReady + "\n")//false
             try {
                 sb.append("RnsId    :" + MainApplication.getSACBTPApplication().gcM_ID + "\n")
             }catch (exc : Exception){

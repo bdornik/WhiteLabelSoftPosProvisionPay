@@ -1,5 +1,6 @@
 package com.payten.whitelabel.viewmodel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -34,8 +35,95 @@ import retrofit2.Response
 import rs.digitalworx.takt.api.ApiService
 import rs.digitalworx.takt.api.SupercaseApiService
 import javax.inject.Inject
+import androidx.core.content.edit
 
-
+/**
+ * ViewModel for merchant registration and terminal activation workflows.
+ *
+ * This ViewModel orchestrates the complex registration process that involves both backend
+ * API calls and payment SDK initialization. It handles:
+ * - Merchant/terminal activation with Payten backend
+ * - Host cryptographic key retrieval (ECDSA public keys)
+ * - Session token generation
+ * - Payment SDK (SoftPOS) wallet initialization and activation
+ * - Terminal reactivation when required
+ * - Error logging and health checks
+ *
+ * ## Registration Flow (New Merchant):
+ * 1. **healthCheck()** - Verify backend API connectivity
+ * 2. **activate(userId, activationCode, appId)** - Register terminal with backend
+ *    - Receives TID (Terminal ID) and stores credentials
+ *    - Verifies SDK status is ready (status == 0)
+ * 3. **getHostKeys(request)** - Retrieve ECDSA public key components (hostX, hostY)
+ *    - Keys used for secure SDK wallet activation
+ * 4. **generateToken(userId, tid)** - Get session token for authenticated API calls
+ * 5. **initializeMTA(application, userId, userCode)** - Initialize payment SDK
+ *    - Triggers `onRegistrationNeeded()` callback
+ * 6. **registerOnSDK(userId, activationCode, pin)** - Complete SDK wallet activation
+ *    - Uses host keys for cryptographic initialization
+ *    - Wallet activation enables NFC payment processing
+ *
+ * ## Reactivation Flow (Existing Terminal):
+ * 1. **reactivation(tid)** - When backend requires terminal reactivation
+ *    - Calls `localWipeWallet()` to clear existing SDK wallet
+ *    - Re-registers terminal with backend (receives new activation code)
+ *    - Stores new credentials in SharedPreferences
+ *    - Returns to step 5-6 of registration flow to reinitialize SDK
+ *
+ * ## SDK Integration:
+ * This ViewModel implements `InitializationListener` to receive callbacks from the
+ * payment SDK during initialization:
+ * - `onRegistrationNeeded()` - SDK requires wallet activation, calls `registerOnSDK()`
+ * - `onMPAReady()` - Multi-Payment Application ready
+ * - `onError(error)` - SDK initialization errors
+ *
+ * The SDK activation uses `CMSSecureActivationListener` for wallet activation callbacks:
+ * - `onWalletActivated()` - Wallet successfully initialized, ready for payments
+ * - `onActivationError(message)` - Wallet activation failed
+ * - `onActivationStarted()` - Wallet activation process started
+ * - `onNetWorkError()` / `onCryptoError()` - Specific activation failures
+ *
+ * ## LiveData Observers:
+ *
+ * ### Registration/Activation:
+ * - `paytenActivationSuccessfull` - Backend terminal activation success
+ * - `paytenActivationFailed` - Backend terminal activation failure
+ * - `paytenGetHostKeys` - Host keys retrieval success/failure
+ * - `paytenGenerateTokenSuccessfull` - Session token generation success
+ * - `paytenGenerateTokenFailed` - Session token generation failure
+ * - `sdkRegisterSuccess` - SDK wallet activation success
+ * - `sdkRegisterFailed` - SDK wallet activation failure (with error message)
+ * - `reactivationSuccess` - Terminal reactivation success/failure
+ *
+ * ### Monitoring:
+ * - `healthCheck` - Backend API health status
+ * - `logsSendSuccess` / `logsSendFailed` - Error log transmission status
+ *
+ * ## Stored Credentials (SharedPreferences):
+ * - `USER_ID` - Merchant user identifier
+ * - `USER_TID` - Terminal ID (assigned by backend)
+ * - `USER_ACTIVATION_CODE` - Terminal activation code
+ * - `APP_ID` - Application identifier
+ * - `TOKEN` - Session authentication token
+ * - `HOST_X` / `HOST_Y` - ECDSA public key components for SDK initialization
+ * - `REGISTRATION_USER_ID` - Terminal user ID for reactivation
+ *
+ * ## Error Handling:
+ * - Validates SDK status before activation (must be 0)
+ * - Logs errors to backend via `errorLog()` API
+ * - Creates detailed error logs including device info, SDK status, transaction records
+ * - Uses `DebugSdk.getSDKDetailedInfo()` for comprehensive SDK diagnostics
+ *
+ * @property apiService SupercaseApiService for backend API calls (Hilt injected)
+ * @property sharedPreferences KsPrefs for encrypted credential storage (Hilt injected)
+ * @property userId Merchant user ID (set during initialization)
+ * @property userCode Terminal activation code (set during initialization)
+ *
+ * @see RegistrationPage for UI that uses this ViewModel
+ * @see ReactivationScreen for reactivation flow UI
+ * @see MainApplication for SDK initialization entry point
+ * @see SupercaseApiService for backend API interface
+ */
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
     private val apiService: SupercaseApiService,
@@ -63,6 +151,7 @@ class RegistrationViewModel @Inject constructor(
     var userId = ""
     var userCode = ""
 
+    @SuppressLint("CheckResult")
     fun reactivation(tid: String){
         val app: SACBTPApplication = MainApplication.getSACBTPApplication()
         app.localWipeWallet()
@@ -77,7 +166,7 @@ class RegistrationViewModel @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
-                logger.info { "Reactivation response: " + response }
+                logger.info { "Reactivation response: $response" }
                 if (response.statusCode.equals(ApiService.SUCCESS, true)) {
                     sharedPreferences.push(SharedPreferencesKeys.USER_TID, response.data.terminalId)
                     sharedPreferences.push(
@@ -106,7 +195,7 @@ class RegistrationViewModel @Inject constructor(
             override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
                 if (response.isSuccessful) {
                     // Log success message if HTTP status code is in the range of 200-299
-                    logger.info { TAG + "/healthCheck successful"}
+                    logger.info { "$TAG/healthCheck successful" }
                     healthCheck.postValue(true)
                 } else {
                     // Log failure message with HTTP status code
@@ -123,6 +212,7 @@ class RegistrationViewModel @Inject constructor(
         })
     }
 
+    @SuppressLint("CheckResult")
     fun activate(userId: String, activationCode: String, appId: String, context: Context, sharedPreferencesSOFT: SharedPreferences) {
         try {
             val sdkStatus = SimantApplication.getSDKStatus()
@@ -136,7 +226,7 @@ class RegistrationViewModel @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ response ->
-                        logger.info { "Activation response: " + response }
+                        logger.info { "Activation response: $response" }
                         if (response.statusCode.equals(ApiService.SUCCESS, true)) {
                             sharedPreferences.push(SharedPreferencesKeys.USER_TID, response.tid)
                             sharedPreferences.push(
@@ -147,7 +237,7 @@ class RegistrationViewModel @Inject constructor(
                             context.getSharedPreferences(
                                 "SOFTPOS_PARAMETERS_MDI",
                                 Context.MODE_PRIVATE
-                            ).edit().putString("TENANT", response.tenant).apply()
+                            ).edit { putString("TENANT", response.tenant) }
 
                             sharedPreferences.push(SharedPreferencesKeys.USER_ID, userId)
                             sharedPreferences.push(SharedPreferencesKeys.APP_ID, appId)
@@ -189,14 +279,15 @@ class RegistrationViewModel @Inject constructor(
 
     }
 
+    @SuppressLint("CheckResult")
     fun getHostKeys(request : GetKeysRequestDto){
-        logger.info { "getHostKeys request: " + request }
+        logger.info { "getHostKeys request: $request" }
         apiService.getKeys(request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
-                if (response.statusCode.equals("00")){
-                    logger.info{"respnse: " + response}
+                if (response.statusCode == "00"){
+                    logger.info{ "response: $response" }
                     logger.info { "Keys: " + response.data.keyX + " : " + response.data.keyY  }
                     sharedPreferences.push(SharedPreferencesKeys.HOST_X, response.data.keyX)
                     sharedPreferences.push(SharedPreferencesKeys.HOST_Y, response.data.keyY)
@@ -212,6 +303,7 @@ class RegistrationViewModel @Inject constructor(
             })
     }
 
+    @SuppressLint("CheckResult")
     fun generateToken(userId: String, tid: String) {
         logger.info { "Generating token..." }
         apiService
@@ -228,7 +320,7 @@ class RegistrationViewModel @Inject constructor(
             })
     }
 
-    fun registerOnSDK(usrId: String, cmsMPAActv: String, pin: String) {
+    fun registerOnSDK(usrId: String, cmsMPAActv: String) {
         val cmsSDKVersion = SACBTPApplication.getCMSSDKVersion()
 
         MainApplication.getSAMTAApplication().initCMSSecureEC(
@@ -244,7 +336,7 @@ class RegistrationViewModel @Inject constructor(
                 }
 
                 override fun onActivationError(message: String) {
-                    logger.error { "onActivationError ${message}" }
+                    logger.error { "onActivationError $message" }
                     sdkRegisterFailed.postValue(message)
                 }
 
@@ -294,7 +386,7 @@ class RegistrationViewModel @Inject constructor(
 
     override fun onRegistrationNeeded() {
         logger.info { "onRegistrationNeeded" }
-        registerOnSDK(userId, userCode, "Intesa.Android")
+        registerOnSDK(userId, userCode)
     }
 
     override fun onError(p0: SACBPPError?) {
@@ -306,13 +398,14 @@ class RegistrationViewModel @Inject constructor(
         logger.info { "onMPAReady" }
     }
 
+    @SuppressLint("CheckResult")
     fun logError(errorLog: ErrorLog, dialog: Boolean) {
         logger.info { "logError $errorLog" }
         apiService
             .errorLog(errorLog)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ response ->
+            .subscribe({ _ ->
                 logger.info("Error Send!")
                 logsSendSuccess.postValue(LogSend(dialog,"", true))
             }, { error ->
