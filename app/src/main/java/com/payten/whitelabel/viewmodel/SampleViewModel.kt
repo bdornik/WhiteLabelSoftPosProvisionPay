@@ -8,7 +8,7 @@ import com.payten.whitelabel.persistance.user.User
 import com.payten.whitelabel.persistance.user.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import mu.KotlinLogging
-import rs.digitalworx.takt.api.SupercaseApiService
+import com.payten.whitelabel.api.SupercaseApiService
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +21,7 @@ class SampleViewModel @Inject constructor(
     private val logger = KotlinLogging.logger {}
 
     fun getValues() : LiveData<List<User>> {
-        loadValues();
+        loadValues()
         return userDao.getAllUsers()
     }
 

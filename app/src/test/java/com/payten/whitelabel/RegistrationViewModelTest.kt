@@ -19,7 +19,7 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import rs.digitalworx.takt.api.SupercaseApiService
+import com.payten.whitelabel.api.SupercaseApiService
 
 /**
  * Unit tests for RegistrationViewModel.

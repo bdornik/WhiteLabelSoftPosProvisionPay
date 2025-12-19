@@ -32,8 +32,8 @@ import mu.KotlinLogging
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import rs.digitalworx.takt.api.ApiService
-import rs.digitalworx.takt.api.SupercaseApiService
+import com.payten.whitelabel.api.ApiService
+import com.payten.whitelabel.api.SupercaseApiService
 import javax.inject.Inject
 import androidx.core.content.edit
 

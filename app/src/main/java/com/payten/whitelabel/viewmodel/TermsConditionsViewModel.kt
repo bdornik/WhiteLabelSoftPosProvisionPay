@@ -15,7 +15,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import mu.KotlinLogging
 import okhttp3.*
-import rs.digitalworx.takt.api.SupercaseApiService
+import com.payten.whitelabel.api.SupercaseApiService
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

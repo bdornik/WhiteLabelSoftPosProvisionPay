@@ -12,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import mu.KotlinLogging
-import rs.digitalworx.takt.api.SupercaseApiService
+import com.payten.whitelabel.api.SupercaseApiService
 import javax.inject.Inject
 
 /**

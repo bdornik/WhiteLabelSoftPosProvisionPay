@@ -15,7 +15,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import mu.KotlinLogging
 import org.threeten.bp.LocalDateTime
-import rs.digitalworx.takt.api.SupercaseApiService
+import com.payten.whitelabel.api.SupercaseApiService
 import javax.inject.Inject
 
 @HiltViewModel

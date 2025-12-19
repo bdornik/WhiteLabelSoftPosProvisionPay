@@ -57,16 +57,185 @@ import android.app.DialogFragment
 import com.payten.whitelabel.ui.states.PaymentUiBridge
 
 /**
- * HeadlessPaymentActivity.kt
+ * Activity for NFC contactless card payment processing via SoftPOS SDK.
  *
- * This Activity handles the payment transaction flow with card tap:
- * 1. Shows CardProcessingScreen - user taps card for payment
- * 2. Reads card via SDK transaction processing
- * 3. Shows PaymentProcessingScreen - white screen with red loading indicator (during PIN entry & online processing)
- * 4. Shows AnimationScreen - Visa/Mastercard animation on success
- * 5. Returns result to calling screen
+ * This activity runs as a separate overlay on top of MainActivity to handle NFC card payments.
+ * It orchestrates the entire payment flow from card tap to transaction completion, managing
+ * SDK callbacks, UI state transitions, and result communication back to the calling screen.
  *
- * This follows the same pattern as HeadlessVoidActivity but uses Compose UI.
+ * ## Architecture:
+ *
+ * **Activity Overlay Pattern:**
+ * - Launched via `ActivityResultContracts.StartActivityForResult()` from CardProcessingScreen
+ * - Runs on top of MainActivity as a separate activity
+ * - Uses `PaymentUiBridge` singleton to synchronize UI state with CardProcessingScreen (visible below)
+ * - Returns transaction result via `setResult()` when payment completes or fails
+ *
+ * **Bridge Pattern for SDK Access:**
+ * - Uses `SoftPosProvider` interface for SDK operations (enables testing)
+ * - Default implementation: `RealSoftPosProvider` (wraps actual SDK calls)
+ * - Can inject mock implementation for testing via `softPosProvider` property
+ *
+ * ## Payment Flow States (PaymentState sealed class):
+ *
+ * 1. **WaitingForCard** (Initial State)
+ *    - Displays `CardProcessingScreen` with "Tap Card" UI
+ *    - Calls `softPosProvider.startTransaction()` to enable NFC reader
+ *    - LED state: 0x01 (idle, waiting for card)
+ *    - Plays audio tone when card detected
+ *
+ * 2. **Processing**
+ *    - Triggered when PIN entry begins (`onCVMEEntered` callback)
+ *    - Displays `PaymentProcessingScreen` (white screen with red loading indicator)
+ *    - Shows PIN entry dialog (configured via `getDialogConfiguration()`)
+ *    - SDK performs online authorization during this state
+ *    - LED state: 0x02 (processing), 0x04 (card read), 0x0F (all on during online)
+ *
+ * 3. **ShowAnimation**
+ *    - Triggered when transaction approved with Visa/Mastercard card
+ *    - Displays `AnimationScreen` with card brand animation
+ *    - Immediately calls `PaymentUiBridge.setAnimationStarted()` to hide underlying CardProcessingScreen
+ *    - Returns transaction result when animation completes
+ *    - Non-Visa/Mastercard cards skip animation and return immediately
+ *
+ * ## SDK Integration:
+ *
+ * This activity implements multiple SDK listener interfaces to receive payment lifecycle callbacks:
+ *
+ * ### TransactionResultListener:
+ * - `onTransactionProcessing()` - Card detected, transaction starting
+ * - `onTransactionOnline()` - Online authorization in progress
+ * - `onOnlineResponse()` - Authorization complete (approved/declined)
+ * - `onTransactionSuccessful()` / `onTransactionDeclined()` - Final result
+ * - `onTransactionCancelled()` - User cancelled or error occurred
+ * - `onTransactionNotStarted()` - SDK not ready (retries after 2 seconds)
+ *
+ * ### CVMSListener (Cardholder Verification Method):
+ * - `onCVMEEntered()` - PIN entry dialog requested by SDK
+ * - `onCVMETimeout()` - PIN entry timeout (30 seconds)
+ * - `onCVMECancelled()` - User cancelled PIN entry
+ * - `getDialogConfiguration()` - Provides PIN dialog layout and styling
+ *
+ * ### DisplayInterface:
+ * - `displayMessage()` - SDK sends UI messages (e.g., "Card Read Successfully")
+ * - `onTransactionIdle()` / `onTransactionReadyToRead()` - Transaction state updates
+ *
+ * ### LoyaltyActionListener:
+ * - `onBINDetected()` - Card BIN detected for loyalty program lookup (not currently used)
+ *
+ * ### MTMSListener:
+ * - Multi-Transaction Management System callbacks (not actively used)
+ *
+ * ## Multi-Payment Session Support:
+ *
+ * The activity supports multiple consecutive payments in the same app session:
+ * - `PaymentUiBridge.reset()` called in `onCreate()` to clear state from previous payment
+ * - Resets LED states, animation flags, and activity completion flags
+ * - Allows user to return to CardProcessingScreen and start new payment
+ *
+ * ## LED State Management:
+ *
+ * Visual feedback is provided via LED indicators on CardProcessingScreen (visible below this activity):
+ * - LED states communicated via `PaymentUiBridge.updateLedState(ledMask, isSuccess)`
+ * - Bitmask values:
+ *   - `0x01` - Idle/Ready (blue LED)
+ *   - `0x02` - Processing (orange LED)
+ *   - `0x04` - Card Read (green LED)
+ *   - `0x08` - Unused
+ *   - `0x0F` - All LEDs (success = green, failure = red)
+ *
+ * ## PIN Entry Configuration:
+ *
+ * When SDK requires PIN verification, `getDialogConfiguration()` provides:
+ * - Layout: `fragment_pin_entry.xml` with numeric keypad + clear/cancel buttons
+ * - Keypad configuration: 4-digit PIN, 30-second timeout, auto-submit on 4th digit
+ * - Visual feedback: 4 circular indicators filled as PIN digits entered
+ * - Styling: Black text on transparent keys, Payten Red branding
+ * - Security: No PIN visibility, randomization disabled for usability
+ *
+ * The PIN dialog is managed by the SDK and overlays this activity during Processing state.
+ *
+ * ## Transaction Result Handling:
+ *
+ * ### Internal App Flow:
+ * Returns `RESULT_OK` with transaction data to CardProcessingScreen → TransactionScreen:
+ * ```kotlin
+ * val resultIntent = Intent()
+ * resultIntent.putExtra("transaction_data", TransactionDetailsDto(...))
+ * setResult(RESULT_OK, resultIntent)
+ * ```
+ *
+ * ### App-to-App Payment Flow:
+ * Supports external apps initiating payments via Intent with `providedPackageName`:
+ * - Returns result by launching calling app with response JSON
+ * - Response format: `AppToAppResponseDto` with transaction details
+ * - Status codes: "00" = approved, "05" = declined
+ *
+ * Transaction result includes:
+ * - Card details (masked PAN, application label, AID)
+ * - Authorization code, RRN, response code
+ * - Amount, tip amount, merchant/terminal IDs
+ * - Transaction date/time, record ID
+ *
+ * ## Error Handling:
+ *
+ * Errors are logged to backend via `PosViewModel.logError()`:
+ * - SDK not ready errors
+ * - NFC disabled errors
+ * - Transaction failures with SDK diagnostics
+ *
+ * Error logs include:
+ * - Device information (manufacturer, model, Android version)
+ * - Terminal credentials (TID, user ID)
+ * - SDK security status via `SDKUtility.logSecurityStatus()`
+ * - Transaction records via `SDKUtility.getTR()`
+ * - Module logs via `SDKUtility.getModulesLogsMessage()`
+ *
+ * ## NFC Monitoring:
+ *
+ * Monitors NFC adapter state via `BroadcastReceiver`:
+ * - Cancels payment if NFC disabled during transaction
+ * - Registered in `onCreate()` and `onResume()`
+ * - Unregistered in `onPause()`
+ *
+ * ## Lifecycle Management:
+ *
+ * - **onCreate()**: Reset state, parse intent, initialize SDK, setup Compose UI
+ * - **onResume()**: Re-register NFC monitor, start transaction after 1 second delay
+ * - **onPause()**: Cancel transaction, unregister NFC monitor, re-register SDK listeners
+ * - **finish()**: Activity closes, returns to CardProcessingScreen or calling app
+ *
+ * ## Audio Feedback:
+ *
+ * Plays audio tones via `ToneGenerator`:
+ * - Success: `TONE_PROP_ACK` (600ms) - card read, transaction approved
+ * - Failure: `TONE_SUP_ERROR` (500ms) - transaction declined, error
+ *
+ * ## Intent Parameters:
+ *
+ * Required parameters passed via Intent:
+ * - `Amount` (String) - Transaction amount in pare (cents)
+ * - `Tip` (String, optional) - Tip amount in pare (cents)
+ * - `uniqueId` (String, optional) - Transaction unique identifier
+ * - `providedPackageName` (String, optional) - Calling app package for app-to-app flow
+ *
+ * ## Testing Support:
+ *
+ * The activity uses Bridge Pattern for SDK access to enable testing:
+ * - `softPosProvider: SoftPosProvider` property is `@VisibleForTesting`
+ * - Tests can inject mock implementation to simulate SDK behavior
+ * - Default: `RealSoftPosProvider()` wraps actual SDK calls
+ *
+ * @property sharedPreferences KsPrefs for reading merchant credentials (Hilt injected)
+ * @property model PosViewModel for error logging (Hilt injected)
+ * @property softPosProvider SoftPosProvider for SDK operations (default: RealSoftPosProvider)
+ *
+ * @see CardProcessingScreen for the "Tap Card" UI visible below this activity
+ * @see PaymentUiBridge for cross-activity state synchronization
+ * @see PosViewModel for error logging
+ * @see TransactionScreen for transaction result display
+ * @see SoftPosProvider for SDK interface abstraction
+ * @see PaymentState for state machine transitions
  */
 @AndroidEntryPoint
 class HeadlessPaymentActivity : ComponentActivity(), TransactionResultListener, LoyaltyActionListener,
