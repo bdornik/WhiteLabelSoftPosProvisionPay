@@ -521,7 +521,7 @@ private fun ReceiptCard(
 
                 CardSection(
                     title = stringResource(R.string.eod_ips_title).uppercase(),
-                    logoResId = R.drawable.ips,
+                    logoResId = R.drawable.icon_ips,
                     traffic = flikTraffic,
                     showTips = false,
                     isIPS = true

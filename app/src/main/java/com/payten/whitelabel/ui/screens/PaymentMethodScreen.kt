@@ -155,7 +155,7 @@ fun PaymentMethodScreen(
                 PaymentMethodOption(
                     icon = R.drawable.qr,
                     title = stringResource(R.string.payment_method_ips),
-                    logos = listOf(R.drawable.ips),
+                    logos = listOf(R.drawable.icon_ips),
                     isSelected = selectedMethod == PaymentMethod.IPS,
                     onClick = {
                         Log.d(TAG, "IPS payment selected")
