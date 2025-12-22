@@ -20,6 +20,7 @@ import com.payten.whitelabel.dto.AppToAppRequestDto
 import com.payten.whitelabel.persistance.SharedPreferencesKeys
 import com.payten.whitelabel.ui.navigation.PosNavigation
 import com.payten.whitelabel.ui.theme.AppTheme
+import com.simant.MainApplication
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KotlinLogging
 import javax.inject.Inject
@@ -67,6 +68,8 @@ class SplashActivity : AppCompatActivity() {
         )
 
         Log.d("DEBUG", "MainActivity started!")
+
+        MainApplication.getInstance().createActivationCodes()
 
         enableEdgeToEdge()
 
