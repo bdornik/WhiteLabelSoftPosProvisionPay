@@ -113,14 +113,14 @@ fun CardProcessingScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.mastercard),
+                    painter = painterResource(id = R.drawable.icon_mastercard),
                     contentDescription = null,
-                    modifier = Modifier.height(16.dp)
+                    modifier = Modifier.height(32.dp)
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.visa),
+                    painter = painterResource(id = R.drawable.icon_visa),
                     contentDescription = null,
-                    modifier = Modifier.height(16.dp)
+                    modifier = Modifier.height(32.dp)
                 )
             }
 

@@ -320,7 +320,7 @@ private fun ReceiptCard(transactionData: TransactionDetailsDto) {
                     Image(
                         painter = painterResource(id = cardLogo),
                         contentDescription = null,
-                        modifier = Modifier.height(16.dp)
+                        modifier = Modifier.height(24.dp)
                     )
                 }
             }
@@ -384,8 +384,8 @@ private fun TransactionDetailRow(
 private fun getCardLogo(transactionData: TransactionDetailsDto): Int? {
     return when {
         transactionData.isIps -> null // IPS has no logo
-        transactionData.applicationLabel?.contains("visa", ignoreCase = true) == true -> R.drawable.visa
-        transactionData.applicationLabel?.contains("master", ignoreCase = true) == true -> R.drawable.mastercard
+        transactionData.applicationLabel?.contains("visa", ignoreCase = true) == true -> R.drawable.icon_visa
+        transactionData.applicationLabel?.contains("master", ignoreCase = true) == true -> R.drawable.icon_mastercard
         else -> null // Unknown - no logo
     }
 }

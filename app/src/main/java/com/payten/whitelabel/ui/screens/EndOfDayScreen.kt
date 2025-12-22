@@ -496,7 +496,7 @@ private fun ReceiptCard(
             // Mastercard section
             CardSection(
                 title = stringResource(R.string.eod_mastercard_title),
-                logoResId = R.drawable.mastercard,
+                logoResId = R.drawable.icon_mastercard,
                 traffic = masterTraffic,
                 showTips = tipsEnabled
             )
@@ -508,7 +508,7 @@ private fun ReceiptCard(
             // Visa section
             CardSection(
                 title = stringResource(R.string.eod_visa_title),
-                logoResId = R.drawable.visa,
+                logoResId = R.drawable.icon_visa,
                 traffic = visaTraffic,
                 showTips = tipsEnabled
             )

@@ -142,8 +142,8 @@ fun PaymentMethodScreen(
                     icon = R.drawable.card,
                     title = stringResource(R.string.payment_method_card),
                     logos = listOf(
-                        R.drawable.mastercard,
-                        R.drawable.visa
+                        R.drawable.icon_mastercard,
+                        R.drawable.icon_visa
                     ),
                     isSelected = selectedMethod == PaymentMethod.CARD,
                     onClick = {
