@@ -170,12 +170,9 @@ class SDKUtility {
             return sb.toString()
         }
 
-        fun getTR(): String? {
+        fun getTR(): String {
             val value = SACBTPModuleConfigurator.getInstance().tr
-            return if (value !=null)
-                "null"
-            else
-                value
+            return value ?: "null"
         }
 
         fun checkSDKReleaseMode(): Boolean {
