@@ -1,5 +1,6 @@
 package com.simant.softpos.impl;
 
+import com.payten.whitelabel.config.SupercaseConfig;
 import com.simcore.api.interfaces.PaymentData;
 
 public class SamplePaymentData implements PaymentData
@@ -7,7 +8,7 @@ public class SamplePaymentData implements PaymentData
     private String transactionType =  PaymentData.TransactionType.GOODS.getInternalType();
     private long amountTransaction = 10000;
     private long amountOther = 0;
-    private String currencyCode = "0978";
+    private String currencyCode = SupercaseConfig.CURRENCY_CODE;
     private String currencyExponent = "02";
     private String merchantCustomData = "SimAnt::MCL311:Test";
     private String merchantAdditionalData = "None";

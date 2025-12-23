@@ -8,6 +8,7 @@ public class SupercaseConfig {
 
     public static final String INSTITUTION = "OTP banka d.d.";
     public static final String CURRENCY_STRING = "RSD";
+    public static final String CURRENCY_CODE = "0941";
     public static final String dummyUsId = "google";
     public static final String dummyActCode = "27021994";
 
