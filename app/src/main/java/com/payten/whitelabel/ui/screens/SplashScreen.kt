@@ -65,7 +65,7 @@ fun SplashScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.payten),
-                contentDescription = null,
+                contentDescription = "Payten Logo",
                  modifier = Modifier.size(300.dp)
             )
 
