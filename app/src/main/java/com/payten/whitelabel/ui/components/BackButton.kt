@@ -13,6 +13,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 
@@ -47,6 +49,7 @@ fun BackButton(
     Canvas(
         modifier = modifier
             .size(40.dp)
+            .semantics { contentDescription = "Back" }
             .clickable(
                 onClick = onClick,
                 indication = null,

@@ -78,7 +78,7 @@ fun CustomDialog(
                         } else {
                             Icons.Default.Close
                         },
-                        contentDescription = null,
+                        contentDescription = if (isSuccess) "Success" else "Error",
                         tint = Color.White,
                         modifier = Modifier.size(48.dp)
                     )

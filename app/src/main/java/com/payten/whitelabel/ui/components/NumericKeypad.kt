@@ -117,7 +117,7 @@ private fun BackspaceKey(onClick: () -> Unit) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.backspace),
-            contentDescription = null,
+            contentDescription = "Backspace",
             modifier = Modifier.size(24.dp)
         )
     }
