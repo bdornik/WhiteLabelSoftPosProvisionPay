@@ -207,4 +207,273 @@ class SupercaseApiServiceTest {
         assertThat(body).contains("2023-10-01")
         assertThat(body).contains("12345678")
     }
+    // ==========================================
+    // PAYMENT & TRANSACTIONS (CRITICAL PATH)
+    // ==========================================
+
+    @Test
+    fun `payTransaction sends correct POST request for IPS payments`() {
+        val jsonResponse = """{"statusCode": "00", "message": "Payment Initiated"}"""
+        mockWebServer.enqueue(MockResponse().setBody(jsonResponse).setResponseCode(200))
+
+        // Updated to use the correct PayTransactionDto fields
+        val request = com.payten.whitelabel.dto.PayTransactionDto(
+            creditTransferIdentificator = "IPS-ID-12345",
+            terminalIdentificator = "12345678",
+            creditTransferAmount = "1500.00",
+            debtorAccountNumber = "999-000000-11",
+            oneTimeCode = "123456",
+            debtorReference = "REF-2023",
+            debtorName = "John Doe",
+            debtorAddress = "Main St 1"
+        )
+
+        val testObserver = apiService.payTransaction(request).test()
+
+        testObserver.awaitDone(1, TimeUnit.SECONDS)
+        testObserver.assertNoErrors()
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/v2/requestToPay")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+
+        // Verify specific field mapping
+        val body = recordedRequest.body.readUtf8()
+        assertThat(body).contains("creditTransferAmount") //
+        assertThat(body).contains("1500.00")
+        assertThat(body).contains("debtorAccountNumber")
+    }
+
+    @Test
+    fun `getTransactionDetails sends correct POST request`() {
+        mockWebServer.enqueue(MockResponse().setBody("""{"statusCode": "00"}""").setResponseCode(200))
+
+        // Updated to use correct GetTransactionDetailsRequest fields
+        val request = com.payten.whitelabel.dto.transactionDetails.GetTransactionDetailsRequest(
+            recordId = "REC-999",
+            tid = "12345678"
+        )
+
+        apiService.getTransactionDetails(request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/v2/getTransactionDetail")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+
+        val body = recordedRequest.body.readUtf8()
+        assertThat(body).contains("REC-999")
+        assertThat(body).contains("tid")
+    }
+
+    // ==========================================
+    // AUTHENTICATION & SECURITY
+    // ==========================================
+
+    @Test
+    fun `refreshToken sends correct POST request`() {
+        mockWebServer.enqueue(MockResponse().setBody("""{"statusCode": "00", "token": "new-jwt"}""").setResponseCode(200))
+
+        val request = com.payten.whitelabel.dto.GenerateTokenDto("userId", "tid")
+
+        apiService.refreshToken(request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/res/v2/generateToken")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+    }
+
+    @Test
+    fun `getKeys retrieves security keys correctly`() {
+        mockWebServer.enqueue(MockResponse().setBody("""{"statusCode": "00", "keys": "..."}""").setResponseCode(200))
+
+        val request = com.payten.whitelabel.dto.keys.GetKeysRequestDto("tid-123")
+
+        apiService.getKeys(request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/v2/terminal/getKeys")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+    }
+
+    @Test
+    fun `otpCreate sends Header correctly via GET`() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200))
+
+        val tid = "12345678"
+        apiService.otpCreate(tid).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/v2/otpCreate")
+        assertThat(recordedRequest.method).isEqualTo("GET")
+        // Verify the @Header annotation worked
+        assertThat(recordedRequest.getHeader("Terminal-Identification")).isEqualTo(tid)
+    }
+
+    // ==========================================
+    // SYSTEM & DIAGNOSTICS
+    // ==========================================
+
+    @Test
+    fun `healthCheck executes correct GET request`() {
+        // NOTE: healthCheck returns Call<Void>, not Observable, so we test it differently
+        mockWebServer.enqueue(MockResponse().setResponseCode(200))
+
+        val call = apiService.healthCheck()
+        val response = call.execute() // Synchronous execution for testing
+
+        assertThat(response.isSuccessful).isTrue()
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/healthCheck")
+        assertThat(recordedRequest.method).isEqualTo("GET")
+    }
+
+    @Test
+    fun `errorLog sends diagnostics via POST`() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200))
+
+        // Updated to use correct ErrorLog fields
+        // Note: passing emptyList() for 'messages'. Ensure your project has the 'Message' class available.
+        val request = com.payten.whitelabel.dto.ErrorLog(
+            tid = "12345678",
+            userId = "user_01",
+            device = "Samsung S21",
+            os = "Android 13",
+            activity = "PaymentActivity",
+            description = "NullPointerException",
+            stack = "Stacktrace...",
+            sdkStatus = "ACTIVE",
+            institution = "BankXYZ",
+            tr = "TR-CODE",
+            messages = emptyList()
+        )
+
+        apiService.errorLog(request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/res/v2/logErrorEx")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+
+        val body = recordedRequest.body.readUtf8()
+        assertThat(body).contains("Samsung S21")
+        assertThat(body).contains("sdkStatus")
+    }
+
+    @Test
+    fun `cancelIpsTransactions sends correct POST request`() {
+        mockWebServer.enqueue(MockResponse().setBody("""{"statusCode": "00"}""").setResponseCode(200))
+
+        // Uses CancelIpsTransactionDto
+        val request = com.payten.whitelabel.dto.CancelIpsTransactionDto(
+            creditTransferIdentificator = "IPS-REF-123",
+            creditTransferAmount = "1500.00",
+            terminalIdentificator = "12345678"
+        )
+
+        apiService.cancelIpsTransactions(request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/v2/paymentReturn")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+
+        // Check body content
+        val body = recordedRequest.body.readUtf8()
+        assertThat(body).contains("IPS-REF-123")
+        assertThat(body).contains("1500.00")
+    }
+
+    @Test
+    fun `checkCTSStatus polls status via POST`() {
+        mockWebServer.enqueue(MockResponse().setBody("""{"statusCode": "00", "status": "COMPLETED"}""").setResponseCode(200))
+
+        // Uses CheckTransferRequest
+        val request = com.payten.whitelabel.dto.CheckTransferRequest(
+            endToEndReference = "E2E-REF-999",
+            terminalIdentificator = "12345678",
+            amount = "200.00",
+            qrCodeString = "RAW_QR_DATA_STRING",
+            transactionId = "TX-ID-555"
+        )
+
+        apiService.checkCTSStatus(request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/checkCTStatusProxy")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+
+        val body = recordedRequest.body.readUtf8()
+        assertThat(body).contains("E2E-REF-999")
+        assertThat(body).contains("RAW_QR_DATA_STRING")
+    }
+
+    @Test
+    fun `otpCheck verifies code via POST with Header`() {
+        mockWebServer.enqueue(MockResponse().setBody("""{"statusCode": "00"}""").setResponseCode(200))
+
+        // Uses OtpCheckDto
+        val request = com.payten.whitelabel.dto.OtpCheckDto(
+            userId = "user_test_01",
+            activationCode = "123456"
+        )
+        val tidHeader = "TID-HEADER-123"
+
+        apiService.otpCheck(tidHeader, request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/v2/otpCheck")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+
+        // Verify Header
+        assertThat(recordedRequest.getHeader("Terminal-Identification")).isEqualTo(tidHeader)
+
+        // Verify Body
+        val body = recordedRequest.body.readUtf8()
+        assertThat(body).contains("user_test_01")
+        assertThat(body).contains("123456")
+    }
+
+    // ==========================================
+    // REMAINING SYSTEM & CARD OPERATIONS
+    // ==========================================
+
+    @Test
+    fun `getTransaction retrieves history via POST`() {
+        mockWebServer.enqueue(MockResponse().setBody("""{"statusCode": "00", "transactions": []}""").setResponseCode(200))
+
+        // Uses GetTransactionsRequest
+        val request = com.payten.whitelabel.dto.transactions.GetTransactionsRequest(
+            userId = "user_test",
+            dateFrom = "2023-01-01",
+            dateTo = "2023-01-31",
+            tid = "12345678"
+        )
+
+        apiService.getTransaction(request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/v2/getTransaction")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+
+        val body = recordedRequest.body.readUtf8()
+        assertThat(body).contains("user_test")
+        assertThat(body).contains("2023-01-01")
+    }
+
+    @Test
+    fun `getTerminalStatus checks device health via POST`() {
+        mockWebServer.enqueue(MockResponse().setBody("""{"statusCode": "00", "status": "ACTIVE"}""").setResponseCode(200))
+
+        // Uses GetTerminalStatusRequest
+        val request = com.payten.whitelabel.dto.status.GetTerminalStatusRequest(
+            userId = "user_status_check"
+        )
+
+        apiService.getTerminalStatus(request).test().awaitDone(1, TimeUnit.SECONDS)
+
+        val recordedRequest = mockWebServer.takeRequest()
+        assertThat(recordedRequest.path).isEqualTo("/ips/v2/terminal/status")
+        assertThat(recordedRequest.method).isEqualTo("POST")
+
+        assertThat(recordedRequest.body.readUtf8()).contains("user_status_check")
+    }
 }
