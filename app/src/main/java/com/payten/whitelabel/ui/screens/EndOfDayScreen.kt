@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
@@ -296,6 +297,7 @@ fun EndOfDayScreen(
                     masterTraffic = masterTraffic.value,
                     visaTraffic = visaTraffic.value,
                     flikTraffic = flikTraffic.value,
+                    totalTraffic = totalTraffic.value,
                     tipsEnabled = tipsEnabled,
                     ipsExists = ipsExists
                 )
@@ -426,6 +428,7 @@ private fun ReceiptCard(
     masterTraffic: CardTrafficPrint,
     visaTraffic: CardTrafficPrint,
     flikTraffic: CardTrafficPrint,
+    totalTraffic: CardTrafficPrint,
     tipsEnabled: Boolean,
     ipsExists: Boolean
 ) {
@@ -527,6 +530,17 @@ private fun ReceiptCard(
                     isIPS = true
                 )
             }
+
+            // Grand Total section
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(color = Color.Black)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            CardSection(
+                title = stringResource(R.string.eod_grand_total_label).uppercase(),
+                traffic = totalTraffic,
+                showTips = tipsEnabled
+            )
         }
     }
 }
@@ -534,7 +548,7 @@ private fun ReceiptCard(
 @Composable
 private fun CardSection(
     title: String,
-    logoResId: Int,
+    logoResId: Int? = null,
     traffic: CardTrafficPrint,
     showTips: Boolean,
     isIPS: Boolean = false
@@ -554,11 +568,13 @@ private fun CardSection(
                 color = Color.Black
             )
 
-            Image(
-                painter = painterResource(logoResId),
-                contentDescription = title,
-                modifier = Modifier.height(16.dp)
-            )
+            if (logoResId != null) {
+                Image(
+                    painter = painterResource(logoResId),
+                    contentDescription = title,
+                    modifier = Modifier.height(16.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -1151,7 +1167,7 @@ private fun createTextForPrint(
 }
 
 // Preview support
-@androidx.compose.ui.tooling.preview.Preview(
+@Preview(
     name = "End of Day Screen - Full",
     showBackground = true,
     backgroundColor = 0xFFF5F5F5
@@ -1228,6 +1244,16 @@ private fun EndOfDayScreenPreview() {
                     masterTraffic = sampleMasterTraffic,
                     visaTraffic = sampleVisaTraffic,
                     flikTraffic = sampleFlikTraffic,
+                    totalTraffic = CardTrafficPrint(
+                        type = "GRAND TOTAL",
+                        purchaseNumber = "38",
+                        purchase = "31.251,25 RSD",
+                        cancelPurchaseNumber = "5",
+                        cancelPurchase = "3.300,00 RSD",
+                        tipAmount = "1.250,00 RSD",
+                        totalNumber = "51",
+                        total = "33.351,25 RSD"
+                    ),
                     tipsEnabled = true,
                     ipsExists = true
                 )
@@ -1236,7 +1262,7 @@ private fun EndOfDayScreenPreview() {
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(
+@Preview(
     name = "Receipt Card Only",
     showBackground = true,
     backgroundColor = 0xFFF5F5F5
@@ -1290,6 +1316,16 @@ private fun ReceiptCardPreview() {
         visaTraffic = sampleVisaTraffic,
         flikTraffic = sampleFlikTraffic,
         tipsEnabled = true,
-        ipsExists = true
+        ipsExists = true,
+        totalTraffic = CardTrafficPrint(
+            type = "GRAND TOTAL",
+            purchaseNumber = "38",
+            purchase = "31.251,25 RSD",
+            cancelPurchaseNumber = "5",
+            cancelPurchase = "3.300,00 RSD",
+            tipAmount = "1.250,00 RSD",
+            totalNumber = "51",
+            total = "33.351,25 RSD"
+        )
     )
 }
